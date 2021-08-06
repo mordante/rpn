@@ -1,0 +1,13 @@
+add_executable(tests
+	math.cpp
+)
+target_compile_options(tests
+	PRIVATE
+		${module_compile_options}
+)
+target_link_libraries(tests
+	PRIVATE
+		math
+		gtest_main
+)
+target_code_coverage(tests)
