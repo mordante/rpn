@@ -1,0 +1,194 @@
+Bottom: 5595474538578d82ab3dbc2eb4604b1e559bf891
+Top:    31401ce44e5b010bc4ef3e71fdfd77c2a7356e99
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 11:39:42 +0200
+
+Refresh of add-a-calculator-model-object
+
+---
+
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index 24b077d..cb0ace1 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -17,6 +17,7 @@ export module calculator.model;
+ export import calculator.value;
+ 
+ import<string>;
++import<string_view>;
+ import<vector>;
+ 
+ namespace calculator {
+@@ -48,13 +49,21 @@ public:
+ 
+   // *** Modifiers ***
+ 
++  // * Diagnostics *
++
+   void diagnostics_set(std::string &&diagnotics) {
+     diagnotics_ = std::move(diagnotics);
+   }
+-  const std::string &diagnostics_get() const noexcept { return diagnotics_; }
++
++  [[nodiscard]] const std::string &diagnostics_get() const noexcept {
++    return diagnotics_;
++  }
++
+   /** Clears the current diagnostics. */
+   void diagnostics_clear() noexcept { diagnotics_.clear(); }
+ 
++  // * Stack *
++
+   /** Adds the @p value to the back of the stack. */
+   void stack_push(tvalue value) { stack_.emplace_back(std::move(value)); }
+ 
+@@ -64,8 +73,22 @@ public:
+    */
+   [[nodiscard]] tvalue stack_pop();
+ 
++  // * Input *
++
++  /** Clears the current input. */
++  void input_clear() noexcept { input_.clear(); }
++
++  /**
++   * Appends the @p data to the @ref input_. @note Since the expected usage
++   * pattern is that the user only append (and maybe later removes) input
++   * there's no setter required.
++   */
++  void input_append(std::string_view data) { input_.append(data); }
++
++  [[nodiscard]] const std::string &input_get() const noexcept { return input_; }
++
+ private:
+-  /** Contains the errors to show to the user. */
++  /** The execution issues to report to the user. */
+   std::string diagnotics_{};
+ 
+   /**
+@@ -76,6 +99,9 @@ private:
+    * oldest item.
+    */
+   std::vector<tvalue> stack_{};
++
++  /** The input buffer used to store the current editting session. */
++  std::string input_{};
+ };
+ 
+ tvalue tmodel::stack_pop() {
+diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
+index 6bcff03..e41a56d 100644
+--- a/tests/calculator/model.cpp
++++ b/tests/calculator/model.cpp
+@@ -21,10 +21,11 @@ import<type_traits>;
+ namespace calculator {
+ 
+ TEST(model, default_constructor) {
+-  tmodel model;
++  const tmodel model;
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_TRUE(model.input_get().empty());
+ }
+ 
+ TEST(model, copy_constructor) {
+@@ -66,11 +67,13 @@ TEST(model, stack_push) {
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_FALSE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_TRUE(model.input_get().empty());
+ 
+   model.stack_push(42);
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_FALSE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 2);
++  EXPECT_TRUE(model.input_get().empty());
+ }
+ 
+ TEST(model, stack_pop) {
+@@ -85,16 +88,23 @@ TEST(model, stack_pop) {
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_FALSE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_TRUE(model.input_get().empty());
+ 
+   value = model.stack_pop();
+   EXPECT_EQ(value.get(), 42);
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_TRUE(model.input_get().empty());
+ 
+   EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
+ }
+ 
++TEST(model, diagnostics_get) {
++  const tmodel model;
++  EXPECT_TRUE(noexcept(model.diagnostics_get()));
++}
++
+ TEST(model, diagnostics_set) {
+   tmodel model;
+ 
+@@ -102,15 +112,18 @@ TEST(model, diagnostics_set) {
+   EXPECT_EQ(model.diagnostics_get(), "abc");
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_TRUE(model.input_get().empty());
+ 
+   model.diagnostics_set("");
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
+   EXPECT_EQ(model.stack_size(), 0);
+ }
+ 
+ TEST(model, diagnostics_clear) {
+   tmodel model;
++  EXPECT_TRUE(noexcept(model.diagnostics_clear()));
+ 
+   model.diagnostics_set("abc");
+ 
+@@ -118,6 +131,41 @@ TEST(model, diagnostics_clear) {
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(model, input_get) {
++  const tmodel model;
++  EXPECT_TRUE(noexcept(model.input_get()));
++}
++
++TEST(model, input_append) {
++  tmodel model;
++
++  model.input_append("abc");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_EQ(model.input_get(), "abc");
++
++  model.input_append("def");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_EQ(model.input_get(), "abcdef");
++}
++
++TEST(model, input_clear) {
++  tmodel model;
++  EXPECT_TRUE(noexcept(model.input_clear()));
++
++  model.input_append("abc");
++
++  model.input_clear();
++  EXPECT_TRUE(model.input_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
++  EXPECT_TRUE(model.input_get().empty());
+ }
+ 
+ } // namespace calculator
