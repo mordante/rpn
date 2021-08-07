@@ -1,0 +1,30 @@
+Bottom: a8a08e97f92555dfcd0420f04fd31feb8c59f961
+Top:    3b3af79731dc453e8d5521c50e0923da9e166b6d
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 20:57:03 +0200
+
+Refresh of implement-input-prefixes
+
+---
+
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index df03c28..fe64683 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -176,13 +176,13 @@ int determine_base(std::string_view &input) {
+ 
+   switch (input[1]) {
+   case 'b':
+-	  input.remove_prefix(2);
++    input.remove_prefix(2);
+     return 2;
+   default:
+-	  input.remove_prefix(1);
++    input.remove_prefix(1);
+     return 8;
+   case 'x':
+-	  input.remove_prefix(2);
++    input.remove_prefix(2);
+     return 16;
+   }
+ }
