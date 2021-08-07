@@ -56,19 +56,17 @@ public:
   /**
    * Pushes the current input to the stack.
    *
-   * The function clears the diagnostics.
+   * Upon success the diagnostics are cleared, else they contain the last error.
    */
   void push() noexcept;
 
   /**
-   * Pushes the sum of the last two elements on the stack.
+   * Calculates the sum of two values.
    *
-   * The function clears the diagnostics.
-   * The function doesn't affect the input, however it's expected the input
-   * buffer is empty.
+   * When the input isn't empty equivalent @c pop() @em op @a input
+   * else equivalent @c pop() @em op @c pop()
    *
-   * @note If the input isn't empty the behaviour might change in the future,
-   * by first pushing the current contents of the input.
+   * Upon success the diagnostics are cleared, else they contain the last error.
    */
   void math_add() noexcept;
 
@@ -92,8 +90,7 @@ void tcontroller::append(std::string_view data) noexcept {
 
 void tcontroller::push() noexcept {
   try {
-    push(model_.input_get());
-    model_.diagnostics_clear();
+    push(model_.input_steal());
   } catch (const std::exception &e) {
     diagnostics_set(e);
   }
@@ -102,6 +99,9 @@ void tcontroller::push() noexcept {
 
 void tcontroller::math_add() noexcept {
   try {
+    if (const std::string input = model_.input_steal(); !input.empty())
+      push(input);
+
     const tvalue lhs = model_.stack_pop();
     const tvalue rhs = model_.stack_pop();
     model_.stack_push(math::add(lhs.get(), rhs.get()));

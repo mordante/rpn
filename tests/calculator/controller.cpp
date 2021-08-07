@@ -21,6 +21,7 @@ import calculator.model;
 namespace calculator {
 
 // *** SMF ***
+
 TEST(controller, constructor) {
   tmodel model;
   const tcontroller controller{model};
@@ -236,7 +237,20 @@ TEST(controller, math_add_too_few_elements) {
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, math_add) {
+TEST(controller, math_add_stack_input) {
+  tmodel model;
+  tcontroller controller{model};
+  model.stack_push(42);
+  model.input_append("42");
+
+  controller.math_add();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 84);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, math_add_stack_stack) {
   tmodel model;
   tcontroller controller{model};
   model.stack_push(42);
@@ -263,18 +277,17 @@ TEST(controller, math_add_diagnostics_cleared) {
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, math_add_input_unchanged) {
+TEST(controller, math_add_input_invalid) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
   model.stack_push(42);
   model.input_append("abc");
 
   controller.math_add();
-  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 84);
-  EXPECT_EQ(model.input_get(), "abc");
+  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_TRUE(model.input_get().empty());
 }
 
 } // namespace calculator
