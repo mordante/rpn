@@ -1,11 +1,12 @@
 Version: 1
-Previous: 4e5cedda361c5201e3a1533cb9d59e0cd113e841
-Head: 484f7e4c75e313f418447017038b4b67035df920
+Previous: 7a03a71ad7a9cf67f2e6a2b9aec0efb3a698a2fb
+Head: f6c1f77e592d9c3e34fac1f06be0d3d75a332c69
 Applied:
   improve-the-add_module-cmake: 4264f83b11b6c396fb2d1bd7d35142ff8258ff61
   add-a-calculator-value-object: a8d1f29909ee7d06309e0c8e129404198f5beca1
   add-a-calculator-model-object: 126151f7d4713eaae7d6bb20769c3df668250880
   add-a-calculator-controller: 7234bc49a86d98e28a737eb15ba956fb79f31219
   toy-with-a-gui: 484f7e4c75e313f418447017038b4b67035df920
+  refresh-temp: f6c1f77e592d9c3e34fac1f06be0d3d75a332c69
 Unapplied:
 Hidden:
