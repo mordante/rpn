@@ -18,7 +18,7 @@ export import calculator.value;
 
 import<string>;
 import<string_view>;
-import<vector>;
+export import<vector>;
 
 namespace calculator {
 
