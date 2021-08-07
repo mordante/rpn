@@ -1,0 +1,13 @@
+Bottom: 44dd99b31e428b6134018f16a7801d0475577de8
+Top:    44dd99b31e428b6134018f16a7801d0475577de8
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 07:41:39 +0200
+
+Add a calculator value object.
+
+This object mainly lives on the stack of the calculator.
+
+
+---
+
+
