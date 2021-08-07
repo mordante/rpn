@@ -1,0 +1,16 @@
+Bottom: 765163d97cd5ff5edbf7efc72be8bea6e03be15d
+Top:    765163d97cd5ff5edbf7efc72be8bea6e03be15d
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 16:43:08 +0200
+
+Implement the basic arithmetic operations.
+
+The add has already been implemented, now implement
+- subtract
+- multiply
+- divide, for now always an integral operation, truncating the value
+
+
+---
+
+
