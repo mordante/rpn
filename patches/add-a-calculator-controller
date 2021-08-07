@@ -1,5 +1,5 @@
 Bottom: 724ffa40c8830a3ae02ff83b604c22fba9abb7cf
-Top:    4346cac5d98c194a76f4f567c4f85a53b7f8578e
+Top:    d4ac3da5c3c6deef94610a6bd43a1fe9c214c979
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 11:44:09 +0200
 
@@ -36,7 +36,7 @@ index 089f030..e36404c 100644
  )
 diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
 new file mode 100644
-index 0000000..8cc861a
+index 0000000..3f3c12d
 --- /dev/null
 +++ b/src/modules/calculator/controller.cpp
 @@ -0,0 +1,163 @@
@@ -98,19 +98,17 @@ index 0000000..8cc861a
 +  /**
 +   * Pushes the current input to the stack.
 +   *
-+   * The function clears the diagnostics.
++   * Upon success the diagnostics are cleared, else they contain the last error.
 +   */
 +  void push() noexcept;
 +
 +  /**
-+   * Pushes the sum of the last two elements on the stack.
++   * Calculates the sum of two values.
 +   *
-+   * The function clears the diagnostics.
-+   * The function doesn't affect the input, however it's expected the input
-+   * buffer is empty.
++   * When the input isn't empty equivalent @c pop() @em op @a input
++   * else equivalent @c pop() @em op @c pop()
 +   *
-+   * @note If the input isn't empty the behaviour might change in the future,
-+   * by first pushing the current contents of the input.
++   * Upon success the diagnostics are cleared, else they contain the last error.
 +   */
 +  void math_add() noexcept;
 +
@@ -134,8 +132,7 @@ index 0000000..8cc861a
 +
 +void tcontroller::push() noexcept {
 +  try {
-+    push(model_.input_get());
-+    model_.diagnostics_clear();
++    push(model_.input_steal());
 +  } catch (const std::exception &e) {
 +    diagnostics_set(e);
 +  }
@@ -144,6 +141,9 @@ index 0000000..8cc861a
 +
 +void tcontroller::math_add() noexcept {
 +  try {
++    if (const std::string input = model_.input_steal(); !input.empty())
++      push(input);
++
 +    const tvalue lhs = model_.stack_pop();
 +    const tvalue rhs = model_.stack_pop();
 +    model_.stack_push(math::add(lhs.get(), rhs.get()));
@@ -215,10 +215,10 @@ index 24dbb5f..88300e8 100644
  	math.cpp
 diff --git a/tests/calculator/controller.cpp b/tests/calculator/controller.cpp
 new file mode 100644
-index 0000000..abca005
+index 0000000..adc7bdb
 --- /dev/null
 +++ b/tests/calculator/controller.cpp
-@@ -0,0 +1,280 @@
+@@ -0,0 +1,293 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -242,6 +242,7 @@ index 0000000..abca005
 +namespace calculator {
 +
 +// *** SMF ***
++
 +TEST(controller, constructor) {
 +  tmodel model;
 +  const tcontroller controller{model};
@@ -457,7 +458,20 @@ index 0000000..abca005
 +  EXPECT_TRUE(model.input_get().empty());
 +}
 +
-+TEST(controller, math_add) {
++TEST(controller, math_add_stack_input) {
++  tmodel model;
++  tcontroller controller{model};
++  model.stack_push(42);
++  model.input_append("42");
++
++  controller.math_add();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 84);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, math_add_stack_stack) {
 +  tmodel model;
 +  tcontroller controller{model};
 +  model.stack_push(42);
@@ -484,18 +498,17 @@ index 0000000..abca005
 +  EXPECT_TRUE(model.input_get().empty());
 +}
 +
-+TEST(controller, math_add_input_unchanged) {
++TEST(controller, math_add_input_invalid) {
 +  tmodel model;
 +  tcontroller controller{model};
-+  model.stack_push(42);
 +  model.stack_push(42);
 +  model.input_append("abc");
 +
 +  controller.math_add();
-+  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
 +  EXPECT_EQ(model.stack_size(), 1);
-+  EXPECT_EQ(model.stack_pop().get(), 84);
-+  EXPECT_EQ(model.input_get(), "abc");
++  EXPECT_EQ(model.stack_pop().get(), 42);
++  EXPECT_TRUE(model.input_get().empty());
 +}
 +
 +} // namespace calculator
