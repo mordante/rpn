@@ -1,5 +1,5 @@
 Bottom: 5b96b54b6280fead88f62454f76042810f99c86d
-Top:    ff93c0dff87a02a29791cdb51e6c1fb27b48ffea
+Top:    f089a8416c9dd82c0d138e31743ef84f25c4bd11
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -11,23 +11,12 @@ Just an intial experiment to have some kind of GUI for the application.
 ---
 
 diff --git a/cmake/ExternalProjects.cmake b/cmake/ExternalProjects.cmake
-index 759f971..9520b46 100644
+index 759f971..97738b3 100644
 --- a/cmake/ExternalProjects.cmake
 +++ b/cmake/ExternalProjects.cmake
-@@ -1,5 +1,30 @@
+@@ -1,5 +1,17 @@
  include(FetchContent)
  
-+#FetchContent_Declare(
-+#  imgui
-+#  GIT_REPOSITORY https://github.com/ocornut/imgui
-+#  GIT_TAG v1.83
-+#)
-+#FetchContent_GetProperties(imgui)
-+#if(NOT imgui_POPULATED)
-+#  FetchContent_Populate(imgui)
-+##  add_subdirectory(${imgui_SOURCE_DIR} ${imgui_BINARY_DIR})
-+#endif()
-+
 +FetchContent_Declare(
 +  fltk
 +  GIT_REPOSITORY https://github.com/fltk/fltk
@@ -40,16 +29,16 @@ index 759f971..9520b46 100644
 +  add_subdirectory(${fltk_SOURCE_DIR} ${fltk_BINARY_DIR})
 +endif()
 +
-+
-+
  FetchContent_Declare(
    googletest
    GIT_REPOSITORY https://github.com/google/googletest.git
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 0a8cc53..e787794 100644
+index 0a8cc53..d46203b 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -2,3 +2,16 @@ add_subdirectory(modules)
+@@ -1,4 +1,20 @@
+ add_subdirectory(modules)
++
  add_executable(rpn
  	rpn.cpp
  )
@@ -57,14 +46,16 @@ index 0a8cc53..e787794 100644
 +	PRIVATE
 +		${module_compile_options}
 +)
-+target_link_libraries(rpn
-+	calculator
-+	fltk
-+)
++# These aren't properly set by fltk itself.
 +target_include_directories(rpn
 +	PRIVATE
-+		${fltk_SOURCE_DIR}
-+		${fltk_BINARY_DIR}
++		${fltk_SOURCE_DIR} # Default include directory
++		${fltk_BINARY_DIR} # Contains the build information header
++)
++target_link_libraries(rpn
++	PRIVATE
++		calculator
++		fltk
 +)
 diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
 index e36404c..4bca16e 100644
