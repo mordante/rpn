@@ -1,5 +1,5 @@
-Bottom: a0a2d6a8131cb8f2296a51aa70650a6f6c77a634
-Top:    e043ea4e6e3ea30041dac84512e4a38cd11359d8
+Bottom: 4346cac5d98c194a76f4f567c4f85a53b7f8578e
+Top:    933be709a71c97a3eceff0e3bf84ce93b3ea29dd
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -109,7 +109,7 @@ index 0000000..50a05d6
 +export import calculator.model;
 +export import calculator.value;
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
-index cb0ace1..c188793 100644
+index cbd5c48..f225bed 100644
 --- a/src/modules/calculator/model.cpp
 +++ b/src/modules/calculator/model.cpp
 @@ -18,7 +18,7 @@ export import calculator.value;
