@@ -1,5 +1,5 @@
 Bottom: ca524ec255dd6b78373579f49f8ba5334c5ec872
-Top:    3c8dd62fabab6eb55182688e7094a5fef8a095a0
+Top:    1878c1ed245325fa1f2b93c284f1243b1fd822d3
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -113,10 +113,10 @@ index c799329..79e7f42 100644
  namespace calculator {
  
 diff --git a/src/rpn.cpp b/src/rpn.cpp
-index 9b5a646..743834d 100644
+index 9b5a646..5c3a934 100644
 --- a/src/rpn.cpp
 +++ b/src/rpn.cpp
-@@ -12,6 +12,96 @@
+@@ -12,6 +12,91 @@
   * See the COPYING file for more details.
   */
  
@@ -146,57 +146,51 @@ index 9b5a646..743834d 100644
 +    case FL_KEYDOWN:
 +    case FL_PASTE:
 +      process_input_event();
++      update_ui();
 +      return 1;
 +    }
 +    return 0;
 +  }
 +
-+  void process_input_event() noexcept;
++  /** Process the user provided input. */
++  void process_input_event();
 +
-+  void input_append(std::string_view data);
-+
++  /** Updates the UI after changes need to be processed. */
 +  void update_ui();
++
++  // *** Widgets ***
 +
 +  Fl_Box diagnostics_{5, 5, 300, 20};
 +  Fl_Browser stack_{5, 30, 300, 200};
 +  Fl_Box input_{5, 235, 300, 20};
 +
++  // *** Model & controller ***
++
 +  calculator::tmodel model_;
 +  calculator::tcontroller controller_{model_};
 +};
 +
-+void twindow::process_input_event() noexcept {
-+  try {
++void twindow::process_input_event() {
++  // *** Handle special keys ***
++  switch (Fl::event_key()) {
++  case FL_Enter:
++  case FL_KP_Enter:
++    controller_.push();
++    return;
++  }
 +
-+    // *** Handle special keys ***
-+    switch (Fl::event_key()) {
-+    case FL_Enter:
-+    case FL_KP_Enter:
-+      controller_.push();
-+      update_ui();
++  const std::string text = Fl::event_text();
++  // *** Handle special values ***
++  if (text.size() == 1) {
++    switch (text[0]) {
++    case '+':
++      controller_.math_add();
 +      return;
 +    }
-+
-+    const std::string text = Fl::event_text();
-+    // *** Handle special values ***
-+    if (text.size() == 1) {
-+      switch (text[0]) {
-+      case '+':
-+        controller_.math_add();
-+        update_ui();
-+        return;
-+      }
-+    }
-+
-+    // *** Add the text to the input ***
-+    input_append(text);
-+  } catch (...) {
 +  }
-+}
 +
-+void twindow::input_append(std::string_view data) {
-+  controller_.append(data);
-+  update_ui();
++  // *** Add the text to the input ***
++  controller_.append(text);
 +}
 +
 +void twindow::update_ui() {
@@ -205,6 +199,7 @@ index 9b5a646..743834d 100644
 +  stack_.clear();
 +  for (const auto &value : model_.stack())
 +    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
++  stack_.bottomline(stack_.size());
 +
 +  input_.label(model_.input_get().c_str());
 +}
