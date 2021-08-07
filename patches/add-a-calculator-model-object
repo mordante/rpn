@@ -1,5 +1,5 @@
 Bottom: bbfd1bcc61fef3c71c96e75e3b0a2216c3bb7246
-Top:    45d55434d28d55a7be036c460916805c97668b6f
+Top:    5595474538578d82ab3dbc2eb4604b1e559bf891
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 08:19:50 +0200
 
@@ -32,10 +32,10 @@ index a221ed8..089f030 100644
 +)
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
 new file mode 100644
-index 0000000..128a7f2
+index 0000000..24b077d
 --- /dev/null
 +++ b/src/modules/calculator/model.cpp
-@@ -0,0 +1,80 @@
+@@ -0,0 +1,90 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -54,6 +54,7 @@ index 0000000..128a7f2
 +
 +export import calculator.value;
 +
++import<string>;
 +import<vector>;
 +
 +namespace calculator {
@@ -61,8 +62,7 @@ index 0000000..128a7f2
 +/**
 + * The model of the calculator.
 + *
-+ * For now a very basic version of this class. Future additions may contain the
-+ * diagnostics shown upon errors an the input buffer.
++ * For now a very basic version of this class.
 + *
 + * The class is non-copyable and non-movable. These operations make little
 + * sense for the model and are most likely logic errors.
@@ -81,21 +81,31 @@ index 0000000..128a7f2
 +
 +  // *** Query ***
 +
-+  [[nodiscard]] bool empty() const noexcept { return stack_.empty(); }
-+  [[nodiscard]] size_t size() const noexcept { return stack_.size(); }
++  [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
++  [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
 +
 +  // *** Modifiers ***
 +
++  void diagnostics_set(std::string &&diagnotics) {
++    diagnotics_ = std::move(diagnotics);
++  }
++  const std::string &diagnostics_get() const noexcept { return diagnotics_; }
++  /** Clears the current diagnostics. */
++  void diagnostics_clear() noexcept { diagnotics_.clear(); }
++
 +  /** Adds the @p value to the back of the stack. */
-+  void push(tvalue value) { stack_.emplace_back(std::move(value)); }
++  void stack_push(tvalue value) { stack_.emplace_back(std::move(value)); }
 +
 +  /**
 +   * @returns The last element at the back of the stack.
 +   * @throws @ref std::out_of_range when the stack is empty.
 +   */
-+  [[nodiscard]] tvalue pop();
++  [[nodiscard]] tvalue stack_pop();
 +
 +private:
++  /** Contains the errors to show to the user. */
++  std::string diagnotics_{};
++
 +  /**
 +   * The stack with all values of the applications.
 +   *
@@ -106,7 +116,7 @@ index 0000000..128a7f2
 +  std::vector<tvalue> stack_{};
 +};
 +
-+tvalue tmodel::pop() {
++tvalue tmodel::stack_pop() {
 +  if (stack_.empty())
 +    throw std::out_of_range("Stack is empty");
 +
@@ -128,10 +138,10 @@ index 1be6d9c..24dbb5f 100644
  )
 diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
 new file mode 100644
-index 0000000..c7eaba9
+index 0000000..6bcff03
 --- /dev/null
 +++ b/tests/calculator/model.cpp
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,123 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -156,8 +166,9 @@ index 0000000..c7eaba9
 +
 +TEST(model, default_constructor) {
 +  tmodel model;
-+  EXPECT_TRUE(model.empty());
-+  EXPECT_EQ(model.size(), 0);
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
 +}
 +
 +TEST(model, copy_constructor) {
@@ -182,46 +193,75 @@ index 0000000..c7eaba9
 +      << "Implement the proper tests.";
 +}
 +
-+TEST(model, empty) {
++TEST(model, stack_empty) {
 +  const tmodel model;
-+  EXPECT_TRUE(noexcept(model.empty()));
++  EXPECT_TRUE(noexcept(model.stack_empty()));
 +}
 +
-+TEST(model, size) {
++TEST(model, stack_size) {
 +  const tmodel model;
-+  EXPECT_TRUE(noexcept(model.size()));
++  EXPECT_TRUE(noexcept(model.stack_size()));
 +}
 +
-+TEST(model, push) {
++TEST(model, stack_push) {
 +  tmodel model;
 +
-+  model.push(42);
-+  EXPECT_FALSE(model.empty());
-+  EXPECT_EQ(model.size(), 1);
++  model.stack_push(42);
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_FALSE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 1);
 +
-+  model.push(42);
-+  EXPECT_FALSE(model.empty());
-+  EXPECT_EQ(model.size(), 2);
++  model.stack_push(42);
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_FALSE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 2);
 +}
 +
-+TEST(model, pop) {
++TEST(model, stack_pop) {
 +  tmodel model;
 +  tvalue value;
 +
-+  model.push(42);
-+  model.push(1);
++  model.stack_push(42);
++  model.stack_push(1);
 +
-+  value = model.pop();
++  value = model.stack_pop();
 +  EXPECT_EQ(value.get(), 1);
-+  EXPECT_FALSE(model.empty());
-+  EXPECT_EQ(model.size(), 1);
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_FALSE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 1);
 +
-+  value = model.pop();
++  value = model.stack_pop();
 +  EXPECT_EQ(value.get(), 42);
-+  EXPECT_TRUE(model.empty());
-+  EXPECT_EQ(model.size(), 0);
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
 +
-+  EXPECT_THROW((void)model.pop(), std::out_of_range);
++  EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
++}
++
++TEST(model, diagnostics_set) {
++  tmodel model;
++
++  model.diagnostics_set("abc");
++  EXPECT_EQ(model.diagnostics_get(), "abc");
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
++
++  model.diagnostics_set("");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
++}
++
++TEST(model, diagnostics_clear) {
++  tmodel model;
++
++  model.diagnostics_set("abc");
++
++  model.diagnostics_clear();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
 +}
 +
 +} // namespace calculator
