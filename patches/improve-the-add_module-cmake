@@ -1,0 +1,14 @@
+Bottom: 44dd99b31e428b6134018f16a7801d0475577de8
+Top:    44dd99b31e428b6134018f16a7801d0475577de8
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 09:29:55 +0200
+
+Improve the add_module CMake function.
+
+When a module uses another module let it search the
+${PREBUILT_MODULE_PATH} for this module.
+
+
+---
+
+
