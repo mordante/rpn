@@ -21,10 +21,11 @@ import<type_traits>;
 namespace calculator {
 
 TEST(model, default_constructor) {
-  tmodel model;
+  const tmodel model;
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(model, copy_constructor) {
@@ -66,11 +67,13 @@ TEST(model, stack_push) {
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_TRUE(model.input_get().empty());
 
   model.stack_push(42);
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 2);
+  EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(model, stack_pop) {
@@ -85,14 +88,21 @@ TEST(model, stack_pop) {
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_TRUE(model.input_get().empty());
 
   value = model.stack_pop();
   EXPECT_EQ(value.get(), 42);
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_TRUE(model.input_get().empty());
 
   EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
+}
+
+TEST(model, diagnostics_get) {
+  const tmodel model;
+  EXPECT_TRUE(noexcept(model.diagnostics_get()));
 }
 
 TEST(model, diagnostics_set) {
@@ -102,15 +112,18 @@ TEST(model, diagnostics_set) {
   EXPECT_EQ(model.diagnostics_get(), "abc");
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_TRUE(model.input_get().empty());
 
   model.diagnostics_set("");
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
   EXPECT_EQ(model.stack_size(), 0);
 }
 
 TEST(model, diagnostics_clear) {
   tmodel model;
+  EXPECT_TRUE(noexcept(model.diagnostics_clear()));
 
   model.diagnostics_set("abc");
 
@@ -118,6 +131,41 @@ TEST(model, diagnostics_clear) {
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(model, input_get) {
+  const tmodel model;
+  EXPECT_TRUE(noexcept(model.input_get()));
+}
+
+TEST(model, input_append) {
+  tmodel model;
+
+  model.input_append("abc");
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_EQ(model.input_get(), "abc");
+
+  model.input_append("def");
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_EQ(model.input_get(), "abcdef");
+}
+
+TEST(model, input_clear) {
+  tmodel model;
+  EXPECT_TRUE(noexcept(model.input_clear()));
+
+  model.input_append("abc");
+
+  model.input_clear();
+  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_TRUE(model.input_get().empty());
 }
 
 } // namespace calculator

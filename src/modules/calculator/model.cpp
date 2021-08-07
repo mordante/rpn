@@ -17,6 +17,7 @@ export module calculator.model;
 export import calculator.value;
 
 import<string>;
+import<string_view>;
 import<vector>;
 
 namespace calculator {
@@ -48,12 +49,20 @@ public:
 
   // *** Modifiers ***
 
+  // * Diagnostics *
+
   void diagnostics_set(std::string &&diagnotics) {
     diagnotics_ = std::move(diagnotics);
   }
-  const std::string &diagnostics_get() const noexcept { return diagnotics_; }
+
+  [[nodiscard]] const std::string &diagnostics_get() const noexcept {
+    return diagnotics_;
+  }
+
   /** Clears the current diagnostics. */
   void diagnostics_clear() noexcept { diagnotics_.clear(); }
+
+  // * Stack *
 
   /** Adds the @p value to the back of the stack. */
   void stack_push(tvalue value) { stack_.emplace_back(std::move(value)); }
@@ -64,8 +73,22 @@ public:
    */
   [[nodiscard]] tvalue stack_pop();
 
+  // * Input *
+
+  /** Clears the current input. */
+  void input_clear() noexcept { input_.clear(); }
+
+  /**
+   * Appends the @p data to the @ref input_. @note Since the expected usage
+   * pattern is that the user only append (and maybe later removes) input
+   * there's no setter required.
+   */
+  void input_append(std::string_view data) { input_.append(data); }
+
+  [[nodiscard]] const std::string &input_get() const noexcept { return input_; }
+
 private:
-  /** Contains the errors to show to the user. */
+  /** The execution issues to report to the user. */
   std::string diagnotics_{};
 
   /**
@@ -76,6 +99,9 @@ private:
    * oldest item.
    */
   std::vector<tvalue> stack_{};
+
+  /** The input buffer used to store the current editting session. */
+  std::string input_{};
 };
 
 tvalue tmodel::stack_pop() {
