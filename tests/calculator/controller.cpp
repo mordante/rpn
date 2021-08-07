@@ -199,7 +199,7 @@ TEST(controller, push_invalid_input_after_valid_value) {
   tmodel model;
   tcontroller controller{model};
 
-  model.input_append("0a");
+  model.input_append("1a");
   controller.push();
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack_empty());
@@ -216,6 +216,97 @@ TEST(controller, push_diagnostics_cleared) {
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_2_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0b100");
+
+  controller.push();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 4);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_2_only_prefix) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0b");
+
+  controller.push();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_2_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0b2");
+
+  controller.push();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_8_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("010");
+
+  controller.push();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 8);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_8_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("08");
+
+  controller.push();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_16_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0x10");
+
+  controller.push();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 16);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_16_only_prefix) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0x");
+
+  controller.push();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_base_16_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0xg");
+
+  controller.push();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
 }
 
