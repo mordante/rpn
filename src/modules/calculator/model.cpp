@@ -78,8 +78,19 @@ public:
 
   // * Input *
 
-  /** Clears the current input. */
+  /**
+   * Clears the current input.
+   *
+   * TODO Is this function still needed?
+   */
   void input_clear() noexcept { input_.clear(); }
+
+  /** Returns the clears the input and returns the original value. */
+  [[nodiscard]] std::string input_steal() {
+    std::string result;
+    std::swap(input_, result);
+    return result;
+  }
 
   /**
    * Appends the @p data to the @ref input_. @note Since the expected usage

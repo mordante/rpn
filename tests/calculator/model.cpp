@@ -20,6 +20,8 @@ import<type_traits>;
 
 namespace calculator {
 
+// *** SMF ***
+
 TEST(model, default_constructor) {
   const tmodel model;
   static_assert(noexcept(tmodel{}));
@@ -51,6 +53,8 @@ TEST(model, move_assignment) {
                 "Implement the proper tests.");
 }
 
+// *** Stack operations ***
+
 TEST(model, stack_empty) {
   const tmodel model;
   static_assert(noexcept(model.stack_empty()));
@@ -62,10 +66,10 @@ TEST(model, stack_size) {
 }
 
 TEST(model, stack) {
-	{
-  const tmodel model;
-  static_assert(noexcept(model.stack()));
-	}
+  {
+    const tmodel model;
+    static_assert(noexcept(model.stack()));
+  }
 
   tmodel model;
   const std::vector<tvalue> &stack = model.stack();
@@ -116,6 +120,8 @@ TEST(model, stack_pop) {
   EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
 }
 
+// *** Diagnostic operations ***
+
 TEST(model, diagnostics_get) {
   const tmodel model;
   static_assert(noexcept(model.diagnostics_get()));
@@ -150,6 +156,8 @@ TEST(model, diagnostics_clear) {
   EXPECT_TRUE(model.input_get().empty());
 }
 
+// *** Input operations ***
+
 TEST(model, input_get) {
   const tmodel model;
   static_assert(noexcept(model.input_get()));
@@ -178,7 +186,20 @@ TEST(model, input_clear) {
   model.input_append("abc");
 
   model.input_clear();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
   EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(model, input_steal) {
+  tmodel model;
+  model.input_append("abc");
+
+  const std::string input = model.input_steal();
+  EXPECT_EQ(input, "abc");
+
+  EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
   EXPECT_TRUE(model.input_get().empty());
