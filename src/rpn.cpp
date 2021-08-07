@@ -26,8 +26,6 @@ public:
     diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     diagnostics_.box(FL_DOWN_BOX);
 
-    stack_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
-
     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     input_.box(FL_DOWN_BOX);
   }
@@ -95,8 +93,7 @@ void twindow::update_ui() {
 
   stack_.clear();
   for (const auto &value : model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), format(value)
-			.c_str());
+    stack_.insert(std::numeric_limits<int>::max(), format(value).c_str());
   stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());
