@@ -1,5 +1,5 @@
 Bottom: 8089253aa2b78288d6d9df0da1fa17661083c343
-Top:    e87c3f3a23523b4cb6d4b18c0dcfaf1df12b0467
+Top:    d84653ca88816c283ee7e2e4cc731ca5d8b36cab
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -46,13 +46,17 @@ index 759f971..9520b46 100644
    googletest
    GIT_REPOSITORY https://github.com/google/googletest.git
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 0a8cc53..ad4b770 100644
+index 0a8cc53..a545078 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -2,3 +2,13 @@ add_subdirectory(modules)
+@@ -2,3 +2,17 @@ add_subdirectory(modules)
  add_executable(rpn
  	rpn.cpp
  )
++target_compile_options(rpn
++	PRIVATE
++		${module_compile_options}
++)
 +target_link_libraries(rpn
 +	calculator
 +	fltk
@@ -63,16 +67,46 @@ index 0a8cc53..ad4b770 100644
 +		${fltk_SOURCE_DIR}
 +		${fltk_BINARY_DIR}
 +)
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index dc073b6..78b61cf 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -7,10 +7,12 @@ target_compile_options(calculator
+ 	PRIVATE
+ 		${module_compile_options}
+ )
++add_module(calculator calculator.cpp)
+ add_module(calculator.controller controller.cpp)
+ add_module(calculator.model model.cpp)
+ add_module(calculator.value value.cpp)
+ add_dependencies(calculator
++	calculator.pcm
+ 	calculator.controller.pcm
+ 	calculator.model.pcm
+ 	calculator.value.pcm
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index cb0ace1..c188793 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -18,7 +18,7 @@ export import calculator.value;
+ 
+ import<string>;
+ import<string_view>;
+-import<vector>;
++export import<vector>;
+ 
+ namespace calculator {
+ 
 diff --git a/src/rpn.cpp b/src/rpn.cpp
-index 9b5a646..fe3b0e7 100644
+index 9b5a646..4e95924 100644
 --- a/src/rpn.cpp
 +++ b/src/rpn.cpp
-@@ -12,6 +12,103 @@
+@@ -12,6 +12,105 @@
   * See the COPYING file for more details.
   */
  
 -#include <format>
-+// import calculator.model;
++ import calculator;
  
 -int main(int, const char **) {}
 +#include <FL/Fl.H>
@@ -108,6 +142,8 @@ index 9b5a646..fe3b0e7 100644
 +  Fl_Box input_{5, 210, 300, 20};
 +
 +  std::string buffer_{};
++  calculator::tmodel model_;
++  calculator::tcontroller controller_{model_};
 +};
 +
 +void twindow::process_input_event() noexcept {
