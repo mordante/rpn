@@ -60,19 +60,24 @@ public:
    */
   void push() noexcept;
 
-  /**
-   * Calculates the sum of two values.
-   *
-   * When the input isn't empty equivalent @c pop() @em op @a input
-   * else equivalent @c pop() @em op @c pop()
-   *
-   * Upon success the diagnostics are cleared, else they contain the last error.
-   */
+  /** Calculates @ref math_binary_operation addition. */
   void math_add() noexcept;
 
+  /** Calculates @ref math_binary_operation subraction. */
   void math_sub() noexcept;
-   void math_mul() noexcept;
-   //void math_div() noexcept;
+
+  /** Calculates @ref math_binary_operation multiplication. */
+  void math_mul() noexcept;
+
+  /**
+   * Calculates @ref math_binary_operation division.
+   *
+   * @note The result is always an integer value instead of a floating-point
+   * value.
+   *
+   * @todo Guard against division by zero.
+   */
+  void math_div() noexcept;
 
 private:
   void push(std::string_view input);
@@ -82,6 +87,14 @@ private:
 
   using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
 
+  /**
+   * Calculates the binary operation on two values.
+   *
+   * When the input isn't empty equivalent @c pop() @em op @a input
+   * else equivalent @c pop() @em op @c pop()
+   *
+   * Upon success the diagnostics are cleared, else they contain the last error.
+   */
   void math_binary_operation(tbinary_operation operation) noexcept;
 
   void diagnostics_set(const std::exception &e);
@@ -125,6 +138,7 @@ void tcontroller::math_binary_operation(tbinary_operation operation) noexcept {
 void tcontroller::math_add() noexcept { math_binary_operation(math::add); }
 void tcontroller::math_sub() noexcept { math_binary_operation(math::sub); }
 void tcontroller::math_mul() noexcept { math_binary_operation(math::mul); }
+void tcontroller::math_div() noexcept { math_binary_operation(math::div); }
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())

@@ -84,6 +84,10 @@ void twindow::process_input_event() {
     case '*':
       controller_.math_mul();
       return;
+
+    case '/':
+      controller_.math_div();
+      return;
     }
   }
 
