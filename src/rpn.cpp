@@ -36,57 +36,51 @@ private:
     case FL_KEYDOWN:
     case FL_PASTE:
       process_input_event();
+      update_ui();
       return 1;
     }
     return 0;
   }
 
-  void process_input_event() noexcept;
+  /** Process the user provided input. */
+  void process_input_event();
 
-  void input_append(std::string_view data);
-
+  /** Updates the UI after changes need to be processed. */
   void update_ui();
+
+  // *** Widgets ***
 
   Fl_Box diagnostics_{5, 5, 300, 20};
   Fl_Browser stack_{5, 30, 300, 200};
   Fl_Box input_{5, 235, 300, 20};
 
+  // *** Model & controller ***
+
   calculator::tmodel model_;
   calculator::tcontroller controller_{model_};
 };
 
-void twindow::process_input_event() noexcept {
-  try {
+void twindow::process_input_event() {
+  // *** Handle special keys ***
+  switch (Fl::event_key()) {
+  case FL_Enter:
+  case FL_KP_Enter:
+    controller_.push();
+    return;
+  }
 
-    // *** Handle special keys ***
-    switch (Fl::event_key()) {
-    case FL_Enter:
-    case FL_KP_Enter:
-      controller_.push();
-      update_ui();
+  const std::string text = Fl::event_text();
+  // *** Handle special values ***
+  if (text.size() == 1) {
+    switch (text[0]) {
+    case '+':
+      controller_.math_add();
       return;
     }
-
-    const std::string text = Fl::event_text();
-    // *** Handle special values ***
-    if (text.size() == 1) {
-      switch (text[0]) {
-      case '+':
-        controller_.math_add();
-        update_ui();
-        return;
-      }
-    }
-
-    // *** Add the text to the input ***
-    input_append(text);
-  } catch (...) {
   }
-}
 
-void twindow::input_append(std::string_view data) {
-  controller_.append(data);
-  update_ui();
+  // *** Add the text to the input ***
+  controller_.append(text);
 }
 
 void twindow::update_ui() {
@@ -95,6 +89,7 @@ void twindow::update_ui() {
   stack_.clear();
   for (const auto &value : model_.stack())
     stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
+  stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());
 }
