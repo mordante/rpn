@@ -1,4 +1,5 @@
 add_executable(tests
+	calculator/value.cpp
 	math.cpp
 )
 target_compile_options(tests
@@ -7,6 +8,7 @@ target_compile_options(tests
 )
 target_link_libraries(tests
 	PRIVATE
+		calculator
 		math
 		gtest_main
 )
