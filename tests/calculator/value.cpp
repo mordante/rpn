@@ -18,14 +18,14 @@ import calculator.value;
 
 namespace calculator {
 TEST(value, default_constructor) {
-  EXPECT_TRUE(noexcept(tvalue{}));
+  static_assert(noexcept(tvalue{}));
   constexpr tvalue value;
   EXPECT_EQ(value.get(), 0);
   EXPECT_EQ(value.format(), "0");
 }
 
 TEST(value, converting_constructor) {
-  EXPECT_TRUE(noexcept(tvalue{1}));
+  static_assert(noexcept(tvalue{1}));
   constexpr tvalue value = 1;
   EXPECT_EQ(value.get(), 1);
   EXPECT_EQ(value.format(), "1");
@@ -33,7 +33,7 @@ TEST(value, converting_constructor) {
 
 TEST(value, copy_constructor) {
   constexpr tvalue v = 1;
-  EXPECT_TRUE(noexcept(tvalue{v}));
+  static_assert(noexcept(tvalue{v}));
 
   constexpr tvalue value{v};
   EXPECT_EQ(v.get(), 1);
@@ -44,19 +44,19 @@ TEST(value, copy_constructor) {
 
 TEST(value, move_constructor) {
   constexpr tvalue v = 1;
-  EXPECT_TRUE(noexcept(tvalue{std::move(v)}));
+  static_assert(noexcept(tvalue{std::move(v)}));
 
   constexpr tvalue value{std::move(v)};
   EXPECT_EQ(v.get(), 1);
   EXPECT_EQ(value.format(), "1");
 }
 
-TEST(value, destructor) { EXPECT_TRUE(noexcept(tvalue{}.~tvalue())); }
+TEST(value, destructor) { static_assert(noexcept(tvalue{}.~tvalue())); }
 
 TEST(value, copy_assignment) {
   constexpr tvalue v = 1;
   tvalue value;
-  EXPECT_TRUE(noexcept(value.operator=(v)));
+  static_assert(noexcept(value.operator=(v)));
 
   value = v;
   EXPECT_EQ(v.get(), 1);
@@ -74,7 +74,7 @@ TEST(value, copy_assignment) {
 TEST(value, move_assignment) {
   constexpr tvalue v = 1;
   tvalue value;
-  EXPECT_TRUE(noexcept(value.operator=(std::move(v))));
+  static_assert(noexcept(value.operator=(std::move(v))));
 
   value = std::move(v);
   EXPECT_EQ(value.get(), 1);
@@ -83,7 +83,7 @@ TEST(value, move_assignment) {
 
 TEST(value, set) {
   tvalue value;
-  EXPECT_TRUE(noexcept(value.set(42)));
+  static_assert(noexcept(value.set(42)));
   value.set(42);
   EXPECT_EQ(value.get(), 42);
   EXPECT_EQ(value.format(), "42");
@@ -95,7 +95,11 @@ TEST(value, set) {
 
 TEST(value, get) {
   constexpr tvalue value;
-  EXPECT_TRUE(noexcept(value.get()));
+  static_assert(noexcept(value.get()));
+}
+
+TEST(value, equality_comparible) {
+  static_assert(std::equality_comparable<tvalue>);
 }
 
 } // namespace calculator
