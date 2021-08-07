@@ -1,0 +1,184 @@
+Bottom: 31401ce44e5b010bc4ef3e71fdfd77c2a7356e99
+Top:    2c9034e52b8531a199fe935eb2cc84417480cf26
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 14:30:25 +0200
+
+Refresh of add-a-calculator-model-object
+
+---
+
+diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
+index e41a56d..edc91ec 100644
+--- a/tests/calculator/model.cpp
++++ b/tests/calculator/model.cpp
+@@ -22,6 +22,7 @@ namespace calculator {
+ 
+ TEST(model, default_constructor) {
+   const tmodel model;
++  static_assert(noexcept(tmodel{}));
+   EXPECT_TRUE(model.diagnostics_get().empty());
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_EQ(model.stack_size(), 0);
+@@ -29,35 +30,35 @@ TEST(model, default_constructor) {
+ }
+ 
+ TEST(model, copy_constructor) {
+-  EXPECT_FALSE(std::is_copy_constructible_v<tmodel>)
+-      << "Implement the proper tests.";
++  static_assert(!std ::is_copy_constructible_v<tmodel>,
++                "Implement the proper tests.");
+ }
+ 
+ TEST(model, move_constructor) {
+-  EXPECT_FALSE(std::is_move_constructible_v<tmodel>)
+-      << "Implement the proper tests.";
++  static_assert(!std ::is_move_constructible_v<tmodel>,
++                "Implement the proper tests.");
+ }
+ 
+-TEST(model, destructor) { EXPECT_TRUE(noexcept(tmodel{}.~tmodel())); }
++TEST(model, destructor) { static_assert(noexcept(tmodel{}.~tmodel())); }
+ 
+ TEST(model, copy_assignment) {
+-  EXPECT_FALSE(std::is_copy_assignable_v<tmodel>)
+-      << "Implement the proper tests.";
++  static_assert(!std ::is_copy_assignable_v<tmodel>,
++                "Implement the proper tests.");
+ }
+ 
+ TEST(model, move_assignment) {
+-  EXPECT_FALSE(std::is_move_assignable_v<tmodel>)
+-      << "Implement the proper tests.";
++  static_assert(!std ::is_move_assignable_v<tmodel>,
++                "Implement the proper tests.");
+ }
+ 
+ TEST(model, stack_empty) {
+   const tmodel model;
+-  EXPECT_TRUE(noexcept(model.stack_empty()));
++  static_assert(noexcept(model.stack_empty()));
+ }
+ 
+ TEST(model, stack_size) {
+   const tmodel model;
+-  EXPECT_TRUE(noexcept(model.stack_size()));
++  static_assert(noexcept(model.stack_size()));
+ }
+ 
+ TEST(model, stack_push) {
+@@ -102,7 +103,7 @@ TEST(model, stack_pop) {
+ 
+ TEST(model, diagnostics_get) {
+   const tmodel model;
+-  EXPECT_TRUE(noexcept(model.diagnostics_get()));
++  static_assert(noexcept(model.diagnostics_get()));
+ }
+ 
+ TEST(model, diagnostics_set) {
+@@ -123,7 +124,7 @@ TEST(model, diagnostics_set) {
+ 
+ TEST(model, diagnostics_clear) {
+   tmodel model;
+-  EXPECT_TRUE(noexcept(model.diagnostics_clear()));
++  static_assert(noexcept(model.diagnostics_clear()));
+ 
+   model.diagnostics_set("abc");
+ 
+@@ -136,7 +137,7 @@ TEST(model, diagnostics_clear) {
+ 
+ TEST(model, input_get) {
+   const tmodel model;
+-  EXPECT_TRUE(noexcept(model.input_get()));
++  static_assert(noexcept(model.input_get()));
+ }
+ 
+ TEST(model, input_append) {
+@@ -157,7 +158,7 @@ TEST(model, input_append) {
+ 
+ TEST(model, input_clear) {
+   tmodel model;
+-  EXPECT_TRUE(noexcept(model.input_clear()));
++  static_assert(noexcept(model.input_clear()));
+ 
+   model.input_append("abc");
+ 
+diff --git a/tests/calculator/value.cpp b/tests/calculator/value.cpp
+index 9e1d8aa..59c3c85 100644
+--- a/tests/calculator/value.cpp
++++ b/tests/calculator/value.cpp
+@@ -18,14 +18,14 @@ import calculator.value;
+ 
+ namespace calculator {
+ TEST(value, default_constructor) {
+-  EXPECT_TRUE(noexcept(tvalue{}));
++  static_assert(noexcept(tvalue{}));
+   constexpr tvalue value;
+   EXPECT_EQ(value.get(), 0);
+   EXPECT_EQ(value.format(), "0");
+ }
+ 
+ TEST(value, converting_constructor) {
+-  EXPECT_TRUE(noexcept(tvalue{1}));
++  static_assert(noexcept(tvalue{1}));
+   constexpr tvalue value = 1;
+   EXPECT_EQ(value.get(), 1);
+   EXPECT_EQ(value.format(), "1");
+@@ -33,7 +33,7 @@ TEST(value, converting_constructor) {
+ 
+ TEST(value, copy_constructor) {
+   constexpr tvalue v = 1;
+-  EXPECT_TRUE(noexcept(tvalue{v}));
++  static_assert(noexcept(tvalue{v}));
+ 
+   constexpr tvalue value{v};
+   EXPECT_EQ(v.get(), 1);
+@@ -44,19 +44,19 @@ TEST(value, copy_constructor) {
+ 
+ TEST(value, move_constructor) {
+   constexpr tvalue v = 1;
+-  EXPECT_TRUE(noexcept(tvalue{std::move(v)}));
++  static_assert(noexcept(tvalue{std::move(v)}));
+ 
+   constexpr tvalue value{std::move(v)};
+   EXPECT_EQ(v.get(), 1);
+   EXPECT_EQ(value.format(), "1");
+ }
+ 
+-TEST(value, destructor) { EXPECT_TRUE(noexcept(tvalue{}.~tvalue())); }
++TEST(value, destructor) { static_assert(noexcept(tvalue{}.~tvalue())); }
+ 
+ TEST(value, copy_assignment) {
+   constexpr tvalue v = 1;
+   tvalue value;
+-  EXPECT_TRUE(noexcept(value.operator=(v)));
++  static_assert(noexcept(value.operator=(v)));
+ 
+   value = v;
+   EXPECT_EQ(v.get(), 1);
+@@ -74,7 +74,7 @@ TEST(value, copy_assignment) {
+ TEST(value, move_assignment) {
+   constexpr tvalue v = 1;
+   tvalue value;
+-  EXPECT_TRUE(noexcept(value.operator=(std::move(v))));
++  static_assert(noexcept(value.operator=(std::move(v))));
+ 
+   value = std::move(v);
+   EXPECT_EQ(value.get(), 1);
+@@ -83,7 +83,7 @@ TEST(value, move_assignment) {
+ 
+ TEST(value, set) {
+   tvalue value;
+-  EXPECT_TRUE(noexcept(value.set(42)));
++  static_assert(noexcept(value.set(42)));
+   value.set(42);
+   EXPECT_EQ(value.get(), 42);
+   EXPECT_EQ(value.format(), "42");
+@@ -95,7 +95,7 @@ TEST(value, set) {
+ 
+ TEST(value, get) {
+   constexpr tvalue value;
+-  EXPECT_TRUE(noexcept(value.get()));
++  static_assert(noexcept(value.get()));
+ }
+ 
+ } // namespace calculator
