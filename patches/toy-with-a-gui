@@ -1,5 +1,5 @@
 Bottom: 45d55434d28d55a7be036c460916805c97668b6f
-Top:    45d55434d28d55a7be036c460916805c97668b6f
+Top:    30405a7e48a8a59c5b54a0bde7d37c094c3a43b8
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -10,4 +10,166 @@ Just an intial experiment to have some kind of GUI for the application.
 
 ---
 
-
+diff --git a/cmake/ExternalProjects.cmake b/cmake/ExternalProjects.cmake
+index 759f971..9520b46 100644
+--- a/cmake/ExternalProjects.cmake
++++ b/cmake/ExternalProjects.cmake
+@@ -1,5 +1,30 @@
+ include(FetchContent)
+ 
++#FetchContent_Declare(
++#  imgui
++#  GIT_REPOSITORY https://github.com/ocornut/imgui
++#  GIT_TAG v1.83
++#)
++#FetchContent_GetProperties(imgui)
++#if(NOT imgui_POPULATED)
++#  FetchContent_Populate(imgui)
++##  add_subdirectory(${imgui_SOURCE_DIR} ${imgui_BINARY_DIR})
++#endif()
++
++FetchContent_Declare(
++  fltk
++  GIT_REPOSITORY https://github.com/fltk/fltk
++  GIT_TAG        release-1.3.7
++)
++FetchContent_GetProperties(fltk)
++if(NOT fltk_POPULATED)
++  FetchContent_Populate(fltk)
++  set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
++  add_subdirectory(${fltk_SOURCE_DIR} ${fltk_BINARY_DIR})
++endif()
++
++
++
+ FetchContent_Declare(
+   googletest
+   GIT_REPOSITORY https://github.com/google/googletest.git
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 0a8cc53..ad4b770 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -2,3 +2,13 @@ add_subdirectory(modules)
+ add_executable(rpn
+ 	rpn.cpp
+ )
++target_link_libraries(rpn
++	calculator
++	fltk
++	math
++)
++target_include_directories(rpn
++	PRIVATE
++		${fltk_SOURCE_DIR}
++		${fltk_BINARY_DIR}
++)
+diff --git a/src/rpn.cpp b/src/rpn.cpp
+index 9b5a646..fe3b0e7 100644
+--- a/src/rpn.cpp
++++ b/src/rpn.cpp
+@@ -12,6 +12,103 @@
+  * See the COPYING file for more details.
+  */
+ 
+-#include <format>
++// import calculator.model;
+ 
+-int main(int, const char **) {}
++#include <FL/Fl.H>
++#include <FL/Fl_Box.H>
++#include <FL/Fl_Browser.H>
++#include <FL/Fl_Window.H>
++#include <iostream>
++
++class twindow final : public Fl_Window {
++public:
++  twindow(int w, int h, const char *t) : Fl_Window(w, h, t) {
++    input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
++    input_.box(FL_DOWN_BOX);
++  }
++
++private:
++  int handle(int event) override {
++    switch (event) {
++    case FL_KEYDOWN:
++    case FL_PASTE:
++      process_input_event();
++      return 1;
++    }
++    return 0;
++  }
++
++  void process_input_event() noexcept;
++
++  void input_append(std::string_view data);
++  void stack_push();
++
++  Fl_Browser stack_{5, 5, 300, 200};
++  Fl_Box input_{5, 210, 300, 20};
++
++  std::string buffer_{};
++};
++
++void twindow::process_input_event() noexcept {
++  try {
++
++    // *** Handle special keys ***
++    switch (Fl::event_key()) {
++    case FL_Enter:
++    case FL_KP_Enter:
++      stack_push();
++      return;
++    }
++
++    const std::string text = Fl::event_text();
++    if (text.empty())
++      return;
++
++    // *** Handle special values ***
++    if (text.size() == 1) {
++      switch (text[0]) {
++      case '+':
++        stack_push();
++        return;
++      }
++    }
++
++    // *** Add the text to the input ***
++    input_append(text);
++  } catch (...) {
++  }
++}
++
++void twindow::input_append(std::string_view data) {
++
++  buffer_ += data;
++  input_.label(buffer_.c_str());
++}
++
++void twindow::stack_push() {
++
++  if (buffer_.empty())
++    return;
++
++  stack_.insert(std::numeric_limits<int>::max(), buffer_.c_str());
++
++  buffer_.clear();
++  input_.label(buffer_.c_str());
++}
++
++int main(int argc, char **argv) {
++  twindow w{310, 240, "RPN"};
++  w.end();
++  w.show(argc, argv);
++  return Fl::run();
++
++  /*  Fl_Window *window = new Fl_Window(340, 180);
++    Fl_Box *box = new Fl_Box(20, 40, 300, 100, "Hello, World!");
++    box->box(FL_UP_BOX);
++    box->labelfont(FL_BOLD + FL_ITALIC);
++    box->labelsize(36);
++    box->labeltype(FL_SHADOW_LABEL);
++    window->end();
++    window->show(argc, argv);
++    return Fl::run(); */
++}
