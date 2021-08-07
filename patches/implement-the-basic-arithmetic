@@ -10,6 +10,13 @@ The add has already been implemented, now implement
 - multiply
 - divide, for now always an integral operation, truncating the value
 
+Fixes a bug were the calculation was done in the wrong order. This doesn't
+affect addition, but it becomes obvious with subtraction.
+
+Improves the valiation when the stack contains too few elements to do the
+calculation. Before a one element stack for a binary operation resulted in an
+empty stack.
+
 
 ---
 
