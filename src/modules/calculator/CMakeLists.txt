@@ -7,6 +7,10 @@ target_compile_options(calculator
 	PRIVATE
 		${module_compile_options}
 )
+target_link_libraries(calculator
+	PRIVATE
+		math
+)
 add_module(calculator.controller controller.cpp)
 add_module(calculator.model model.cpp)
 add_module(calculator.value value.cpp)

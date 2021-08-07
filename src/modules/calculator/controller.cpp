@@ -15,6 +15,7 @@
 export module calculator.controller;
 
 import calculator.model;
+import math;
 
 import<charconv>;
 import<format>;
@@ -44,7 +45,32 @@ public:
   tcontroller &operator=(tcontroller &&) = delete;
 
   // *** Operations ***
+
+  /**
+   * Appends data to the input.
+   *
+   * The function doesn't modify the diagnostics.
+   */
+  void append(std::string_view data) noexcept;
+
+  /**
+   * Pushes the current input to the stack.
+   *
+   * The function clears the diagnostics.
+   */
   void push() noexcept;
+
+  /**
+   * Pushes the sum of the last two elements on the stack.
+   *
+   * The function clears the diagnostics.
+   * The function doesn't affect the input, however it's expected the input
+   * buffer is empty.
+   *
+   * @note If the input isn't empty the behaviour might change in the future,
+   * by first pushing the current contents of the input.
+   */
+  void math_add() noexcept;
 
 private:
   void push(std::string_view input);
@@ -52,21 +78,37 @@ private:
   void duplicate_last_entry();
   void parse(std::string_view input);
 
+  void diagnostics_set(const std::exception &e);
   tmodel &model_;
 };
+
+void tcontroller::append(std::string_view data) noexcept {
+  try {
+    model_.input_append(data);
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
 
 void tcontroller::push() noexcept {
   try {
     push(model_.input_get());
     model_.diagnostics_clear();
   } catch (const std::exception &e) {
-#if defined(__cpp_lib_format)
-    model_.diagnostics_set(std::format("[ERR]{:>80.79}", e.what()));
-#else
-    model_.diagnostics_set(e.what());
-#endif
+    diagnostics_set(e);
   }
   model_.input_clear();
+}
+
+void tcontroller::math_add() noexcept {
+  try {
+    const tvalue lhs = model_.stack_pop();
+    const tvalue rhs = model_.stack_pop();
+    model_.stack_push(math::add(lhs.get(), rhs.get()));
+    model_.diagnostics_clear();
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
 }
 
 void tcontroller::push(std::string_view input) {
@@ -111,4 +153,11 @@ void tcontroller::parse(std::string_view input) {
   model_.stack_push(value);
 }
 
+void tcontroller::diagnostics_set(const std::exception &e) {
+#if defined(__cpp_lib_format)
+  model_.diagnostics_set(std::format("[ERR]{:>80.79}", e.what()));
+#else
+  model_.diagnostics_set(e.what());
+#endif
+}
 } // namespace calculator

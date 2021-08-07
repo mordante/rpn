@@ -20,6 +20,7 @@ import calculator.model;
 
 namespace calculator {
 
+// *** SMF ***
 TEST(controller, constructor) {
   tmodel model;
   const tcontroller controller{model};
@@ -50,6 +51,42 @@ TEST(controller, move_assignment) {
   static_assert(!std::is_move_assignable_v<tcontroller>,
                 "Implement the proper tests.");
 }
+
+// *** append ***
+
+TEST(controller, append) {
+  tmodel model;
+  tcontroller controller{model};
+  static_assert(noexcept(controller.append(std::string_view())));
+
+  controller.append("abc");
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.input_get(), "abc");
+
+  controller.append("");
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.input_get(), "abc");
+
+  controller.append("def");
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.input_get(), "abcdef");
+}
+
+TEST(controller, append_diagnostics_unchanged) {
+  tmodel model;
+  tcontroller controller{model};
+  model.diagnostics_set("Unchanged");
+
+  controller.append("abc");
+  EXPECT_EQ(model.diagnostics_get(), "Unchanged");
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.input_get(), "abc");
+}
+
+// *** push ***
 
 TEST(controller, push) {
   tmodel model;
@@ -166,6 +203,78 @@ TEST(controller, push_invalid_input_after_valid_value) {
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, push_diagnostics_cleared) {
+  tmodel model;
+  tcontroller controller{model};
+  model.diagnostics_set("Cleared");
+  model.input_append("42");
+
+  controller.push();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+// *** math_add ***
+
+TEST(controller, math_add_too_few_elements) {
+  tmodel model;
+  tcontroller controller{model};
+
+  controller.math_add();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Stack is empty"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+
+  model.stack_push(42);
+  controller.math_add();
+  EXPECT_EQ(model.diagnostics_get(), format_error("Stack is empty"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, math_add) {
+  tmodel model;
+  tcontroller controller{model};
+  model.stack_push(42);
+  model.stack_push(42);
+
+  controller.math_add();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 84);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, math_add_diagnostics_cleared) {
+  tmodel model;
+  tcontroller controller{model};
+  model.diagnostics_set("Cleared");
+  model.stack_push(42);
+  model.stack_push(42);
+
+  controller.math_add();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 84);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, math_add_input_unchanged) {
+  tmodel model;
+  tcontroller controller{model};
+  model.stack_push(42);
+  model.stack_push(42);
+  model.input_append("abc");
+
+  controller.math_add();
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 84);
+  EXPECT_EQ(model.input_get(), "abc");
 }
 
 } // namespace calculator
