@@ -16,6 +16,7 @@ export module calculator.model;
 
 export import calculator.value;
 
+import<string>;
 import<vector>;
 
 namespace calculator {
@@ -23,8 +24,7 @@ namespace calculator {
 /**
  * The model of the calculator.
  *
- * For now a very basic version of this class. Future additions may contain the
- * diagnostics shown upon errors an the input buffer.
+ * For now a very basic version of this class.
  *
  * The class is non-copyable and non-movable. These operations make little
  * sense for the model and are most likely logic errors.
@@ -43,21 +43,31 @@ public:
 
   // *** Query ***
 
-  [[nodiscard]] bool empty() const noexcept { return stack_.empty(); }
-  [[nodiscard]] size_t size() const noexcept { return stack_.size(); }
+  [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
+  [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
 
   // *** Modifiers ***
 
+  void diagnostics_set(std::string &&diagnotics) {
+    diagnotics_ = std::move(diagnotics);
+  }
+  const std::string &diagnostics_get() const noexcept { return diagnotics_; }
+  /** Clears the current diagnostics. */
+  void diagnostics_clear() noexcept { diagnotics_.clear(); }
+
   /** Adds the @p value to the back of the stack. */
-  void push(tvalue value) { stack_.emplace_back(std::move(value)); }
+  void stack_push(tvalue value) { stack_.emplace_back(std::move(value)); }
 
   /**
    * @returns The last element at the back of the stack.
    * @throws @ref std::out_of_range when the stack is empty.
    */
-  [[nodiscard]] tvalue pop();
+  [[nodiscard]] tvalue stack_pop();
 
 private:
+  /** Contains the errors to show to the user. */
+  std::string diagnotics_{};
+
   /**
    * The stack with all values of the applications.
    *
@@ -68,7 +78,7 @@ private:
   std::vector<tvalue> stack_{};
 };
 
-tvalue tmodel::pop() {
+tvalue tmodel::stack_pop() {
   if (stack_.empty())
     throw std::out_of_range("Stack is empty");
 
