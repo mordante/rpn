@@ -22,6 +22,7 @@ namespace calculator {
 
 TEST(model, default_constructor) {
   const tmodel model;
+  static_assert(noexcept(tmodel{}));
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
@@ -29,35 +30,35 @@ TEST(model, default_constructor) {
 }
 
 TEST(model, copy_constructor) {
-  EXPECT_FALSE(std::is_copy_constructible_v<tmodel>)
-      << "Implement the proper tests.";
+  static_assert(!std ::is_copy_constructible_v<tmodel>,
+                "Implement the proper tests.");
 }
 
 TEST(model, move_constructor) {
-  EXPECT_FALSE(std::is_move_constructible_v<tmodel>)
-      << "Implement the proper tests.";
+  static_assert(!std ::is_move_constructible_v<tmodel>,
+                "Implement the proper tests.");
 }
 
-TEST(model, destructor) { EXPECT_TRUE(noexcept(tmodel{}.~tmodel())); }
+TEST(model, destructor) { static_assert(noexcept(tmodel{}.~tmodel())); }
 
 TEST(model, copy_assignment) {
-  EXPECT_FALSE(std::is_copy_assignable_v<tmodel>)
-      << "Implement the proper tests.";
+  static_assert(!std ::is_copy_assignable_v<tmodel>,
+                "Implement the proper tests.");
 }
 
 TEST(model, move_assignment) {
-  EXPECT_FALSE(std::is_move_assignable_v<tmodel>)
-      << "Implement the proper tests.";
+  static_assert(!std ::is_move_assignable_v<tmodel>,
+                "Implement the proper tests.");
 }
 
 TEST(model, stack_empty) {
   const tmodel model;
-  EXPECT_TRUE(noexcept(model.stack_empty()));
+  static_assert(noexcept(model.stack_empty()));
 }
 
 TEST(model, stack_size) {
   const tmodel model;
-  EXPECT_TRUE(noexcept(model.stack_size()));
+  static_assert(noexcept(model.stack_size()));
 }
 
 TEST(model, stack_push) {
@@ -102,7 +103,7 @@ TEST(model, stack_pop) {
 
 TEST(model, diagnostics_get) {
   const tmodel model;
-  EXPECT_TRUE(noexcept(model.diagnostics_get()));
+  static_assert(noexcept(model.diagnostics_get()));
 }
 
 TEST(model, diagnostics_set) {
@@ -123,7 +124,7 @@ TEST(model, diagnostics_set) {
 
 TEST(model, diagnostics_clear) {
   tmodel model;
-  EXPECT_TRUE(noexcept(model.diagnostics_clear()));
+  static_assert(noexcept(model.diagnostics_clear()));
 
   model.diagnostics_set("abc");
 
@@ -136,7 +137,7 @@ TEST(model, diagnostics_clear) {
 
 TEST(model, input_get) {
   const tmodel model;
-  EXPECT_TRUE(noexcept(model.input_get()));
+  static_assert(noexcept(model.input_get()));
 }
 
 TEST(model, input_append) {
@@ -157,7 +158,7 @@ TEST(model, input_append) {
 
 TEST(model, input_clear) {
   tmodel model;
-  EXPECT_TRUE(noexcept(model.input_clear()));
+  static_assert(noexcept(model.input_clear()));
 
   model.input_append("abc");
 
