@@ -1,4 +1,5 @@
 add_executable(tests
+	calculator/model.cpp
 	calculator/value.cpp
 	math.cpp
 )
