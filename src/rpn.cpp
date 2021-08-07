@@ -12,7 +12,7 @@
  * See the COPYING file for more details.
  */
 
-// import calculator.model;
+ import calculator;
 
 #include <FL/Fl.H>
 #include <FL/Fl_Box.H>
@@ -47,6 +47,8 @@ private:
   Fl_Box input_{5, 210, 300, 20};
 
   std::string buffer_{};
+  calculator::tmodel model_;
+  calculator::tcontroller controller_{model_};
 };
 
 void twindow::process_input_event() noexcept {
