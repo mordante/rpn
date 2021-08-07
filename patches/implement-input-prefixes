@@ -1,5 +1,5 @@
 Bottom: 8c7baf0bc9f331e0aa09fc7f275611788259c7f6
-Top:    a8a08e97f92555dfcd0420f04fd31feb8c59f961
+Top:    3b3af79731dc453e8d5521c50e0923da9e166b6d
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 20:40:54 +0200
 
@@ -17,7 +17,7 @@ no validation on a sign on the input.
 ---
 
 diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
-index 315f596..df03c28 100644
+index 315f596..fe64683 100644
 --- a/src/modules/calculator/controller.cpp
 +++ b/src/modules/calculator/controller.cpp
 @@ -170,10 +170,28 @@ static void validate(std::errc ec) {
@@ -30,13 +30,13 @@ index 315f596..df03c28 100644
 +
 +  switch (input[1]) {
 +  case 'b':
-+	  input.remove_prefix(2);
++    input.remove_prefix(2);
 +    return 2;
 +  default:
-+	  input.remove_prefix(1);
++    input.remove_prefix(1);
 +    return 8;
 +  case 'x':
-+	  input.remove_prefix(2);
++    input.remove_prefix(2);
 +    return 16;
 +  }
 +}
