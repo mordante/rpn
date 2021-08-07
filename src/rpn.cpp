@@ -22,7 +22,10 @@ import calculator;
 
 class twindow final : public Fl_Window {
 public:
-  twindow(int w, int h, const char *t) : Fl_Window(w, h, t) {
+  twindow() : Fl_Window(310, 265, "RPN") {
+    diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+    diagnostics_.box(FL_DOWN_BOX);
+
     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     input_.box(FL_DOWN_BOX);
   }
@@ -41,14 +44,13 @@ private:
   void process_input_event() noexcept;
 
   void input_append(std::string_view data);
-  void stack_push();
 
-  void update_stack();
+  void update_ui();
 
-  Fl_Browser stack_{5, 5, 300, 200};
-  Fl_Box input_{5, 210, 300, 20};
+  Fl_Box diagnostics_{5, 5, 300, 20};
+  Fl_Browser stack_{5, 30, 300, 200};
+  Fl_Box input_{5, 235, 300, 20};
 
-  //  std::string buffer_{};
   calculator::tmodel model_;
   calculator::tcontroller controller_{model_};
 };
@@ -60,21 +62,18 @@ void twindow::process_input_event() noexcept {
     switch (Fl::event_key()) {
     case FL_Enter:
     case FL_KP_Enter:
-      stack_push();
-      update_stack();
+      controller_.push();
+      update_ui();
       return;
     }
 
     const std::string text = Fl::event_text();
-    /*    if (text.empty())
-          return;
-    */
     // *** Handle special values ***
     if (text.size() == 1) {
       switch (text[0]) {
       case '+':
         controller_.math_add();
-        update_stack();
+        update_ui();
         return;
       }
     }
@@ -86,48 +85,23 @@ void twindow::process_input_event() noexcept {
 }
 
 void twindow::input_append(std::string_view data) {
-
   controller_.append(data);
-  //  buffer_ += data;
+  update_ui();
+}
+
+void twindow::update_ui() {
+  diagnostics_.label(model_.diagnostics_get().c_str());
+
+  stack_.clear();
+  for (const auto &value : model_.stack())
+    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
+
   input_.label(model_.input_get().c_str());
 }
 
-void twindow::stack_push() {
-  /*
-    if (buffer_.empty())
-      return;
-
-    stack_.insert(std::numeric_limits<int>::max(), buffer_.c_str());
-
-    buffer_.clear();
-    input_.label(buffer_.c_str());
-    */
-  //  stack_.insert(std::numeric_limits<int>::max(),
-  //  model_.input_get().c_str());
-  input_.label("");
-  controller_.push();
-}
-
-void twindow::update_stack() {
-  stack_.clear();
-
-  for (const auto &value: model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
-}
-
 int main(int argc, char **argv) {
-  twindow w{310, 240, "RPN"};
-  w.end();
-  w.show(argc, argv);
+  twindow window;
+  window.end();
+  window.show(argc, argv);
   return Fl::run();
-
-  /*  Fl_Window *window = new Fl_Window(340, 180);
-    Fl_Box *box = new Fl_Box(20, 40, 300, 100, "Hello, World!");
-    box->box(FL_UP_BOX);
-    box->labelfont(FL_BOLD + FL_ITALIC);
-    box->labelsize(36);
-    box->labeltype(FL_SHADOW_LABEL);
-    window->end();
-    window->show(argc, argv);
-    return Fl::run(); */
 }
