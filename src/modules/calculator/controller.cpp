@@ -91,10 +91,10 @@ void tcontroller::append(std::string_view data) noexcept {
 void tcontroller::push() noexcept {
   try {
     push(model_.input_steal());
+    model_.diagnostics_clear();
   } catch (const std::exception &e) {
     diagnostics_set(e);
   }
-  model_.input_clear();
 }
 
 void tcontroller::math_add() noexcept {
