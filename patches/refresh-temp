@@ -1,0 +1,32 @@
+Bottom: 07d56ebfb6d33ba16aa03e51fc16ecb5021b520e
+Top:    765163d97cd5ff5edbf7efc72be8bea6e03be15d
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 16:36:37 +0200
+
+Refresh of toy-with-a-gui
+
+---
+
+diff --git a/src/rpn.cpp b/src/rpn.cpp
+index 994ebbb..7de069c 100644
+--- a/src/rpn.cpp
++++ b/src/rpn.cpp
+@@ -26,8 +26,6 @@ public:
+     diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+     diagnostics_.box(FL_DOWN_BOX);
+ 
+-    stack_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+-
+     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+     input_.box(FL_DOWN_BOX);
+   }
+@@ -95,8 +93,7 @@ void twindow::update_ui() {
+ 
+   stack_.clear();
+   for (const auto &value : model_.stack())
+-    stack_.insert(std::numeric_limits<int>::max(), format(value)
+-			.c_str());
++    stack_.insert(std::numeric_limits<int>::max(), format(value).c_str());
+   stack_.bottomline(stack_.size());
+ 
+   input_.label(model_.input_get().c_str());
