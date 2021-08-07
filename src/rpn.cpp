@@ -26,6 +26,8 @@ public:
     diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     diagnostics_.box(FL_DOWN_BOX);
 
+    stack_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+
     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     input_.box(FL_DOWN_BOX);
   }
@@ -83,12 +85,18 @@ void twindow::process_input_event() {
   controller_.append(text);
 }
 
+/** @return The FLTK right-justified formatted output of @p value. */
+static std::string format(const calculator::tvalue &value) {
+  return "@r" + value.format();
+}
+
 void twindow::update_ui() {
   diagnostics_.label(model_.diagnostics_get().c_str());
 
   stack_.clear();
   for (const auto &value : model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
+    stack_.insert(std::numeric_limits<int>::max(), format(value)
+			.c_str());
   stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());
