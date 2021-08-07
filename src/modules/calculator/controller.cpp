@@ -176,13 +176,13 @@ int determine_base(std::string_view &input) {
 
   switch (input[1]) {
   case 'b':
-	  input.remove_prefix(2);
+    input.remove_prefix(2);
     return 2;
   default:
-	  input.remove_prefix(1);
+    input.remove_prefix(1);
     return 8;
   case 'x':
-	  input.remove_prefix(2);
+    input.remove_prefix(2);
     return 16;
   }
 }
