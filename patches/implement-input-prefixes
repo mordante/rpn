@@ -1,0 +1,19 @@
+Bottom: 8c7baf0bc9f331e0aa09fc7f275611788259c7f6
+Top:    8c7baf0bc9f331e0aa09fc7f275611788259c7f6
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 20:40:54 +0200
+
+Implement input prefixes.
+
+This allows the input parser to accept
+- 0b prefix as binaray
+- 0 prefix as octal
+- 0x prefix as hexadecimal
+
+Note since - and + are directly parsed as respectively subtract and add there's
+no validation on a sign on the input.
+
+
+---
+
+
