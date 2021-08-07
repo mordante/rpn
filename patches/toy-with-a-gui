@@ -1,5 +1,5 @@
 Bottom: a0a2d6a8131cb8f2296a51aa70650a6f6c77a634
-Top:    bc95e63290b81ffbe0c93e105cc1f4a1efbe6f96
+Top:    e043ea4e6e3ea30041dac84512e4a38cd11359d8
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -46,10 +46,10 @@ index 759f971..9520b46 100644
    googletest
    GIT_REPOSITORY https://github.com/google/googletest.git
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 0a8cc53..a545078 100644
+index 0a8cc53..e787794 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -2,3 +2,17 @@ add_subdirectory(modules)
+@@ -2,3 +2,16 @@ add_subdirectory(modules)
  add_executable(rpn
  	rpn.cpp
  )
@@ -60,7 +60,6 @@ index 0a8cc53..a545078 100644
 +target_link_libraries(rpn
 +	calculator
 +	fltk
-+	math
 +)
 +target_include_directories(rpn
 +	PRIVATE
@@ -84,6 +83,31 @@ index e36404c..4bca16e 100644
  	calculator.controller.pcm
  	calculator.model.pcm
  	calculator.value.pcm
+diff --git a/src/modules/calculator/calculator.cpp b/src/modules/calculator/calculator.cpp
+new file mode 100644
+index 0000000..50a05d6
+--- /dev/null
++++ b/src/modules/calculator/calculator.cpp
+@@ -0,0 +1,19 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++export module calculator;
++
++export import calculator.controller;
++export import calculator.model;
++export import calculator.value;
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
 index cb0ace1..c188793 100644
 --- a/src/modules/calculator/model.cpp
@@ -98,15 +122,15 @@ index cb0ace1..c188793 100644
  namespace calculator {
  
 diff --git a/src/rpn.cpp b/src/rpn.cpp
-index 9b5a646..4e95924 100644
+index 9b5a646..37d8dbe 100644
 --- a/src/rpn.cpp
 +++ b/src/rpn.cpp
-@@ -12,6 +12,105 @@
+@@ -12,6 +12,122 @@
   * See the COPYING file for more details.
   */
  
 -#include <format>
-+ import calculator;
++import calculator;
  
 -int main(int, const char **) {}
 +#include <FL/Fl.H>
@@ -138,10 +162,12 @@ index 9b5a646..4e95924 100644
 +  void input_append(std::string_view data);
 +  void stack_push();
 +
++  void update_stack();
++
 +  Fl_Browser stack_{5, 5, 300, 200};
 +  Fl_Box input_{5, 210, 300, 20};
 +
-+  std::string buffer_{};
++  //  std::string buffer_{};
 +  calculator::tmodel model_;
 +  calculator::tcontroller controller_{model_};
 +};
@@ -154,18 +180,20 @@ index 9b5a646..4e95924 100644
 +    case FL_Enter:
 +    case FL_KP_Enter:
 +      stack_push();
++      update_stack();
 +      return;
 +    }
 +
 +    const std::string text = Fl::event_text();
-+    if (text.empty())
-+      return;
-+
++    /*    if (text.empty())
++          return;
++    */
 +    // *** Handle special values ***
 +    if (text.size() == 1) {
 +      switch (text[0]) {
 +      case '+':
-+        stack_push();
++        controller_.math_add();
++        update_stack();
 +        return;
 +      }
 +    }
@@ -178,19 +206,32 @@ index 9b5a646..4e95924 100644
 +
 +void twindow::input_append(std::string_view data) {
 +
-+  buffer_ += data;
-+  input_.label(buffer_.c_str());
++  controller_.append(data);
++  //  buffer_ += data;
++  input_.label(model_.input_get().c_str());
 +}
 +
 +void twindow::stack_push() {
++  /*
++    if (buffer_.empty())
++      return;
 +
-+  if (buffer_.empty())
-+    return;
++    stack_.insert(std::numeric_limits<int>::max(), buffer_.c_str());
 +
-+  stack_.insert(std::numeric_limits<int>::max(), buffer_.c_str());
++    buffer_.clear();
++    input_.label(buffer_.c_str());
++    */
++  //  stack_.insert(std::numeric_limits<int>::max(),
++  //  model_.input_get().c_str());
++  input_.label("");
++  controller_.push();
++}
 +
-+  buffer_.clear();
-+  input_.label(buffer_.c_str());
++void twindow::update_stack() {
++  stack_.clear();
++
++  for (const auto &value: model_.stack())
++    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
 +}
 +
 +int main(int argc, char **argv) {
