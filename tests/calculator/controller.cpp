@@ -23,14 +23,7 @@ namespace calculator {
 TEST(controller, constructor) {
   tmodel model;
   const tcontroller controller{model};
-  EXPECT_TRUE(noexcept(tcontroller{model}));
-
-  //
-  //
-  //
-  //
-  //
-  // XXX Backport to other tests..
+  static_assert(noexcept(tcontroller{model}));
 }
 
 TEST(controller, copy_constructor) {
@@ -45,7 +38,7 @@ TEST(controller, move_constructor) {
 
 TEST(controller, destructor) {
   tmodel model;
-  EXPECT_TRUE(noexcept(tcontroller{model}.~tcontroller()));
+  static_assert(noexcept(tcontroller{model}.~tcontroller()));
 }
 
 TEST(controller, copy_assignment) {
@@ -61,7 +54,7 @@ TEST(controller, move_assignment) {
 TEST(controller, push) {
   tmodel model;
   tcontroller controller{model};
-  EXPECT_TRUE(noexcept(controller.push()));
+  static_assert(noexcept(controller.push()));
 }
 
 static std::string format_error(const char *message) {
