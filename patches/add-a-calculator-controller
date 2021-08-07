@@ -1,5 +1,5 @@
 Bottom: 9826c86cc6771023df717ac4b2d991a2b88d9c74
-Top:    5b96b54b6280fead88f62454f76042810f99c86d
+Top:    ca524ec255dd6b78373579f49f8ba5334c5ec872
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 11:44:09 +0200
 
@@ -36,7 +36,7 @@ index 089f030..e36404c 100644
  )
 diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
 new file mode 100644
-index 0000000..3f3c12d
+index 0000000..793ebde
 --- /dev/null
 +++ b/src/modules/calculator/controller.cpp
 @@ -0,0 +1,163 @@
@@ -133,10 +133,10 @@ index 0000000..3f3c12d
 +void tcontroller::push() noexcept {
 +  try {
 +    push(model_.input_steal());
++    model_.diagnostics_clear();
 +  } catch (const std::exception &e) {
 +    diagnostics_set(e);
 +  }
-+  model_.input_clear();
 +}
 +
 +void tcontroller::math_add() noexcept {
