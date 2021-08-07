@@ -9,7 +9,6 @@ target_compile_options(rpn
 target_link_libraries(rpn
 	calculator
 	fltk
-	math
 )
 target_include_directories(rpn
 	PRIVATE
