@@ -1,5 +1,5 @@
 Bottom: 44dd99b31e428b6134018f16a7801d0475577de8
-Top:    bc7fd35354fdf26e9a975628e1caadda6f73ba44
+Top:    9882b2f7d3e6a449deacac9e6689fdd9ed076262
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 07:41:39 +0200
 
@@ -34,7 +34,7 @@ index 0000000..a221ed8
 +add_dependencies(calculator calculator.value.pcm)
 diff --git a/src/modules/calculator/value.cpp b/src/modules/calculator/value.cpp
 new file mode 100644
-index 0000000..3f98edb
+index 0000000..0411824
 --- /dev/null
 +++ b/src/modules/calculator/value.cpp
 @@ -0,0 +1,50 @@
@@ -78,10 +78,10 @@ index 0000000..3f98edb
 +  constexpr tvalue(int64_t value) noexcept : value_(value) {}
 +
 +  constexpr void set(int64_t value) noexcept { value_ = value; }
-+  constexpr int64_t get() const noexcept { return value_; }
++  [[nodiscard]] constexpr int64_t get() const noexcept { return value_; }
 +
 +  /** @returns The formatted output of the value. */
-+  std::string format() const { return std::to_string(value_); };
++  [[nodiscard]] std::string format() const { return std::to_string(value_); };
 +
 +private:
 +  int64_t value_{0};
