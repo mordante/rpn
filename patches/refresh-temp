@@ -1,0 +1,42 @@
+Bottom: 1878c1ed245325fa1f2b93c284f1243b1fd822d3
+Top:    07d56ebfb6d33ba16aa03e51fc16ecb5021b520e
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 16:36:18 +0200
+
+Refresh of toy-with-a-gui
+
+---
+
+diff --git a/src/rpn.cpp b/src/rpn.cpp
+index 5c3a934..994ebbb 100644
+--- a/src/rpn.cpp
++++ b/src/rpn.cpp
+@@ -26,6 +26,8 @@ public:
+     diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+     diagnostics_.box(FL_DOWN_BOX);
+ 
++    stack_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
++
+     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
+     input_.box(FL_DOWN_BOX);
+   }
+@@ -83,12 +85,18 @@ void twindow::process_input_event() {
+   controller_.append(text);
+ }
+ 
++/** @return The FLTK right-justified formatted output of @p value. */
++static std::string format(const calculator::tvalue &value) {
++  return "@r" + value.format();
++}
++
+ void twindow::update_ui() {
+   diagnostics_.label(model_.diagnostics_get().c_str());
+ 
+   stack_.clear();
+   for (const auto &value : model_.stack())
+-    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
++    stack_.insert(std::numeric_limits<int>::max(), format(value)
++			.c_str());
+   stack_.bottomline(stack_.size());
+ 
+   input_.label(model_.input_get().c_str());
