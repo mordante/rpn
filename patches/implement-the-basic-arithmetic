@@ -1,5 +1,5 @@
 Bottom: 765163d97cd5ff5edbf7efc72be8bea6e03be15d
-Top:    765163d97cd5ff5edbf7efc72be8bea6e03be15d
+Top:    cea2045455f19b334abaea520d32dbbd59299391
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 16:43:08 +0200
 
@@ -20,4 +20,251 @@ empty stack.
 
 ---
 
-
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index 793ebde..667738b 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -70,12 +70,20 @@ public:
+    */
+   void math_add() noexcept;
+ 
++  void math_sub() noexcept;
++   void math_mul() noexcept;
++   //void math_div() noexcept;
++
+ private:
+   void push(std::string_view input);
+ 
+   void duplicate_last_entry();
+   void parse(std::string_view input);
+ 
++  using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
++
++  void math_binary_operation(tbinary_operation operation) noexcept;
++
+   void diagnostics_set(const std::exception &e);
+   tmodel &model_;
+ };
+@@ -97,20 +105,27 @@ void tcontroller::push() noexcept {
+   }
+ }
+ 
+-void tcontroller::math_add() noexcept {
++void tcontroller::math_binary_operation(tbinary_operation operation) noexcept {
+   try {
+     if (const std::string input = model_.input_steal(); !input.empty())
+       push(input);
+ 
+-    const tvalue lhs = model_.stack_pop();
++    if (model_.stack_size() < 2)
++      throw std::out_of_range("Stack doesn't contain two elements");
++
+     const tvalue rhs = model_.stack_pop();
+-    model_.stack_push(math::add(lhs.get(), rhs.get()));
++    const tvalue lhs = model_.stack_pop();
++    model_.stack_push(operation(lhs.get(), rhs.get()));
+     model_.diagnostics_clear();
+   } catch (const std::exception &e) {
+     diagnostics_set(e);
+   }
+ }
+ 
++void tcontroller::math_add() noexcept { math_binary_operation(math::add); }
++void tcontroller::math_sub() noexcept { math_binary_operation(math::sub); }
++void tcontroller::math_mul() noexcept { math_binary_operation(math::mul); }
++
+ void tcontroller::push(std::string_view input) {
+   if (input.empty())
+     duplicate_last_entry();
+diff --git a/src/modules/math/math.cpp b/src/modules/math/math.cpp
+index e220bf7..0fc30f5 100644
+--- a/src/modules/math/math.cpp
++++ b/src/modules/math/math.cpp
+@@ -24,4 +24,30 @@ export namespace math {
+ [[nodiscard]] int64_t add(int64_t lhs, int64_t rhs) noexcept {
+   return lhs + rhs;
+ }
++
++/**
++ * @returns The value @p lhs subtracted to @p rhs.
++ * @pre INT64_MIN <= lhs - rhs <= INT64_MAX
++ */
++[[nodiscard]] int64_t sub(int64_t lhs, int64_t rhs) noexcept {
++  return lhs - rhs;
++}
++
++/**
++ * @returns The value @p lhs multiplied by @p rhs.
++ * @pre INT64_MIN <= lhs * rhs <= INT64_MAX
++ */
++[[nodiscard]] int64_t mul(int64_t lhs, int64_t rhs) noexcept {
++  return lhs * rhs;
++}
++
++/**
++ * @returns The value @p lhs multiplied by @p rhs.
++ * @pre rhs != 0
++ * @pre INT64_MIN <= lhs / rhs <= INT64_MAX
++ */
++[[nodiscard]] int64_t div(int64_t lhs, int64_t rhs) noexcept {
++  return lhs / rhs;
++}
++
+ } // namespace math
+diff --git a/src/rpn.cpp b/src/rpn.cpp
+index 7de069c..0e20537 100644
+--- a/src/rpn.cpp
++++ b/src/rpn.cpp
+@@ -76,6 +76,14 @@ void twindow::process_input_event() {
+     case '+':
+       controller_.math_add();
+       return;
++
++    case '-':
++      controller_.math_sub();
++      return;
++
++    case '*':
++      controller_.math_mul();
++      return;
+     }
+   }
+ 
+diff --git a/tests/calculator/controller.cpp b/tests/calculator/controller.cpp
+index adc7bdb..8065474 100644
+--- a/tests/calculator/controller.cpp
++++ b/tests/calculator/controller.cpp
+@@ -226,14 +226,17 @@ TEST(controller, math_add_too_few_elements) {
+   tcontroller controller{model};
+ 
+   controller.math_add();
+-  EXPECT_EQ(model.diagnostics_get(), format_error("Stack is empty"));
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("Stack doesn't contain two elements"));
+   EXPECT_TRUE(model.stack_empty());
+   EXPECT_TRUE(model.input_get().empty());
+ 
+   model.stack_push(42);
+   controller.math_add();
+-  EXPECT_EQ(model.diagnostics_get(), format_error("Stack is empty"));
+-  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("Stack doesn't contain two elements"));
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 42);
+   EXPECT_TRUE(model.input_get().empty());
+ }
+ 
+@@ -290,4 +293,78 @@ TEST(controller, math_add_input_invalid) {
+   EXPECT_TRUE(model.input_get().empty());
+ }
+ 
++// *** math_sub ***
++
++TEST(controller, math_sub_too_few_elements) {
++  tmodel model;
++  tcontroller controller{model};
++
++  controller.math_sub();
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("Stack doesn't contain two elements"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++
++  model.stack_push(42);
++  controller.math_sub();
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("Stack doesn't contain two elements"));
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 42);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, math_sub_stack_input) {
++  tmodel model;
++  tcontroller controller{model};
++  model.stack_push(42);
++  model.input_append("21");
++
++  controller.math_sub();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 21);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, math_sub_stack_stack) {
++  tmodel model;
++  tcontroller controller{model};
++  model.stack_push(42);
++  model.stack_push(21);
++
++  controller.math_sub();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 21);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, math_sub_diagnostics_cleared) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++  model.stack_push(42);
++  model.stack_push(21);
++
++  controller.math_sub();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 21);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, math_sub_input_invalid) {
++  tmodel model;
++  tcontroller controller{model};
++  model.stack_push(42);
++  model.input_append("abc");
++
++  controller.math_sub();
++  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 42);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
+ } // namespace calculator
+diff --git a/tests/math.cpp b/tests/math.cpp
+index 54a2858..e97134e 100644
+--- a/tests/math.cpp
++++ b/tests/math.cpp
+@@ -22,3 +22,29 @@ TEST(math, add) {
+   EXPECT_EQ(math::add(1, 0), 1);
+   EXPECT_EQ(math::add(1, 1), 2);
+ }
++
++TEST(math, sub) {
++  EXPECT_EQ(math::sub(0, 0), 0);
++  EXPECT_EQ(math::sub(0, 1), -1);
++  EXPECT_EQ(math::sub(1, 0), 1);
++  EXPECT_EQ(math::sub(1, 1), 0);
++}
++
++TEST(math, mul) {
++  EXPECT_EQ(math::mul(0, 0), 0);
++  EXPECT_EQ(math::mul(2, -2), -4);
++  EXPECT_EQ(math::mul(-2, 2), -4);
++  EXPECT_EQ(math::mul(-2, -2), 4);
++  EXPECT_EQ(math::mul(2, 2), 4);
++}
++
++TEST(math, div) {
++  EXPECT_EQ(math::div(0, 1), 0);
++  EXPECT_EQ(math::div(2, -2), -1);
++  EXPECT_EQ(math::div(-2, 2), -1);
++  EXPECT_EQ(math::div(-2, -2), 1);
++  EXPECT_EQ(math::div(2, 2), 1);
++  EXPECT_EQ(math::div(4, 2), 2);
++  EXPECT_EQ(math::div(4, 3), 1);
++  EXPECT_EQ(math::div(3, 4), 0);
++}
