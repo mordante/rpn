@@ -1,0 +1,154 @@
+Bottom: 8c7baf0bc9f331e0aa09fc7f275611788259c7f6
+Top:    a8a08e97f92555dfcd0420f04fd31feb8c59f961
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 20:56:57 +0200
+
+Refresh of implement-input-prefixes
+
+---
+
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index 315f596..df03c28 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -170,10 +170,28 @@ static void validate(std::errc ec) {
+   }
+ }
+ 
++int determine_base(std::string_view &input) {
++  if (input.size() < 2 || input[0] != '0')
++    return 10;
++
++  switch (input[1]) {
++  case 'b':
++	  input.remove_prefix(2);
++    return 2;
++  default:
++	  input.remove_prefix(1);
++    return 8;
++  case 'x':
++	  input.remove_prefix(2);
++    return 16;
++  }
++}
++
+ void tcontroller::parse(std::string_view input) {
++  int base = determine_base(input);
+   int64_t value;
+   std::from_chars_result result =
+-      std::from_chars(input.begin(), input.end(), value);
++      std::from_chars(input.begin(), input.end(), value, base);
+ 
+   validate(result.ec);
+   if (result.ptr != input.end())
+diff --git a/tests/calculator/controller.cpp b/tests/calculator/controller.cpp
+index 571e805..10a7c06 100644
+--- a/tests/calculator/controller.cpp
++++ b/tests/calculator/controller.cpp
+@@ -199,7 +199,7 @@ TEST(controller, push_invalid_input_after_valid_value) {
+   tmodel model;
+   tcontroller controller{model};
+ 
+-  model.input_append("0a");
++  model.input_append("1a");
+   controller.push();
+   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+   EXPECT_TRUE(model.stack_empty());
+@@ -219,6 +219,97 @@ TEST(controller, push_diagnostics_cleared) {
+   EXPECT_TRUE(model.input_get().empty());
+ }
+ 
++TEST(controller, push_base_2_valid) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0b100");
++
++  controller.push();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 4);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_2_only_prefix) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0b");
++
++  controller.push();
++  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_2_invalid_value) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0b2");
++
++  controller.push();
++  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_8_valid) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("010");
++
++  controller.push();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 8);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_8_invalid_value) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("08");
++
++  controller.push();
++  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_16_valid) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0x10");
++
++  controller.push();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack_size(), 1);
++  EXPECT_EQ(model.stack_pop().get(), 16);
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_16_only_prefix) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0x");
++
++  controller.push();
++  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, push_base_16_invalid_value) {
++  tmodel model;
++  tcontroller controller{model};
++  model.input_append("0xg");
++
++  controller.push();
++  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_TRUE(model.input_get().empty());
++}
++
+ // *** math_add ***
+ 
+ TEST(controller, math_add_too_few_elements) {
