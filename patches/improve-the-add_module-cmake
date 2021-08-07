@@ -1,5 +1,5 @@
 Bottom: 44dd99b31e428b6134018f16a7801d0475577de8
-Top:    44dd99b31e428b6134018f16a7801d0475577de8
+Top:    97aae78b030915878dc9e6254f94dc39b60654c3
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 09:29:55 +0200
 
@@ -11,4 +11,15 @@ ${PREBUILT_MODULE_PATH} for this module.
 
 ---
 
-
+diff --git a/cmake/ClangModule.cmake b/cmake/ClangModule.cmake
+index 0a43036..a9031b6 100644
+--- a/cmake/ClangModule.cmake
++++ b/cmake/ClangModule.cmake
+@@ -12,6 +12,7 @@ function(add_module name)
+                 -std=c++20
+                 -stdlib=libc++
+                 -fmodules
++				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
+                 -c
+                 ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN}
+                 -Xclang -emit-module-interface
