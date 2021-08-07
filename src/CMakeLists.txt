@@ -2,3 +2,13 @@ add_subdirectory(modules)
 add_executable(rpn
 	rpn.cpp
 )
+target_link_libraries(rpn
+	calculator
+	fltk
+	math
+)
+target_include_directories(rpn
+	PRIVATE
+		${fltk_SOURCE_DIR}
+		${fltk_BINARY_DIR}
+)
