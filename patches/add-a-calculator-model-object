@@ -1,0 +1,13 @@
+Bottom: bc7fd35354fdf26e9a975628e1caadda6f73ba44
+Top:    bc7fd35354fdf26e9a975628e1caadda6f73ba44
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 08:19:50 +0200
+
+Add a calculator model object.
+
+This contains the entire calculator model used in the application.
+
+
+---
+
+
