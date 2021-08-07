@@ -1,5 +1,5 @@
 Bottom: bbfd1bcc61fef3c71c96e75e3b0a2216c3bb7246
-Top:    724ffa40c8830a3ae02ff83b604c22fba9abb7cf
+Top:    9826c86cc6771023df717ac4b2d991a2b88d9c74
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 08:19:50 +0200
 
@@ -32,10 +32,10 @@ index a221ed8..089f030 100644
 +)
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
 new file mode 100644
-index 0000000..cbd5c48
+index 0000000..c799329
 --- /dev/null
 +++ b/src/modules/calculator/model.cpp
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,130 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -116,8 +116,19 @@ index 0000000..cbd5c48
 +
 +  // * Input *
 +
-+  /** Clears the current input. */
++  /**
++   * Clears the current input.
++   *
++   * TODO Is this function still needed?
++   */
 +  void input_clear() noexcept { input_.clear(); }
++
++  /** Returns the clears the input and returns the original value. */
++  [[nodiscard]] std::string input_steal() {
++    std::string result;
++    std::swap(input_, result);
++    return result;
++  }
 +
 +  /**
 +   * Appends the @p data to the @ref input_. @note Since the expected usage
@@ -181,10 +192,10 @@ index 1be6d9c..24dbb5f 100644
  )
 diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
 new file mode 100644
-index 0000000..5fdf0f8
+index 0000000..fa266e6
 --- /dev/null
 +++ b/tests/calculator/model.cpp
-@@ -0,0 +1,187 @@
+@@ -0,0 +1,208 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -206,6 +217,8 @@ index 0000000..5fdf0f8
 +#include <gtest/gtest.h>
 +
 +namespace calculator {
++
++// *** SMF ***
 +
 +TEST(model, default_constructor) {
 +  const tmodel model;
@@ -238,6 +251,8 @@ index 0000000..5fdf0f8
 +                "Implement the proper tests.");
 +}
 +
++// *** Stack operations ***
++
 +TEST(model, stack_empty) {
 +  const tmodel model;
 +  static_assert(noexcept(model.stack_empty()));
@@ -249,10 +264,10 @@ index 0000000..5fdf0f8
 +}
 +
 +TEST(model, stack) {
-+	{
-+  const tmodel model;
-+  static_assert(noexcept(model.stack()));
-+	}
++  {
++    const tmodel model;
++    static_assert(noexcept(model.stack()));
++  }
 +
 +  tmodel model;
 +  const std::vector<tvalue> &stack = model.stack();
@@ -303,6 +318,8 @@ index 0000000..5fdf0f8
 +  EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
 +}
 +
++// *** Diagnostic operations ***
++
 +TEST(model, diagnostics_get) {
 +  const tmodel model;
 +  static_assert(noexcept(model.diagnostics_get()));
@@ -337,6 +354,8 @@ index 0000000..5fdf0f8
 +  EXPECT_TRUE(model.input_get().empty());
 +}
 +
++// *** Input operations ***
++
 +TEST(model, input_get) {
 +  const tmodel model;
 +  static_assert(noexcept(model.input_get()));
@@ -365,7 +384,20 @@ index 0000000..5fdf0f8
 +  model.input_append("abc");
 +
 +  model.input_clear();
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_TRUE(model.stack_empty());
++  EXPECT_EQ(model.stack_size(), 0);
 +  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(model, input_steal) {
++  tmodel model;
++  model.input_append("abc");
++
++  const std::string input = model.input_steal();
++  EXPECT_EQ(input, "abc");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
 +  EXPECT_TRUE(model.stack_empty());
 +  EXPECT_EQ(model.stack_size(), 0);
 +  EXPECT_TRUE(model.input_get().empty());
