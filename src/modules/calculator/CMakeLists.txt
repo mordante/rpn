@@ -7,10 +7,12 @@ target_compile_options(calculator
 	PRIVATE
 		${module_compile_options}
 )
+add_module(calculator calculator.cpp)
 add_module(calculator.controller controller.cpp)
 add_module(calculator.model model.cpp)
 add_module(calculator.value value.cpp)
 add_dependencies(calculator
+	calculator.pcm
 	calculator.controller.pcm
 	calculator.model.pcm
 	calculator.value.pcm
