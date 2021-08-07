@@ -1,5 +1,5 @@
 Bottom: 2c9034e52b8531a199fe935eb2cc84417480cf26
-Top:    707dd6e442696cd42c51f57adf989f482ed735b5
+Top:    8089253aa2b78288d6d9df0da1fa17661083c343
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 11:44:09 +0200
 
@@ -162,10 +162,10 @@ index 24dbb5f..88300e8 100644
  	math.cpp
 diff --git a/tests/calculator/controller.cpp b/tests/calculator/controller.cpp
 new file mode 100644
-index 0000000..7a9f418
+index 0000000..5b82357
 --- /dev/null
 +++ b/tests/calculator/controller.cpp
-@@ -0,0 +1,178 @@
+@@ -0,0 +1,171 @@
 +/*
 + * Copyright (C) Mark de Wever <koraq@xs4all.nl>
 + * Part of the RPN project.
@@ -191,14 +191,7 @@ index 0000000..7a9f418
 +TEST(controller, constructor) {
 +  tmodel model;
 +  const tcontroller controller{model};
-+  EXPECT_TRUE(noexcept(tcontroller{model}));
-+
-+  //
-+  //
-+  //
-+  //
-+  //
-+  // XXX Backport to other tests..
++  static_assert(noexcept(tcontroller{model}));
 +}
 +
 +TEST(controller, copy_constructor) {
@@ -213,7 +206,7 @@ index 0000000..7a9f418
 +
 +TEST(controller, destructor) {
 +  tmodel model;
-+  EXPECT_TRUE(noexcept(tcontroller{model}.~tcontroller()));
++  static_assert(noexcept(tcontroller{model}.~tcontroller()));
 +}
 +
 +TEST(controller, copy_assignment) {
@@ -229,7 +222,7 @@ index 0000000..7a9f418
 +TEST(controller, push) {
 +  tmodel model;
 +  tcontroller controller{model};
-+  EXPECT_TRUE(noexcept(controller.push()));
++  static_assert(noexcept(controller.push()));
 +}
 +
 +static std::string format_error(const char *message) {
