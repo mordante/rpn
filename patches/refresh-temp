@@ -1,0 +1,76 @@
+Bottom: 2c9034e52b8531a199fe935eb2cc84417480cf26
+Top:    724ffa40c8830a3ae02ff83b604c22fba9abb7cf
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-07 15:36:24 +0200
+
+Refresh of add-a-calculator-model-object
+
+---
+
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index cb0ace1..cbd5c48 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -46,6 +46,9 @@ public:
+ 
+   [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
+   [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
++  [[nodiscard]] const std::vector<tvalue> &stack() const noexcept {
++    return stack_;
++  }
+ 
+   // *** Modifiers ***
+ 
+diff --git a/src/modules/calculator/value.cpp b/src/modules/calculator/value.cpp
+index 0411824..667e40b 100644
+--- a/src/modules/calculator/value.cpp
++++ b/src/modules/calculator/value.cpp
+@@ -45,6 +45,9 @@ public:
+ 
+ private:
+   int64_t value_{0};
++
++  /** Only equality comparable is part of the contract. */
++  friend auto operator<=>(const tvalue &, const tvalue &) = default;
+ };
+ 
+ } // namespace calculator
+diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
+index edc91ec..5fdf0f8 100644
+--- a/tests/calculator/model.cpp
++++ b/tests/calculator/model.cpp
+@@ -61,6 +61,21 @@ TEST(model, stack_size) {
+   static_assert(noexcept(model.stack_size()));
+ }
+ 
++TEST(model, stack) {
++	{
++  const tmodel model;
++  static_assert(noexcept(model.stack()));
++	}
++
++  tmodel model;
++  const std::vector<tvalue> &stack = model.stack();
++  model.stack_push(42);
++  EXPECT_EQ(stack, model.stack());
++
++  (void)model.stack_pop();
++  EXPECT_EQ(stack, model.stack());
++}
++
+ TEST(model, stack_push) {
+   tmodel model;
+ 
+diff --git a/tests/calculator/value.cpp b/tests/calculator/value.cpp
+index 59c3c85..bd03ca4 100644
+--- a/tests/calculator/value.cpp
++++ b/tests/calculator/value.cpp
+@@ -98,4 +98,8 @@ TEST(value, get) {
+   static_assert(noexcept(value.get()));
+ }
+ 
++TEST(value, equality_comparible) {
++  static_assert(std::equality_comparable<tvalue>);
++}
++
+ } // namespace calculator
