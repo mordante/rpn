@@ -46,6 +46,9 @@ public:
 
   [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
   [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
+  [[nodiscard]] const std::vector<tvalue> &stack() const noexcept {
+    return stack_;
+  }
 
   // *** Modifiers ***
 

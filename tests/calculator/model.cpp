@@ -61,6 +61,21 @@ TEST(model, stack_size) {
   static_assert(noexcept(model.stack_size()));
 }
 
+TEST(model, stack) {
+	{
+  const tmodel model;
+  static_assert(noexcept(model.stack()));
+	}
+
+  tmodel model;
+  const std::vector<tvalue> &stack = model.stack();
+  model.stack_push(42);
+  EXPECT_EQ(stack, model.stack());
+
+  (void)model.stack_pop();
+  EXPECT_EQ(stack, model.stack());
+}
+
 TEST(model, stack_push) {
   tmodel model;
 

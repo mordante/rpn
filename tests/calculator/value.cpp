@@ -98,4 +98,8 @@ TEST(value, get) {
   static_assert(noexcept(value.get()));
 }
 
+TEST(value, equality_comparible) {
+  static_assert(std::equality_comparable<tvalue>);
+}
+
 } // namespace calculator
