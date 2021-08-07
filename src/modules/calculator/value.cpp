@@ -38,10 +38,10 @@ public:
   constexpr tvalue(int64_t value) noexcept : value_(value) {}
 
   constexpr void set(int64_t value) noexcept { value_ = value; }
-  constexpr int64_t get() const noexcept { return value_; }
+  [[nodiscard]] constexpr int64_t get() const noexcept { return value_; }
 
   /** @returns The formatted output of the value. */
-  std::string format() const { return std::to_string(value_); };
+  [[nodiscard]] std::string format() const { return std::to_string(value_); };
 
 private:
   int64_t value_{0};
