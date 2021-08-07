@@ -15,9 +15,24 @@ add_module(calculator calculator.cpp)
 add_module(calculator.controller controller.cpp)
 add_module(calculator.model model.cpp)
 add_module(calculator.value value.cpp)
-add_dependencies(calculator
-	calculator.pcm
-	calculator.controller.pcm
+
+#
+#
+#
+# Backport
+#
+#
+#
+#
+#
+#
+add_dependencies(calculator.controller.pcm
 	calculator.model.pcm
 	calculator.value.pcm
+)
+add_dependencies(calculator.pcm
+	calculator.controller.pcm
+)
+add_dependencies(calculator
+	calculator.pcm
 )
