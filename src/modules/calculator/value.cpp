@@ -40,9 +40,6 @@ public:
   constexpr void set(int64_t value) noexcept { value_ = value; }
   [[nodiscard]] constexpr int64_t get() const noexcept { return value_; }
 
-  /** @returns The formatted output of the value. */
-  [[nodiscard]] std::string format() const { return std::to_string(value_); };
-
 private:
   int64_t value_{0};
 
