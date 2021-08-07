@@ -21,14 +21,12 @@ TEST(value, default_constructor) {
   static_assert(noexcept(tvalue{}));
   constexpr tvalue value;
   EXPECT_EQ(value.get(), 0);
-  EXPECT_EQ(value.format(), "0");
 }
 
 TEST(value, converting_constructor) {
   static_assert(noexcept(tvalue{1}));
   constexpr tvalue value = 1;
   EXPECT_EQ(value.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 }
 
 TEST(value, copy_constructor) {
@@ -37,9 +35,7 @@ TEST(value, copy_constructor) {
 
   constexpr tvalue value{v};
   EXPECT_EQ(v.get(), 1);
-  EXPECT_EQ(value.format(), "1");
   EXPECT_EQ(value.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 }
 
 TEST(value, move_constructor) {
@@ -48,7 +44,6 @@ TEST(value, move_constructor) {
 
   constexpr tvalue value{std::move(v)};
   EXPECT_EQ(v.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 }
 
 TEST(value, destructor) { static_assert(noexcept(tvalue{}.~tvalue())); }
@@ -60,15 +55,12 @@ TEST(value, copy_assignment) {
 
   value = v;
   EXPECT_EQ(v.get(), 1);
-  EXPECT_EQ(v.format(), "1");
 
   EXPECT_EQ(value.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 
   // Uses implicit constructor.
   value = 42;
   EXPECT_EQ(value.get(), 42);
-  EXPECT_EQ(value.format(), "42");
 }
 
 TEST(value, move_assignment) {
@@ -78,7 +70,6 @@ TEST(value, move_assignment) {
 
   value = std::move(v);
   EXPECT_EQ(value.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 }
 
 TEST(value, set) {
@@ -86,11 +77,9 @@ TEST(value, set) {
   static_assert(noexcept(value.set(42)));
   value.set(42);
   EXPECT_EQ(value.get(), 42);
-  EXPECT_EQ(value.format(), "42");
 
   value.set(1);
   EXPECT_EQ(value.get(), 1);
-  EXPECT_EQ(value.format(), "1");
 }
 
 TEST(value, get) {
