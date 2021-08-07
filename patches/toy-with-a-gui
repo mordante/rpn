@@ -1,5 +1,5 @@
 Bottom: ca524ec255dd6b78373579f49f8ba5334c5ec872
-Top:    1878c1ed245325fa1f2b93c284f1243b1fd822d3
+Top:    07d56ebfb6d33ba16aa03e51fc16ecb5021b520e
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -113,10 +113,10 @@ index c799329..79e7f42 100644
  namespace calculator {
  
 diff --git a/src/rpn.cpp b/src/rpn.cpp
-index 9b5a646..5c3a934 100644
+index 9b5a646..994ebbb 100644
 --- a/src/rpn.cpp
 +++ b/src/rpn.cpp
-@@ -12,6 +12,91 @@
+@@ -12,6 +12,99 @@
   * See the COPYING file for more details.
   */
  
@@ -135,6 +135,8 @@ index 9b5a646..5c3a934 100644
 +  twindow() : Fl_Window(310, 265, "RPN") {
 +    diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
 +    diagnostics_.box(FL_DOWN_BOX);
++
++    stack_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
 +
 +    input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
 +    input_.box(FL_DOWN_BOX);
@@ -193,12 +195,18 @@ index 9b5a646..5c3a934 100644
 +  controller_.append(text);
 +}
 +
++/** @return The FLTK right-justified formatted output of @p value. */
++static std::string format(const calculator::tvalue &value) {
++  return "@r" + value.format();
++}
++
 +void twindow::update_ui() {
 +  diagnostics_.label(model_.diagnostics_get().c_str());
 +
 +  stack_.clear();
 +  for (const auto &value : model_.stack())
-+    stack_.insert(std::numeric_limits<int>::max(), value.format().c_str());
++    stack_.insert(std::numeric_limits<int>::max(), format(value)
++			.c_str());
 +  stack_.bottomline(stack_.size());
 +
 +  input_.label(model_.input_get().c_str());
