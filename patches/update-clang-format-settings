@@ -1,0 +1,11 @@
+Bottom: 1d02fc67b57a8e8082d0fc05194919d141d0cb1f
+Top:    1d02fc67b57a8e8082d0fc05194919d141d0cb1f
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-08 10:28:06 +0200
+
+update clang-format settings should be backported to first commit.
+
+
+---
+
+
