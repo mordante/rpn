@@ -1,6 +1,6 @@
 Version: 1
-Previous: 4dd78e3c3e91aff1935e54aed37565087bd0ec62
-Head: e5318c70673c28141f57917cbb7270262007ce27
+Previous: 02fbd35864b0570c72b25e690111558886cbf760
+Head: ea73460072ad5d1ba93f843957dcc502515f0188
 Applied:
   improve-the-add_module-cmake: 4264f83b11b6c396fb2d1bd7d35142ff8258ff61
   add-a-calculator-value-object: a8d1f29909ee7d06309e0c8e129404198f5beca1
@@ -11,7 +11,6 @@ Applied:
   implement-input-prefixes: bc89055782622b90ea1db6c357d7fa315eabbcae
   implement-the-display-base: 30246c2497adbf7f2dc22b9fe8b5a4112efcf37c
   playing-with-json: 5e517006819c49f1c979afc1b493defacfb87964
-  update-clang-format-settings: f2e29fdaba8e222e8132882a92bd82065711e36b
-  refresh-temp: e5318c70673c28141f57917cbb7270262007ce27
+  update-clang-format-settings: ea73460072ad5d1ba93f843957dcc502515f0188
 Unapplied:
 Hidden:
