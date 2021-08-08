@@ -74,7 +74,7 @@ TEST(model, stack_base_default) {
   tmodel model;
   model.stack_push(42);
   model.stack_push(100);
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"},{ "@r100"}}));
+  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}, {"@r100"}}));
 
   (void)model.stack_pop();
   (void)model.stack_pop();
