@@ -1,6 +1,6 @@
 Version: 1
-Previous: 8da05aea25fe69f266d3492e4ce182684ab1e075
-Head: 53ac6c6103ad960e62096b047cdc8f9072084235
+Previous: 37043528cb72d85aec8a29c1917a930160c3e8d9
+Head: b598017ebd8b9340fc2de83e16364e966f634721
 Applied:
   improve-the-add_module-cmake: 4264f83b11b6c396fb2d1bd7d35142ff8258ff61
   add-a-calculator-value-object: a8d1f29909ee7d06309e0c8e129404198f5beca1
@@ -10,5 +10,6 @@ Applied:
   implement-the-basic-arithmetic: 17a36a4f8e615d9c36628886eb5fe1c03567846e
   implement-input-prefixes: bc89055782622b90ea1db6c357d7fa315eabbcae
   implement-the-display-base: 53ac6c6103ad960e62096b047cdc8f9072084235
+  refresh-temp: b598017ebd8b9340fc2de83e16364e966f634721
 Unapplied:
 Hidden:
