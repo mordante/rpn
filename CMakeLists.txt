@@ -22,6 +22,10 @@ set(module_compile_options
 )
 
 enable_testing()
+
+# XXX this adds the JSON STUFF...
+# BACKPORT TO MASTER???
+#add_code_coverage_all_targets()
 add_code_coverage()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
