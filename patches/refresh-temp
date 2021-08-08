@@ -1,0 +1,54 @@
+Bottom: fcb60f100b9f3b2357a7138e10f275e09566dbd8
+Top:    1d02fc67b57a8e8082d0fc05194919d141d0cb1f
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-08 09:03:18 +0200
+
+Refresh of playing-with-json
+
+---
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f1b17e5..9bff5ee 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,10 @@ set(module_compile_options
+ )
+ 
+ enable_testing()
++
++# XXX this adds the JSON STUFF...
++# BACKPORT TO MASTER???
++#add_code_coverage_all_targets()
+ add_code_coverage()
+ 
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+diff --git a/cmake/CodeCoverage.cmake b/cmake/CodeCoverage.cmake
+index 8d98715..839c8a8 100644
+--- a/cmake/CodeCoverage.cmake
++++ b/cmake/CodeCoverage.cmake
+@@ -200,6 +200,7 @@ endif()
+ # ccov-report : Generates HTML code coverage report for every target added with 'AUTO' parameter.
+ # ccov-${TARGET_NAME} : Generates HTML code coverage report.
+ # ccov-report-${TARGET_NAME} : Prints to command line summary per-file coverage information.
++# ccov-export-${TARGET_NAME} : Exports the coverage report to a JSON file.
+ # ccov-show-${TARGET_NAME} : Prints to command line detailed per-line coverage information.
+ # ccov-all : Generates HTML code coverage report, merging every target added with 'ALL' parameter into a single detailed report.
+ # ccov-all-report : Prints summary per-file coverage information for every target added with ALL' parameter to the command line.
+@@ -362,6 +363,17 @@ function(target_code_coverage TARGET_NAME)
+             ${EXCLUDE_REGEX}
+           DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME})
+ 
++        # Export coverage information so continuous integration tools (e.g.
++        # Jenkins) can consume it
++        add_custom_target(
++          ccov-export-${target_code_coverage_COVERAGE_TARGET_NAME}
++          COMMAND
++            ${LLVM_COV_PATH} export $<TARGET_FILE:${TARGET_NAME}> ${SO_OBJECTS}
++            -instr-profile=${target_code_coverage_COVERAGE_TARGET_NAME}.profdata
++            -format="text" ${EXCLUDE_REGEX} >
++            ${CMAKE_COVERAGE_OUTPUT_DIRECTORY}/${target_code_coverage_COVERAGE_TARGET_NAME}.json
++          DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME})
++
+         # Generates HTML output of the coverage information for perusal
+         add_custom_target(
+           ccov-${target_code_coverage_COVERAGE_TARGET_NAME}
