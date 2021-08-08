@@ -65,19 +65,60 @@ TEST(model, stack_size) {
   static_assert(noexcept(model.stack_size()));
 }
 
-TEST(model, stack) {
+TEST(model, stack_base_default) {
   {
     const tmodel model;
     static_assert(noexcept(model.stack()));
   }
 
   tmodel model;
-  const std::vector<tvalue> &stack = model.stack();
   model.stack_push(42);
-  EXPECT_EQ(stack, model.stack());
+  model.stack_push(100);
+  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"},{ "@r100"}}));
 
   (void)model.stack_pop();
-  EXPECT_EQ(stack, model.stack());
+  (void)model.stack_pop();
+  EXPECT_EQ(model.stack(), std::vector<std::string>{});
+}
+
+TEST(model, stack_base_2) {
+  tmodel model;
+  model.base_set(tbase::binary);
+  model.stack_push(42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0b101010"});
+
+  (void)model.stack_pop();
+  EXPECT_EQ(model.stack(), std::vector<std::string>{});
+}
+
+TEST(model, stack_base_8) {
+  tmodel model;
+  model.base_set(tbase::octal);
+  model.stack_push(42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r052"});
+
+  (void)model.stack_pop();
+  EXPECT_EQ(model.stack(), std::vector<std::string>{});
+}
+
+TEST(model, stack_base_10) {
+  tmodel model;
+  model.base_set(tbase::decimal);
+  model.stack_push(42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r42"});
+
+  (void)model.stack_pop();
+  EXPECT_EQ(model.stack(), std::vector<std::string>{});
+}
+
+TEST(model, stack_base_16) {
+  tmodel model;
+  model.base_set(tbase::hexadecimal);
+  model.stack_push(42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0x2a"});
+
+  (void)model.stack_pop();
+  EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
 TEST(model, stack_push) {
