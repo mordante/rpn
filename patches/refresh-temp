@@ -1,0 +1,22 @@
+Bottom: d8a14a78b2af2650a35a625b462db8031e2e8743
+Top:    fcb60f100b9f3b2357a7138e10f275e09566dbd8
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-08 08:44:29 +0200
+
+Refresh of implement-the-display-base
+
+---
+
+diff --git a/tests/calculator/model.cpp b/tests/calculator/model.cpp
+index 14d0677..16fafdb 100644
+--- a/tests/calculator/model.cpp
++++ b/tests/calculator/model.cpp
+@@ -74,7 +74,7 @@ TEST(model, stack_base_default) {
+   tmodel model;
+   model.stack_push(42);
+   model.stack_push(100);
+-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"},{ "@r100"}}));
++  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}, {"@r100"}}));
+ 
+   (void)model.stack_pop();
+   (void)model.stack_pop();
