@@ -1,5 +1,5 @@
 Bottom: 1d9776317e304d1db1ebc653cf392dcaa1b50900
-Top:    a74706ddf79fcc7a6b5035bff983e314ae68d3b8
+Top:    dad74e4fcbe53f42755340d2e58143dec28cfee5
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-08 09:03:16 +0200
 
@@ -8,21 +8,6 @@ playing with json...
 
 ---
 
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5d462be..bcb934c 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -22,6 +22,10 @@ set(module_compile_options
- )
- 
- enable_testing()
-+
-+# XXX this adds the JSON STUFF...
-+# BACKPORT TO MASTER???
-+#add_code_coverage_all_targets()
- add_code_coverage()
- 
- set(CMAKE_INCLUDE_CURRENT_DIR ON)
 diff --git a/cmake/CodeCoverage.cmake b/cmake/CodeCoverage.cmake
 index 8d98715..839c8a8 100644
 --- a/cmake/CodeCoverage.cmake
