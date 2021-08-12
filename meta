@@ -1,7 +1,8 @@
 Version: 1
-Previous: 0cd2ee50dd98fb2d1f3d98df68c2df84c4037865
-Head: df07dd52561f23f6ef4864e67bd553532ae894c1
+Previous: e808b1989b7c3b69b7299633bddaa0b56297f3b6
+Head: df93b57742bc0e7023088034c47d84c87eb19329
 Applied:
+Unapplied:
   improve-the-add_module-cmake: 4264f83b11b6c396fb2d1bd7d35142ff8258ff61
   add-a-calculator-value-object: a8d1f29909ee7d06309e0c8e129404198f5beca1
   add-a-calculator-model-object: 126151f7d4713eaae7d6bb20769c3df668250880
@@ -13,5 +14,4 @@ Applied:
   playing-with-json: 5e517006819c49f1c979afc1b493defacfb87964
   update-clang-format-settings: ea73460072ad5d1ba93f843957dcc502515f0188
   return-span-instead-of-vector: df07dd52561f23f6ef4864e67bd553532ae894c1
-Unapplied:
 Hidden:
