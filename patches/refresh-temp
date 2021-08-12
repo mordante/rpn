@@ -1,0 +1,24 @@
+Bottom: a74706ddf79fcc7a6b5035bff983e314ae68d3b8
+Top:    dad74e4fcbe53f42755340d2e58143dec28cfee5
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-12 20:33:01 +0200
+
+Refresh of playing-with-json
+
+---
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bcb934c..5d462be 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,10 +22,6 @@ set(module_compile_options
+ )
+ 
+ enable_testing()
+-
+-# XXX this adds the JSON STUFF...
+-# BACKPORT TO MASTER???
+-#add_code_coverage_all_targets()
+ add_code_coverage()
+ 
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
