@@ -1,17 +1,17 @@
 Version: 1
-Previous: 395dc3b6439914280cc78880dba0a5f8e1301422
-Head: 20c7d0693ae4ec4b4c0de847ec21f21266206e63
+Previous: 939d0a37f36bd0143cecbf39ef5857817b1e292c
+Head: aee992b066cf2de8ba5e6132d034211ff8d019d9
 Applied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
   add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
   add-a-calculator-model-object: 1a4c8de936998eb73c78ef1562b687f680a176f8
   add-a-calculator-controller: 161c3dcf698154cafb6363cc223a8fc734bfafbd
   toy-with-a-gui: 20c7d0693ae4ec4b4c0de847ec21f21266206e63
+  implement-the-basic-arithmetic: 6558d387f7b4630288db6cb3a3d8c426765ee1d1
+  implement-input-prefixes: e01e72f04b1cfac5f622360a26146943b07de7ac
+  implement-the-display-base: eb17a9c39a67d21867acf5055a1d253174bb2aa9
+  playing-with-json: a676d5a3aa8ab27bc1e68fc66df487fb5f096135
+  update-clang-format-settings: eefd6c0e5b5b90e87b9eccbc677b7552872569f7
+  return-span-instead-of-vector: aee992b066cf2de8ba5e6132d034211ff8d019d9
 Unapplied:
-  implement-the-basic-arithmetic: 17a36a4f8e615d9c36628886eb5fe1c03567846e
-  implement-input-prefixes: bc89055782622b90ea1db6c357d7fa315eabbcae
-  implement-the-display-base: 30246c2497adbf7f2dc22b9fe8b5a4112efcf37c
-  playing-with-json: 5e517006819c49f1c979afc1b493defacfb87964
-  update-clang-format-settings: ea73460072ad5d1ba93f843957dcc502515f0188
-  return-span-instead-of-vector: df07dd52561f23f6ef4864e67bd553532ae894c1
 Hidden:
