@@ -1,5 +1,5 @@
 Bottom: 680c77ff5a9d021d96c314fb1a2fb49d6de96541
-Top:    eaa91a3d23fd6e22e57e08a2edcd2c7369596215
+Top:    95bf28308fe2abc0fc1749970eed10ef4c5c1258
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 20:59:42 +0200
 
@@ -8,20 +8,6 @@ Implement the display base.
 
 ---
 
-diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
-index 16ce5a7..25b502d 100644
---- a/src/modules/calculator/CMakeLists.txt
-+++ b/src/modules/calculator/CMakeLists.txt
-@@ -29,3 +29,9 @@ add_dependencies(calculator.pcm
- add_dependencies(calculator
- 	calculator.pcm
- )
-+add_dependencies(calculator.pcm
-+	calculator.controller.pcm
-+)
-+add_dependencies(calculator
-+	calculator.pcm
-+)
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
 index 79e7f42..f3b19c5 100644
 --- a/src/modules/calculator/model.cpp
