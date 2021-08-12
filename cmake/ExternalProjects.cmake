@@ -11,3 +11,11 @@ if(NOT googletest_POPULATED)
   set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
   add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
 endif()
+target_compile_options(gtest
+	PRIVATE
+		-stdlib=libc++
+)
+target_link_libraries(gtest
+	PRIVATE
+		c++
+)

@@ -12,10 +12,10 @@ include(GoogleTest)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
+add_compile_options(-stdlib=libc++)
 set(PREBUILT_MODULE_PATH ${CMAKE_BINARY_DIR}/modules)
 set(module_compile_options
 	-fmodules
-	-stdlib=libc++
 	-fbuiltin-module-map
 	-fimplicit-module-maps
 	-fprebuilt-module-path=${PREBUILT_MODULE_PATH}

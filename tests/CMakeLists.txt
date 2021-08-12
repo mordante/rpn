@@ -9,5 +9,6 @@ target_link_libraries(tests
 	PRIVATE
 		math
 		gtest_main
+		c++
 )
 target_code_coverage(tests)
