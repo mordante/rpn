@@ -1,6 +1,6 @@
 Version: 1
-Previous: 9cbea60b9b61ae14a399794ea148eda74d1cf2f9
-Head: 4a0730e7695306aacefe82b9b00dc4f17f16e8b5
+Previous: e292133b1b27f14fc37bd3fc5595854ae0e4392e
+Head: 81070a503f13a634b7a9b3014e41e62e252ce3d0
 Applied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
   add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
@@ -10,6 +10,6 @@ Applied:
   implement-the-basic-arithmetic: e2a86543bffdaaf2f6db90e5959d2dd60a2679d7
   implement-input-prefixes: f8ffc7ac1f40fcb7ec08e5e0ca0a2c44d58fc070
   implement-the-display-base: 4a0730e7695306aacefe82b9b00dc4f17f16e8b5
+  playing-with-json: 81070a503f13a634b7a9b3014e41e62e252ce3d0
 Unapplied:
-  playing-with-json: 3578f53f8b4cbee6e6abb3ebbc28d006d93f08f3
 Hidden:
