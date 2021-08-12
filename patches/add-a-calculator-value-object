@@ -1,5 +1,5 @@
-Bottom: 97aae78b030915878dc9e6254f94dc39b60654c3
-Top:    bbfd1bcc61fef3c71c96e75e3b0a2216c3bb7246
+Bottom: b75ba499d1c61954c43023db72e999fcb1fd4cfe
+Top:    a58e3db4295a051bc1e0a7c7798255a9f7b36597
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 07:41:39 +0200
 
@@ -89,7 +89,7 @@ index 0000000..0411824
 +
 +} // namespace calculator
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index 836544d..1be6d9c 100644
+index c6ef984..d1587d5 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
 @@ -1,4 +1,5 @@
@@ -105,7 +105,7 @@ index 836544d..1be6d9c 100644
 +		calculator
  		math
  		gtest_main
- )
+ 		c++
 diff --git a/tests/calculator/value.cpp b/tests/calculator/value.cpp
 new file mode 100644
 index 0000000..9e1d8aa

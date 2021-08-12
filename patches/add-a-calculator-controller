@@ -1,5 +1,5 @@
-Bottom: 9826c86cc6771023df717ac4b2d991a2b88d9c74
-Top:    ca524ec255dd6b78373579f49f8ba5334c5ec872
+Bottom: fab5a69f162c380d6cfcf4afdb4b816ac48e1ed5
+Top:    223adc9c5e5da688b302ed9a24805a1b8f8090e5
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 11:44:09 +0200
 
@@ -204,7 +204,7 @@ index 0000000..793ebde
 +}
 +} // namespace calculator
 diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
-index 24dbb5f..88300e8 100644
+index da0f188..709a6d9 100644
 --- a/tests/CMakeLists.txt
 +++ b/tests/CMakeLists.txt
 @@ -1,4 +1,5 @@
