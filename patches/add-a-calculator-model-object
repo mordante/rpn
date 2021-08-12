@@ -1,5 +1,5 @@
 Bottom: a58e3db4295a051bc1e0a7c7798255a9f7b36597
-Top:    fab5a69f162c380d6cfcf4afdb4b816ac48e1ed5
+Top:    ebd12a3c7f7782c2f293dede62fd215fa644327d
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 08:19:50 +0200
 
@@ -11,10 +11,10 @@ This contains the entire calculator model used in the application.
 ---
 
 diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
-index a221ed8..089f030 100644
+index a221ed8..683fd89 100644
 --- a/src/modules/calculator/CMakeLists.txt
 +++ b/src/modules/calculator/CMakeLists.txt
-@@ -1,9 +1,14 @@
+@@ -1,9 +1,16 @@
  add_library(calculator
 +	model.cpp
  	value.cpp
@@ -26,9 +26,11 @@ index a221ed8..089f030 100644
 +add_module(calculator.model model.cpp)
  add_module(calculator.value value.cpp)
 -add_dependencies(calculator calculator.value.pcm)
++add_dependencies(calculator.model.pcm
++	calculator.value.pcm
++)
 +add_dependencies(calculator
 +	calculator.model.pcm
-+	calculator.value.pcm
 +)
 diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
 new file mode 100644
