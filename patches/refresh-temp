@@ -1,0 +1,23 @@
+Bottom: eaa91a3d23fd6e22e57e08a2edcd2c7369596215
+Top:    95bf28308fe2abc0fc1749970eed10ef4c5c1258
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-12 20:50:12 +0200
+
+Refresh of implement-the-display-base
+
+---
+
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index 25b502d..16ce5a7 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -29,9 +29,3 @@ add_dependencies(calculator.pcm
+ add_dependencies(calculator
+ 	calculator.pcm
+ )
+-add_dependencies(calculator.pcm
+-	calculator.controller.pcm
+-)
+-add_dependencies(calculator
+-	calculator.pcm
+-)
