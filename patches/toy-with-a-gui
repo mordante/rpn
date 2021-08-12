@@ -1,5 +1,5 @@
 Bottom: bf0330039ddb7492c9d32da5cfea387f7b606a73
-Top:    dc1031801f16408851d1b9c73813c43edf775f4a
+Top:    ca5ff2868910413806260127e81ab25a69ce2a0a
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 10:04:37 +0200
 
@@ -59,7 +59,7 @@ index 152c21c..51058b6 100644
  		c++
  )
 diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
-index e3e7585..4050624 100644
+index e3e7585..16ce5a7 100644
 --- a/src/modules/calculator/CMakeLists.txt
 +++ b/src/modules/calculator/CMakeLists.txt
 @@ -11,6 +11,7 @@ target_link_libraries(calculator
@@ -70,13 +70,19 @@ index e3e7585..4050624 100644
  add_module(calculator.controller controller.cpp)
  add_module(calculator.model model.cpp)
  add_module(calculator.value value.cpp)
-@@ -21,5 +22,6 @@ add_dependencies(calculator.controller.pcm
+@@ -20,6 +21,11 @@ add_dependencies(calculator.model.pcm
+ add_dependencies(calculator.controller.pcm
  	calculator.model.pcm
  )
- add_dependencies(calculator
-+	calculator.pcm
+-add_dependencies(calculator
++add_dependencies(calculator.pcm
++	calculator.value.pcm
++	calculator.model.pcm
  	calculator.controller.pcm
  )
++add_dependencies(calculator
++	calculator.pcm
++)
 diff --git a/src/modules/calculator/calculator.cpp b/src/modules/calculator/calculator.cpp
 new file mode 100644
 index 0000000..50a05d6
