@@ -1,9 +1,9 @@
 Version: 1
-Previous: bbb20198fa698332b57fdd3ed6344e0641686c22
-Head: 5cf1bac1122c2df1469ce1dc69ce18f5fba21259
+Previous: 38b66502af0a467af793ae3a1b871cd79fc6624c
+Head: b63f8f98ce925cedec8549eda8431737ae6a01aa
 Applied:
-Unapplied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
+Unapplied:
   add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
   add-a-calculator-model-object: 1a4c8de936998eb73c78ef1562b687f680a176f8
   add-a-calculator-controller: 161c3dcf698154cafb6363cc223a8fc734bfafbd
