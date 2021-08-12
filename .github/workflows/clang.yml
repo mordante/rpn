@@ -1,0 +1,29 @@
+name: Clang
+
+on:
+  push:
+    branches-ignore:
+    - build
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install latest Clang and libc++
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo sh -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list'
+          sudo apt update
+          sudo apt-get install -y clang-14 libc++-14-dev libc++abi-14-dev libunwind-14-dev
+      - name: Build
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_CXX_COMPILER=clang++-14 -DLLVM_COV_PATH=/usr/bin/llvm-cov-14 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-14 -DCODE_COVERAGE=ON ..
+          make VERBOSE=1
+          make ccov-report-tests
