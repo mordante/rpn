@@ -17,7 +17,9 @@ add_module(calculator.value value.cpp)
 add_dependencies(calculator.model.pcm
 	calculator.value.pcm
 )
+add_dependencies(calculator.controller.pcm
+	calculator.model.pcm
+)
 add_dependencies(calculator
 	calculator.controller.pcm
-	calculator.model.pcm
 )
