@@ -21,7 +21,11 @@ add_dependencies(calculator.model.pcm
 add_dependencies(calculator.controller.pcm
 	calculator.model.pcm
 )
+add_dependencies(calculator.pcm
+	calculator.value.pcm
+	calculator.model.pcm
+	calculator.controller.pcm
+)
 add_dependencies(calculator
 	calculator.pcm
-	calculator.controller.pcm
 )
