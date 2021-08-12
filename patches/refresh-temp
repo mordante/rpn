@@ -1,0 +1,215 @@
+Bottom: 223adc9c5e5da688b302ed9a24805a1b8f8090e5
+Top:    426dd7901d020a286542b7fe534e24c16c2ffcdc
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-12 20:31:32 +0200
+
+Refresh of toy-with-a-gui
+
+---
+
+diff --git a/cmake/ExternalProjects.cmake b/cmake/ExternalProjects.cmake
+index a32750c..fe01d97 100644
+--- a/cmake/ExternalProjects.cmake
++++ b/cmake/ExternalProjects.cmake
+@@ -1,5 +1,17 @@
+ include(FetchContent)
+ 
++FetchContent_Declare(
++  fltk
++  GIT_REPOSITORY https://github.com/fltk/fltk
++  GIT_TAG        release-1.3.7
++)
++FetchContent_GetProperties(fltk)
++if(NOT fltk_POPULATED)
++  FetchContent_Populate(fltk)
++  set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
++  add_subdirectory(${fltk_SOURCE_DIR} ${fltk_BINARY_DIR})
++endif()
++
+ FetchContent_Declare(
+   googletest
+   GIT_REPOSITORY https://github.com/google/googletest.git
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 152c21c..51058b6 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,4 +1,5 @@
+ add_subdirectory(modules)
++
+ add_executable(rpn
+ 	rpn.cpp
+ )
+@@ -6,7 +7,15 @@ target_compile_options(rpn
+ 	PRIVATE
+ 		${module_compile_options}
+ )
++# These aren't properly set by fltk itself.
++target_include_directories(rpn
++	PRIVATE
++		${fltk_SOURCE_DIR} # Default include directory
++		${fltk_BINARY_DIR} # Contains the build information header
++)
+ target_link_libraries(rpn
+ 	PRIVATE
++		calculator
++		fltk
+ 		c++
+ )
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index e36404c..4bca16e 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -11,10 +11,12 @@ target_link_libraries(calculator
+ 	PRIVATE
+ 		math
+ )
++add_module(calculator calculator.cpp)
+ add_module(calculator.controller controller.cpp)
+ add_module(calculator.model model.cpp)
+ add_module(calculator.value value.cpp)
+ add_dependencies(calculator
++	calculator.pcm
+ 	calculator.controller.pcm
+ 	calculator.model.pcm
+ 	calculator.value.pcm
+diff --git a/src/modules/calculator/calculator.cpp b/src/modules/calculator/calculator.cpp
+new file mode 100644
+index 0000000..50a05d6
+--- /dev/null
++++ b/src/modules/calculator/calculator.cpp
+@@ -0,0 +1,19 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++export module calculator;
++
++export import calculator.controller;
++export import calculator.model;
++export import calculator.value;
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index c799329..79e7f42 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -18,7 +18,7 @@ export import calculator.value;
+ 
+ import<string>;
+ import<string_view>;
+-import<vector>;
++export import<vector>;
+ 
+ namespace calculator {
+ 
+diff --git a/src/rpn.cpp b/src/rpn.cpp
+index 9b5a646..7de069c 100644
+--- a/src/rpn.cpp
++++ b/src/rpn.cpp
+@@ -12,6 +12,96 @@
+  * See the COPYING file for more details.
+  */
+ 
+-#include <format>
++import calculator;
+ 
+-int main(int, const char **) {}
++#include <FL/Fl.H>
++#include <FL/Fl_Box.H>
++#include <FL/Fl_Browser.H>
++#include <FL/Fl_Window.H>
++#include <iostream>
++
++class twindow final : public Fl_Window {
++public:
++  twindow() : Fl_Window(310, 265, "RPN") {
++    diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
++    diagnostics_.box(FL_DOWN_BOX);
++
++    input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
++    input_.box(FL_DOWN_BOX);
++  }
++
++private:
++  int handle(int event) override {
++    switch (event) {
++    case FL_KEYDOWN:
++    case FL_PASTE:
++      process_input_event();
++      update_ui();
++      return 1;
++    }
++    return 0;
++  }
++
++  /** Process the user provided input. */
++  void process_input_event();
++
++  /** Updates the UI after changes need to be processed. */
++  void update_ui();
++
++  // *** Widgets ***
++
++  Fl_Box diagnostics_{5, 5, 300, 20};
++  Fl_Browser stack_{5, 30, 300, 200};
++  Fl_Box input_{5, 235, 300, 20};
++
++  // *** Model & controller ***
++
++  calculator::tmodel model_;
++  calculator::tcontroller controller_{model_};
++};
++
++void twindow::process_input_event() {
++  // *** Handle special keys ***
++  switch (Fl::event_key()) {
++  case FL_Enter:
++  case FL_KP_Enter:
++    controller_.push();
++    return;
++  }
++
++  const std::string text = Fl::event_text();
++  // *** Handle special values ***
++  if (text.size() == 1) {
++    switch (text[0]) {
++    case '+':
++      controller_.math_add();
++      return;
++    }
++  }
++
++  // *** Add the text to the input ***
++  controller_.append(text);
++}
++
++/** @return The FLTK right-justified formatted output of @p value. */
++static std::string format(const calculator::tvalue &value) {
++  return "@r" + value.format();
++}
++
++void twindow::update_ui() {
++  diagnostics_.label(model_.diagnostics_get().c_str());
++
++  stack_.clear();
++  for (const auto &value : model_.stack())
++    stack_.insert(std::numeric_limits<int>::max(), format(value).c_str());
++  stack_.bottomline(stack_.size());
++
++  input_.label(model_.input_get().c_str());
++}
++
++int main(int argc, char **argv) {
++  twindow window;
++  window.end();
++  window.show(argc, argv);
++  return Fl::run();
++}

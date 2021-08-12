@@ -1,12 +1,13 @@
 Version: 1
-Previous: 4b9c39ae574b5fb64582881a9b3759a28469ae55
-Head: ef8674bfa1b94bedc4be5ab1e9222b17cef2a67d
+Previous: 498517445f4a5efcbf74fced4baf9cb9ebccdd97
+Head: d57478113e463852b487995587b332e9f0d5cf8e
 Applied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
   add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
   add-a-calculator-model-object: 1a4c8de936998eb73c78ef1562b687f680a176f8
   add-a-calculator-controller: 161c3dcf698154cafb6363cc223a8fc734bfafbd
   toy-with-a-gui: ef8674bfa1b94bedc4be5ab1e9222b17cef2a67d
+  refresh-temp: d57478113e463852b487995587b332e9f0d5cf8e
 Unapplied:
   implement-the-basic-arithmetic: 17a36a4f8e615d9c36628886eb5fe1c03567846e
   implement-input-prefixes: bc89055782622b90ea1db6c357d7fa315eabbcae
