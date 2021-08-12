@@ -29,9 +29,3 @@ add_dependencies(calculator.pcm
 add_dependencies(calculator
 	calculator.pcm
 )
-add_dependencies(calculator.pcm
-	calculator.controller.pcm
-)
-add_dependencies(calculator
-	calculator.pcm
-)
