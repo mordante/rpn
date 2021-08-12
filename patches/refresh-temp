@@ -1,0 +1,26 @@
+Bottom: dc1031801f16408851d1b9c73813c43edf775f4a
+Top:    ca5ff2868910413806260127e81ab25a69ce2a0a
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-12 20:48:58 +0200
+
+Refresh of toy-with-a-gui
+
+---
+
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index 4050624..16ce5a7 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -21,7 +21,11 @@ add_dependencies(calculator.model.pcm
+ add_dependencies(calculator.controller.pcm
+ 	calculator.model.pcm
+ )
++add_dependencies(calculator.pcm
++	calculator.value.pcm
++	calculator.model.pcm
++	calculator.controller.pcm
++)
+ add_dependencies(calculator
+ 	calculator.pcm
+-	calculator.controller.pcm
+ )
