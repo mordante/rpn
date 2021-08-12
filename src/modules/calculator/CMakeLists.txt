@@ -8,7 +8,9 @@ target_compile_options(calculator
 )
 add_module(calculator.model model.cpp)
 add_module(calculator.value value.cpp)
+add_dependencies(calculator.model.pcm
+	calculator.value.pcm
+)
 add_dependencies(calculator
 	calculator.model.pcm
-	calculator.value.pcm
 )
