@@ -1,6 +1,6 @@
 Version: 1
-Previous: e7267ac3ac0fbb65a499b16b0145efdbd840290a
-Head: 4d0983bc57b57b5eec24a85defe8b9a9b19d5739
+Previous: 412aabcfcba54d6f728aa1749c932306b73391b6
+Head: 2fc68e26aa262e56e9fc48ba73f413a9b25ffe21
 Applied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
   add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
@@ -11,7 +11,6 @@ Applied:
   implement-input-prefixes: f8ffc7ac1f40fcb7ec08e5e0ca0a2c44d58fc070
   implement-the-display-base: 4a0730e7695306aacefe82b9b00dc4f17f16e8b5
   playing-with-json: 81070a503f13a634b7a9b3014e41e62e252ce3d0
-  add-a-coverage-validation: 6a6c65719a1448dec732a247cb1acf14e132f8ec
-  refresh-temp: 4d0983bc57b57b5eec24a85defe8b9a9b19d5739
+  add-a-coverage-validation: 2fc68e26aa262e56e9fc48ba73f413a9b25ffe21
 Unapplied:
 Hidden:
