@@ -1,0 +1,21 @@
+Bottom: ca5ff2868910413806260127e81ab25a69ce2a0a
+Top:    af22931162739b6ef27bde9ea60cb16cfbb13900
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-13 12:42:34 +0200
+
+Refresh of toy-with-a-gui
+
+---
+
+diff --git a/cmake/ExternalProjects.cmake b/cmake/ExternalProjects.cmake
+index fe01d97..9d62ae2 100644
+--- a/cmake/ExternalProjects.cmake
++++ b/cmake/ExternalProjects.cmake
+@@ -8,7 +8,7 @@ FetchContent_Declare(
+ FetchContent_GetProperties(fltk)
+ if(NOT fltk_POPULATED)
+   FetchContent_Populate(fltk)
+-  set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
++  set(FLTK_BUILD_TEST OFF CACHE BOOL "" FORCE)
+   add_subdirectory(${fltk_SOURCE_DIR} ${fltk_BINARY_DIR})
+ endif()
