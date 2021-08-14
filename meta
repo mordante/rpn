@@ -1,8 +1,9 @@
 Version: 1
-Previous: 4f6b6779504a5ef3354d3b2d58691148d1d0ab93
-Head: b27ba787c8e2707b958f44292e62ecfd1fd67abc
+Previous: 9d575dc63aaac5c1aa1ea9cd40dc01a5d50a2785
+Head: 0d7aedf866ade20d6e170b55fc5061bd22bdf537
 Applied:
   add-a-calculator-value-object: b27ba787c8e2707b958f44292e62ecfd1fd67abc
+  refresh-temp: 0d7aedf866ade20d6e170b55fc5061bd22bdf537
 Unapplied:
   implement-the-basic-arithmetic: 6155db2f0ad4053cd277756ed79e61688a721a67
   implement-input-prefixes: 2602ac42873e12741afc9bcf685eeeda4f85ff77
