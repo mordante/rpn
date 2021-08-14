@@ -1,0 +1,53 @@
+Bottom: 94a04020cb38c5549a09c4486652949bcfcdb733
+Top:    42ca3ead6677b544ea2c1f680d460bf2792a1abe
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2021-08-14 15:14:49 +0200
+
+Refresh of add-a-calculator-model-object
+
+---
+
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index c28dd37..4bc9837 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -7,5 +7,11 @@ target_compile_options(calculator
+ 	PRIVATE
+ 		${module_compile_options}
+ )
++add_module(calculator.model model.cpp)
+ add_module(calculator.value value.cpp)
+-add_dependencies(calculator calculator.value.pcm)
++add_dependencies(calculator.model.pcm
++	calculator.value.pcm
++)
++add_dependencies(calculator
++	calculator.model.pcm
++)
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index 79e7f42..c799329 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -18,7 +18,7 @@ export import calculator.value;
+ 
+ import<string>;
+ import<string_view>;
+-export import<vector>;
++import<vector>;
+ 
+ namespace calculator {
+ 
+diff --git a/src/modules/calculator/value.cpp b/src/modules/calculator/value.cpp
+index 0411824..667e40b 100644
+--- a/src/modules/calculator/value.cpp
++++ b/src/modules/calculator/value.cpp
+@@ -45,6 +45,9 @@ public:
+ 
+ private:
+   int64_t value_{0};
++
++  /** Only equality comparable is part of the contract. */
++  friend auto operator<=>(const tvalue &, const tvalue &) = default;
+ };
+ 
+ } // namespace calculator
