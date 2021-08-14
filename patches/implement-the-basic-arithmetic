@@ -1,5 +1,5 @@
 Bottom: da4944c4b40dd9d00b36b0a8629b7b6fa0771b3e
-Top:    5fe583499abc53626c64a2155431814621e96499
+Top:    67d12d5c3c600a05d60992a81b960f5724af81a8
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-07 16:43:08 +0200
 
@@ -464,20 +464,3 @@ index 54a2858..e97134e 100644
 +  EXPECT_EQ(math::div(4, 3), 1);
 +  EXPECT_EQ(math::div(3, 4), 0);
 +}
-diff --git a/utils/check_coverage.py b/utils/check_coverage.py
-index 233f7d8..e5e1eb6 100755
---- a/utils/check_coverage.py
-+++ b/utils/check_coverage.py
-@@ -32,6 +32,12 @@ not_covered = {
-             'branches' : 1,
-             'regions': 2,
-         },
-+    path + '/src/modules/calculator/model.cpp' :
-+        {
-+            'lines' : 0,
-+            'branches' : 3,
-+            'regions': 0,
-+        },
- }
- 
- file = open(path + '/build/ccov/tests.json')

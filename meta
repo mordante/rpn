@@ -1,9 +1,8 @@
 Version: 1
-Previous: acff72e0dc1975815bc8b437d6ca30664023d3a5
-Head: 9f2ceb15c056c5ca13679669785aa1f3435241d8
+Previous: c2bf54ca5801a92597f72b4aa9548252f792f972
+Head: bf2c84c4bc9bb1dab8890fcb7f8223a6bc7b74e7
 Applied:
-  implement-the-basic-arithmetic: 696ff07f77413c5267dfacd3a57555d9d1c1d88b
-  refresh-temp: 9f2ceb15c056c5ca13679669785aa1f3435241d8
+  implement-the-basic-arithmetic: bf2c84c4bc9bb1dab8890fcb7f8223a6bc7b74e7
 Unapplied:
   implement-input-prefixes: 16060eeed155c949c1aa416059e1df954aad8326
   implement-the-display-base: 693483184b627c7e421420da481430d9f57c5a6d
