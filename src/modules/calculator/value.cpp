@@ -45,9 +45,6 @@ public:
 
 private:
   int64_t value_{0};
-
-  /** Only equality comparable is part of the contract. */
-  friend auto operator<=>(const tvalue &, const tvalue &) = default;
 };
 
 } // namespace calculator
