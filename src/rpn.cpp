@@ -105,6 +105,14 @@ void twindow::process_input_event() {
     case '~':
       controller_.math_complement();
       return;
+
+    case '<':
+      controller_.math_shl();
+      return;
+
+    case '>':
+      controller_.math_shr();
+      return;
     }
   }
 

@@ -72,3 +72,15 @@ TEST(math, bit_complement) {
   EXPECT_EQ(math::bit_complement(2), ~2);
   EXPECT_EQ(math::bit_complement(-2), ~-2);
 }
+
+TEST(math, shl) {
+  EXPECT_EQ(math::shl(0, 32), 0);
+  EXPECT_EQ(math::shl(1, 2), 0b100);
+  EXPECT_EQ(math::shl(0b1010, 3), 0b1010000);
+}
+
+TEST(math, shr) {
+  EXPECT_EQ(math::shr(0xffff, 32), 0);
+  EXPECT_EQ(math::shr(2, 1), 0b1);
+  EXPECT_EQ(math::shr(0b1010, 3), 0b1);
+}

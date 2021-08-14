@@ -8,6 +8,8 @@ add_executable(tests
 	calculator/controller/math_or.cpp
 	calculator/controller/math_xor.cpp
 	calculator/controller/math_complement.cpp
+	calculator/controller/math_shl.cpp
+	calculator/controller/math_shr.cpp
 	calculator/model.cpp
 	calculator/value.cpp
 	format_error.cpp

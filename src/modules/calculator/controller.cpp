@@ -91,6 +91,12 @@ public:
   /** Calculates @ref math_unary_operation bitwise complement. */
   void math_complement() noexcept;
 
+  /** Calculates @ref math_binary_operation bitwise shl. */
+  void math_shl() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise shr. */
+  void math_shr() noexcept;
+
 private:
   void push(std::string_view input);
 
@@ -185,6 +191,8 @@ void tcontroller::math_xor() noexcept { math_binary_operation(math::bit_xor); }
 void tcontroller::math_complement() noexcept {
   math_unary_operation(math::bit_complement);
 }
+void tcontroller::math_shl() noexcept { math_binary_operation(math::shl); }
+void tcontroller::math_shr() noexcept { math_binary_operation(math::shr); }
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())
