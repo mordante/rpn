@@ -12,6 +12,7 @@ function(add_module name)
                 -std=c++20
                 -stdlib=libc++
                 -fmodules
+				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
                 -c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN}
                 -Xclang -emit-module-interface
