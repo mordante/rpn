@@ -1,5 +1,5 @@
 Bottom: 3c3f0f8a447e86b0bbd6e61d3ab5e43a37ac7ce0
-Top:    af22931162739b6ef27bde9ea60cb16cfbb13900
+Top:    3c3f0f8a447e86b0bbd6e61d3ab5e43a37ac7ce0
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-14 15:18:12 +0200
 
@@ -9,13 +9,4 @@ This object mainly lives on the stack of the calculator.
 
 ---
 
-diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 2f61c76..51058b6 100644
---- a/src/CMakeLists.txt
-+++ b/src/CMakeLists.txt
-@@ -1,4 +1,5 @@
- add_subdirectory(modules)
-+
- add_executable(rpn
- 	rpn.cpp
- )
+
