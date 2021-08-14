@@ -1,11 +1,12 @@
 Version: 1
-Previous: 8cb07f05c0e61c5e0da4de19d26818345de3d3a9
-Head: 453483d10fe7662d5bda75b82ef0f61dba0ab033
+Previous: 16895513dc7beec1ed377117a2205ea801aa92ec
+Head: 88180b6a5676e756891de33372ef3758f8533e0d
 Applied:
   implement-the-basic-arithmetic: 131e62d7adbaae6696c81004535c0c2150572e13
   implement-input-prefixes: 16c3f306529bd4508e965c05ae3ed4145f840c9d
   implement-the-display-base: 6ffab105a3a5af8f44d290e3b5c918927bed1a95
   playing-with-json: 453483d10fe7662d5bda75b82ef0f61dba0ab033
+  refresh-temp: 88180b6a5676e756891de33372ef3758f8533e0d
 Unapplied:
   add-a-coverage-validation: e9e873dfda096589d27e80fe557afeaac86d720d
 Hidden:
