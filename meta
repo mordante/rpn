@@ -1,12 +1,9 @@
 Version: 1
-Previous: 6fa3d5b0c7fc5b454e7e1ea02aae58ddd2f00da3
-Head: 06fc975c4a2f2f844b8a808fe64688a660cbb294
+Previous: 4f6b6779504a5ef3354d3b2d58691148d1d0ab93
+Head: b27ba787c8e2707b958f44292e62ecfd1fd67abc
 Applied:
-  add-a-calculator-value-object: 06fc975c4a2f2f844b8a808fe64688a660cbb294
+  add-a-calculator-value-object: b27ba787c8e2707b958f44292e62ecfd1fd67abc
 Unapplied:
-  add-a-calculator-model-object: b84b3103a7fa3a6224d19cbf5a000c3dfdb815fc
-  add-a-calculator-controller: bc96d9139278c554e2f839a9637720844732d884
-  add-an-initial-gui: 4f4c60d5fb08be6b86832988ae96d9acefa07ad2
   implement-the-basic-arithmetic: 6155db2f0ad4053cd277756ed79e61688a721a67
   implement-input-prefixes: 2602ac42873e12741afc9bcf685eeeda4f85ff77
   implement-the-display-base: 86610ef971fb45a1e623380d0b6a432c7c68b314
