@@ -1,5 +1,5 @@
 Bottom: eceeb7f1fc53501eace7bf8f7931110882a9406b
-Top:    cf778b78b35c23cde722678972976d10047c1c06
+Top:    6c081c25aabbcbf36a2b3fd4ad7fef85130c699b
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2021-08-08 09:03:16 +0200
 
@@ -9,10 +9,10 @@ playing with json...
 ---
 
 diff --git a/cmake/CodeCoverage.cmake b/cmake/CodeCoverage.cmake
-index 8d98715..839c8a8 100644
+index 8d98715..e3437ec 100644
 --- a/cmake/CodeCoverage.cmake
 +++ b/cmake/CodeCoverage.cmake
-@@ -200,6 +200,7 @@ endif()
+@@ -200,9 +200,11 @@ endif()
  # ccov-report : Generates HTML code coverage report for every target added with 'AUTO' parameter.
  # ccov-${TARGET_NAME} : Generates HTML code coverage report.
  # ccov-report-${TARGET_NAME} : Prints to command line summary per-file coverage information.
@@ -20,7 +20,11 @@ index 8d98715..839c8a8 100644
  # ccov-show-${TARGET_NAME} : Prints to command line detailed per-line coverage information.
  # ccov-all : Generates HTML code coverage report, merging every target added with 'ALL' parameter into a single detailed report.
  # ccov-all-report : Prints summary per-file coverage information for every target added with ALL' parameter to the command line.
-@@ -362,6 +363,17 @@ function(target_code_coverage TARGET_NAME)
++# ccov-all-export : Exports the coverage report to a JSON file.
+ #
+ # Required:
+ # TARGET_NAME - Name of the target to generate code coverage for.
+@@ -362,6 +364,17 @@ function(target_code_coverage TARGET_NAME)
              ${EXCLUDE_REGEX}
            DEPENDS ccov-processing-${target_code_coverage_COVERAGE_TARGET_NAME})
  
