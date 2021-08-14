@@ -1,9 +1,9 @@
 Version: 1
-Previous: ec3cd541ab54d1831b922a235c1b8ce0bf9a2e97
-Head: 16060eeed155c949c1aa416059e1df954aad8326
+Previous: 616e4da9ba73687dfe24feed7b166653cf0767ad
+Head: 9d01728b408d9f45bed7f71b3fcb173d263dd5a9
 Applied:
   implement-the-basic-arithmetic: bf2c84c4bc9bb1dab8890fcb7f8223a6bc7b74e7
   implement-input-prefixes: 16060eeed155c949c1aa416059e1df954aad8326
+  implement-the-display-base: 9d01728b408d9f45bed7f71b3fcb173d263dd5a9
 Unapplied:
-  implement-the-display-base: 693483184b627c7e421420da481430d9f57c5a6d
 Hidden:
