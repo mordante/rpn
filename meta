@@ -1,10 +1,9 @@
 Version: 1
-Previous: ad36f4930a41913814910efedfb362e9eacc674c
-Head: 1e176047f12fc1d9afd921f0ed84ca82106fbc44
+Previous: 9f7a884a7cc93fa2f72506a7e865d7dc31d45ef6
+Head: a75b9f6ae766d634896b98e9be12433165ba0d7a
 Applied:
   improve-the-add_module-cmake: b63f8f98ce925cedec8549eda8431737ae6a01aa
-  add-a-calculator-value-object: 3a33791b86793dfc8be6cbd56aa5d3584aeea557
-  refresh-temp: 1e176047f12fc1d9afd921f0ed84ca82106fbc44
+  add-a-calculator-value-object: a75b9f6ae766d634896b98e9be12433165ba0d7a
 Unapplied:
   add-a-calculator-model-object: bff51a4e0dfeb13bd90a8900c9b0d037a147fb02
   add-a-calculator-controller: d18c3155fd4690416ffe6c699ea80092cceb80e4
