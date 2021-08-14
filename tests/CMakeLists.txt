@@ -4,6 +4,10 @@ add_executable(tests
 	calculator/controller/math_sub.cpp
 	calculator/controller/math_mul.cpp
 	calculator/controller/math_div.cpp
+	calculator/controller/math_and.cpp
+	calculator/controller/math_or.cpp
+	calculator/controller/math_xor.cpp
+	calculator/controller/math_complement.cpp
 	calculator/model.cpp
 	calculator/value.cpp
 	format_error.cpp

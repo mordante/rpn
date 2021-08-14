@@ -48,3 +48,27 @@ TEST(math, div) {
   EXPECT_EQ(math::div(4, 3), 1);
   EXPECT_EQ(math::div(3, 4), 0);
 }
+
+TEST(math, bit_and) {
+  EXPECT_EQ(math::bit_and(0, 1), 0);
+  EXPECT_EQ(math::bit_and(2, 2), 2);
+  EXPECT_EQ(math::bit_and(2, 3), 2);
+}
+
+TEST(math, bit_or) {
+  EXPECT_EQ(math::bit_or(0, 1), 1);
+  EXPECT_EQ(math::bit_or(2, 2), 2);
+  EXPECT_EQ(math::bit_or(2, 3), 3);
+}
+
+TEST(math, bit_xor) {
+  EXPECT_EQ(math::bit_xor(0, 1), 1);
+  EXPECT_EQ(math::bit_xor(2, 2), 0);
+  EXPECT_EQ(math::bit_xor(2, 3), 1);
+}
+
+TEST(math, bit_complement) {
+  EXPECT_EQ(math::bit_complement(0), ~0);
+  EXPECT_EQ(math::bit_complement(2), ~2);
+  EXPECT_EQ(math::bit_complement(-2), ~-2);
+}

@@ -50,4 +50,24 @@ export namespace math {
   return lhs / rhs;
 }
 
+/*** Bitwise operations ***/
+
+/** @returns The value @p lhs and-ed with @p rhs. */
+[[nodiscard]] int64_t bit_and(int64_t lhs, int64_t rhs) noexcept {
+  return lhs & rhs;
+}
+
+/** @returns The value @p lhs or-ed with @p rhs. */
+[[nodiscard]] int64_t bit_or(int64_t lhs, int64_t rhs) noexcept {
+  return lhs | rhs;
+}
+
+/** @returns The value @p lhs xor-ed with @p rhs. */
+[[nodiscard]] int64_t bit_xor(int64_t lhs, int64_t rhs) noexcept {
+  return lhs ^ rhs;
+}
+
+/** @returns The bitwise complement of @p value. */
+[[nodiscard]] int64_t bit_complement(int64_t value) noexcept { return ~value; }
+
 } // namespace math

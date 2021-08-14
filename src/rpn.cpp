@@ -88,6 +88,23 @@ void twindow::process_input_event() {
     case '/':
       controller_.math_div();
       return;
+
+      /*** Bitwise ***/
+    case '&':
+      controller_.math_and();
+      return;
+
+    case '|':
+      controller_.math_or();
+      return;
+
+    case '^':
+      controller_.math_xor();
+      return;
+
+    case '~':
+      controller_.math_complement();
+      return;
     }
   }
 
