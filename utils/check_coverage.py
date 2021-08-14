@@ -28,7 +28,7 @@ path = os.path.abspath(path)
 not_covered = {
     path + '/src/modules/calculator/controller.cpp' :
         {
-            'lines' : 0,
+            'lines' : 4,
             'branches' : 1,
             'regions': 2,
         },
@@ -42,7 +42,7 @@ passed = True
 for file in coverage["data"][0]["files"] :
     filename = file['filename']
     # There's no notcovered for lines.
-    lines = file['summary']['lines']['covered'] - file['summary']['lines']['covered']
+    lines = file['summary']['lines']['count'] - file['summary']['lines']['covered']
     branches = file['summary']['branches']['notcovered']
     regions = file['summary']['regions']['notcovered']
     expected = not_covered.get(filename)
