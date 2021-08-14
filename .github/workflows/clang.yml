@@ -26,4 +26,5 @@ jobs:
           cd build
           cmake -DCMAKE_CXX_COMPILER=clang++-14 -DLLVM_COV_PATH=/usr/bin/llvm-cov-14 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-14 -DCODE_COVERAGE=ON ..
           make VERBOSE=1
-          make ccov-report-tests
+          make ccov-export-tests
+          ../utils/check_coverage.py
