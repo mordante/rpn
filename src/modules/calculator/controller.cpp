@@ -244,6 +244,11 @@ void tcontroller::handle_keyboard_input_control(char key) {
   case 'h':
     model_.base_set(tbase::hexadecimal);
     break;
+
+	/*** Miscellaneous ***/
+  case 'n':
+    math_unary_operation(math::negate);
+    break;
   }
 }
 

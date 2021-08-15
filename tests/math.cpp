@@ -49,6 +49,12 @@ TEST(math, div) {
   EXPECT_EQ(math::div(3, 4), 0);
 }
 
+TEST(math, negate) {
+  EXPECT_EQ(math::negate(-1), 1);
+  EXPECT_EQ(math::negate(0), 0);
+  EXPECT_EQ(math::negate(1), -1);
+}
+
 TEST(math, bit_and) {
   EXPECT_EQ(math::bit_and(0, 1), 0);
   EXPECT_EQ(math::bit_and(2, 2), 2);
