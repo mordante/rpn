@@ -28,9 +28,9 @@ path = os.path.abspath(path)
 not_covered = {
     path + '/src/modules/calculator/controller.cpp' :
         {
-            'lines' : 6,
+            'lines' : 4,
             'branches' : 3,
-            'regions': 3,
+            'regions': 2,
         },
 }
 
