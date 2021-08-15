@@ -50,6 +50,9 @@ export namespace math {
   return lhs / rhs;
 }
 
+/** @returns The negate value of @p value. */
+[[nodiscard]] int64_t negate(int64_t value) noexcept { return -value; }
+
 /*** Bitwise operations ***/
 
 /** @returns The value @p lhs and-ed with @p rhs. */
