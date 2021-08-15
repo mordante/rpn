@@ -25,6 +25,24 @@ import<string_view>;
 namespace calculator {
 
 /**
+ * The special keys on the keyboard.
+ *
+ * Most keys are processed using their ASCII value. This makes it easier to
+ * handle the two ways to enter a + character on the keyboard.
+ *
+ * @note This set only contains the keys the controller is interested in. For
+ * example:
+ * - there's no control key, that is already part of @ref tmodifier,
+ * - there's only on enter, since both enters on the keyboard are treated the
+ *   same.
+ * This means adding functionality may add new keys.
+ */
+export enum class tkey {
+  /* Sorted list */
+  enter
+};
+
+/**
  * The controller of the calculator.
  *
  * For now a very basic version of this class.
@@ -46,56 +64,18 @@ public:
 
   // *** Operations ***
 
+  /** Handles the keyboard input for special keys. */
+  void handle_keyboard_input(tkey key) noexcept;
+
+  /** Handles the keyboard input for normal keys. */
+  void handle_keyboard_input(char key) noexcept;
+
   /**
    * Appends data to the input.
    *
    * The function doesn't modify the diagnostics.
    */
   void append(std::string_view data) noexcept;
-
-  /**
-   * Pushes the current input to the stack.
-   *
-   * Upon success the diagnostics are cleared, else they contain the last error.
-   */
-  void push() noexcept;
-
-  /** Calculates @ref math_binary_operation addition. */
-  void math_add() noexcept;
-
-  /** Calculates @ref math_binary_operation subraction. */
-  void math_sub() noexcept;
-
-  /** Calculates @ref math_binary_operation multiplication. */
-  void math_mul() noexcept;
-
-  /**
-   * Calculates @ref math_binary_operation division.
-   *
-   * @note The result is always an integer value instead of a floating-point
-   * value.
-   *
-   * @todo Guard against division by zero.
-   */
-  void math_div() noexcept;
-
-  /** Calculates @ref math_binary_operation bitwise and. */
-  void math_and() noexcept;
-
-  /** Calculates @ref math_binary_operation bitwise or. */
-  void math_or() noexcept;
-
-  /** Calculates @ref math_binary_operation bitwise xor. */
-  void math_xor() noexcept;
-
-  /** Calculates @ref math_unary_operation bitwise complement. */
-  void math_complement() noexcept;
-
-  /** Calculates @ref math_binary_operation bitwise shl. */
-  void math_shl() noexcept;
-
-  /** Calculates @ref math_binary_operation bitwise shr. */
-  void math_shr() noexcept;
 
 private:
   void push(std::string_view input);
@@ -112,9 +92,10 @@ private:
    * When the input isn't empty equivalent @em op @a input
    * else equivalent @em op @c pop()
    *
-   * Upon success the diagnostics are cleared, else they contain the last error.
+   * Upon success the diagnostics are cleared, else passes the exception thrown
+   * to its parent.
    */
-  void math_unary_operation(tunary_operation operation) noexcept;
+  void math_unary_operation(tunary_operation operation);
 
   /**
    * Calculates the binary operation on two values.
@@ -122,13 +103,89 @@ private:
    * When the input isn't empty equivalent @c pop() @em op @a input
    * else equivalent @c pop() @em op @c pop()
    *
-   * Upon success the diagnostics are cleared, else they contain the last error.
+   * Upon success the diagnostics are cleared, else passes the exception thrown
+   * to its parent.
    */
-  void math_binary_operation(tbinary_operation operation) noexcept;
+  void math_binary_operation(tbinary_operation operation);
 
   void diagnostics_set(const std::exception &e);
+
+  /**
+   * Pushes the current input to the stack.
+   *
+   * Upon success the diagnostics are cleared, else passes the exception thrown
+   * to its parent.
+   */
+  void push();
+
   tmodel &model_;
 };
+
+void tcontroller::handle_keyboard_input(tkey key) noexcept {
+  try {
+    switch (key) {
+    case tkey::enter:
+      push();
+    }
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
+
+void tcontroller::handle_keyboard_input(char key) noexcept {
+  try {
+    switch (key) {
+      /*** Basic arithmetic operations ***/
+    case '+':
+      math_binary_operation(math::add);
+      break;
+
+    case '-':
+      math_binary_operation(math::sub);
+      break;
+
+    case '*':
+      math_binary_operation(math::mul);
+      break;
+
+    case '/':
+      math_binary_operation(math::div);
+      break;
+
+      /*** Bitwise operations ***/
+    case '&':
+      math_binary_operation(math::bit_and);
+      break;
+
+    case '|':
+      math_binary_operation(math::bit_or);
+      break;
+
+    case '^':
+      math_binary_operation(math::bit_xor);
+      break;
+
+    case '~':
+      math_unary_operation(math::bit_complement);
+      break;
+
+      /*** Bitwise shifts ***/
+    case '<':
+      math_binary_operation(math::shl);
+      break;
+
+    case '>':
+      math_binary_operation(math::shr);
+      break;
+
+      /*** Others ***/
+    default:
+      model_.input_append(key);
+    }
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
 
 void tcontroller::append(std::string_view data) noexcept {
   try {
@@ -138,61 +195,30 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
-void tcontroller::push() noexcept {
-  try {
-    push(model_.input_steal());
-    model_.diagnostics_clear();
-  } catch (const std::exception &e) {
-    diagnostics_set(e);
-  }
+void tcontroller::math_binary_operation(tbinary_operation operation) {
+  if (const std::string input = model_.input_steal(); !input.empty())
+    push(input);
+
+  if (model_.stack_size() < 2)
+    throw std::out_of_range("Stack doesn't contain two elements");
+
+  const tvalue rhs = model_.stack_pop();
+  const tvalue lhs = model_.stack_pop();
+  model_.stack_push(operation(lhs.get(), rhs.get()));
+  model_.diagnostics_clear();
 }
 
-void tcontroller::math_binary_operation(tbinary_operation operation) noexcept {
-  try {
-    if (const std::string input = model_.input_steal(); !input.empty())
-      push(input);
+void tcontroller::math_unary_operation(tunary_operation operation) {
+  if (const std::string input = model_.input_steal(); !input.empty())
+    push(input);
 
-    if (model_.stack_size() < 2)
-      throw std::out_of_range("Stack doesn't contain two elements");
+  if (model_.stack_empty())
+    throw std::out_of_range("Stack doesn't contain an element");
 
-    const tvalue rhs = model_.stack_pop();
-    const tvalue lhs = model_.stack_pop();
-    model_.stack_push(operation(lhs.get(), rhs.get()));
-    model_.diagnostics_clear();
-  } catch (const std::exception &e) {
-    diagnostics_set(e);
-  }
+  const tvalue value = model_.stack_pop();
+  model_.stack_push(operation(value.get()));
+  model_.diagnostics_clear();
 }
-
-void tcontroller::math_unary_operation(tunary_operation operation) noexcept {
-  try {
-    if (const std::string input = model_.input_steal(); !input.empty())
-      push(input);
-
-    if (model_.stack_empty())
-      throw std::out_of_range("Stack doesn't contain an element");
-
-    const tvalue value = model_.stack_pop();
-    model_.stack_push(operation(value.get()));
-    model_.diagnostics_clear();
-  } catch (const std::exception &e) {
-    diagnostics_set(e);
-  }
-}
-
-void tcontroller::math_add() noexcept { math_binary_operation(math::add); }
-void tcontroller::math_sub() noexcept { math_binary_operation(math::sub); }
-void tcontroller::math_mul() noexcept { math_binary_operation(math::mul); }
-void tcontroller::math_div() noexcept { math_binary_operation(math::div); }
-
-void tcontroller::math_and() noexcept { math_binary_operation(math::bit_and); }
-void tcontroller::math_or() noexcept { math_binary_operation(math::bit_or); }
-void tcontroller::math_xor() noexcept { math_binary_operation(math::bit_xor); }
-void tcontroller::math_complement() noexcept {
-  math_unary_operation(math::bit_complement);
-}
-void tcontroller::math_shl() noexcept { math_binary_operation(math::shl); }
-void tcontroller::math_shr() noexcept { math_binary_operation(math::shr); }
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())
@@ -243,4 +269,10 @@ void tcontroller::diagnostics_set(const std::exception &e) {
   model_.diagnostics_set(e.what());
 #endif
 }
+
+void tcontroller::push() {
+  push(model_.input_steal());
+  model_.diagnostics_clear();
+}
+
 } // namespace calculator

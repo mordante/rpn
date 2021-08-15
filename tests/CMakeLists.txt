@@ -1,15 +1,17 @@
 add_executable(tests
 	calculator/controller.cpp
-	calculator/controller/math_add.cpp
-	calculator/controller/math_sub.cpp
-	calculator/controller/math_mul.cpp
-	calculator/controller/math_div.cpp
-	calculator/controller/math_and.cpp
-	calculator/controller/math_or.cpp
-	calculator/controller/math_xor.cpp
-	calculator/controller/math_complement.cpp
-	calculator/controller/math_shl.cpp
-	calculator/controller/math_shr.cpp
+	calculator/controller/key_char_ampersand.cpp
+	calculator/controller/key_char_circumflex.cpp
+	calculator/controller/key_char_default.cpp
+	calculator/controller/key_char_forward_slash.cpp
+	calculator/controller/key_char_greater_than.cpp
+	calculator/controller/key_char_less_than.cpp
+	calculator/controller/key_char_minus.cpp
+	calculator/controller/key_char_pipe.cpp
+	calculator/controller/key_char_plus.cpp
+	calculator/controller/key_char_star.cpp
+	calculator/controller/key_char_tilde.cpp
+	calculator/controller/key_enter.cpp
 	calculator/model.cpp
 	calculator/value.cpp
 	format_error.cpp

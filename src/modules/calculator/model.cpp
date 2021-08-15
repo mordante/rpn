@@ -97,6 +97,7 @@ public:
    * pattern is that the user only append (and maybe later removes) input
    * there's no setter required.
    */
+  void input_append(char data) { input_.push_back(data); }
   void input_append(std::string_view data) { input_.append(data); }
 
   [[nodiscard]] const std::string &input_get() const noexcept { return input_; }

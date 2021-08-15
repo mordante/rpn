@@ -65,59 +65,27 @@ void twindow::process_input_event() {
   switch (Fl::event_key()) {
   case FL_Enter:
   case FL_KP_Enter:
-    controller_.push();
+    controller_.handle_keyboard_input(calculator::tkey::enter);
     return;
   }
 
   const std::string text = Fl::event_text();
-  // *** Handle special values ***
-  if (text.size() == 1) {
-    switch (text[0]) {
-    case '+':
-      controller_.math_add();
-      return;
+  switch (text.size()) {
+  case 0:
+    /* Do nothing */
+    break;
 
-    case '-':
-      controller_.math_sub();
-      return;
+  case 1:
+    // *** The normal characters ***
+    controller_.handle_keyboard_input(text[0]);
+    break;
 
-    case '*':
-      controller_.math_mul();
-      return;
+  default:
+    // *** Special strings ***
 
-    case '/':
-      controller_.math_div();
-      return;
-
-      /*** Bitwise ***/
-    case '&':
-      controller_.math_and();
-      return;
-
-    case '|':
-      controller_.math_or();
-      return;
-
-    case '^':
-      controller_.math_xor();
-      return;
-
-    case '~':
-      controller_.math_complement();
-      return;
-
-    case '<':
-      controller_.math_shl();
-      return;
-
-    case '>':
-      controller_.math_shr();
-      return;
-    }
+    // TODO Validate whether we should add them at all.
+    controller_.append(text);
   }
-
-  // *** Add the text to the input ***
-  controller_.append(text);
 }
 
 /** @return The FLTK right-justified formatted output of @p value. */

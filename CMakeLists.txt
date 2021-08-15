@@ -9,6 +9,7 @@ include(CodeCoverage)
 include(ExternalProjects)
 include(GoogleTest)
 
+# TODO Require CMake 3.20 to allow C++23.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
