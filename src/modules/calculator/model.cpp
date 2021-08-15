@@ -16,11 +16,16 @@ export module calculator.model;
 
 export import calculator.value;
 
+import<charconv>;
+import<format>;
 import<string>;
 import<string_view>;
 export import<vector>;
 
 namespace calculator {
+
+/** The supported bases in the calculator. */
+export enum class tbase { binary, octal, decimal, hexadecimal };
 
 /**
  * The model of the calculator.
@@ -46,8 +51,9 @@ public:
 
   [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
   [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
-  [[nodiscard]] const std::vector<tvalue> &stack() const noexcept {
-    return stack_;
+  [[nodiscard]] const std::vector<std::string> &stack() const noexcept {
+    synchronise_display();
+    return display_;
   }
 
   // *** Modifiers ***
@@ -68,7 +74,11 @@ public:
   // * Stack *
 
   /** Adds the @p value to the back of the stack. */
-  void stack_push(tvalue value) { stack_.emplace_back(std::move(value)); }
+  void stack_push(tvalue value) {
+    stack_.emplace_back(std::move(value));
+    display_.emplace_back();
+    dirty_ = true;
+  }
 
   /**
    * @returns The last element at the back of the stack.
@@ -102,6 +112,16 @@ public:
 
   [[nodiscard]] const std::string &input_get() const noexcept { return input_; }
 
+  // * Base *
+
+  void base_set(tbase base) {
+    base_ = base;
+    // clear the cached strings.
+    std::for_each(display_.begin(), display_.end(),
+                  [](std::string &string) { string.clear(); });
+    dirty_ = true;
+  }
+
 private:
   /** The execution issues to report to the user. */
   std::string diagnotics_{};
@@ -115,8 +135,31 @@ private:
    */
   std::vector<tvalue> stack_{};
 
+  /**
+   * The shadow stack with values rendered as string.
+   *
+   * The size always matches the size of @ref stack_. The display is a cache of
+   * the rendered value. When it contains an empty string it's contents are out
+   * of sync. When invalidating a cache entry the @ref dirty_ flag must be set.
+   */
+  mutable std::vector<std::string> display_{};
+
+  /** Is the display in sync with the values? */
+  mutable bool dirty_{false};
+
+  void synchronise_display() const;
+
+  [[nodiscard]] std::string format(const tvalue &value) const;
+
   /** The input buffer used to store the current editting session. */
   std::string input_{};
+
+  /**
+   * The base used to display the contents of the stack.
+   *
+   * @note The input is always base 10, unless the user enters a base prefix.
+   */
+  tbase base_{tbase::decimal};
 };
 
 tvalue tmodel::stack_pop() {
@@ -125,7 +168,87 @@ tvalue tmodel::stack_pop() {
 
   tvalue result = stack_.back();
   stack_.pop_back();
+  display_.pop_back();
   return result;
+}
+
+void tmodel::synchronise_display() const {
+  if (!dirty_)
+    return;
+
+  for (size_t i = 0; i < display_.size(); ++i)
+    if (display_[i].empty())
+      display_[i] = format(stack_[i]);
+
+  dirty_ = false;
+}
+
+[[nodiscard]] std::string tmodel::format(const tvalue &value) const {
+#if defined(__cpp_lib_format)
+  // All formats use the '@r' prefix, this uses the right alignment in FLTK.
+  switch (base_) {
+  case tbase::binary:
+    return std::format("@r{:#b}", value.get());
+  case tbase::octal:
+    return std::format("@r{:#o}", value.get());
+  case tbase::decimal:
+    return std::format("@r{}", value.get());
+  case tbase::hexadecimal:
+    return std::format("@r{:#x}", value.get());
+  }
+  __builtin_unreachable();
+#else
+  // Initialize with right alignment for FLTK.
+  std::string result = "@r";
+
+  switch (base_) {
+  case tbase::binary: {
+    int64_t v = value.get();
+    if (v < 0) {
+      result += '-';
+      // Note -v may not work properly. However std::format doesn't have this
+      // issue.
+      v = -v;
+    }
+    result += "0b";
+    char buffer[64];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
+    result.append(std::begin(buffer), ptr);
+  } break;
+  case tbase::octal: {
+    int64_t v = value.get();
+    if (v < 0) {
+      result += '-';
+      // Note -v may not work properly. However std::format doesn't have this
+      // issue.
+      v = -v;
+    }
+    if (v != 0)
+      result += "0";
+    char buffer[22];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
+    result.append(std::begin(buffer), ptr);
+  } break;
+  case tbase::decimal:
+    result += std::to_string(value.get());
+    break;
+
+  case tbase::hexadecimal: {
+    int64_t v = value.get();
+    if (v < 0) {
+      result += '-';
+      // Note -v may not work properly. However std::format doesn't have this
+      // issue.
+      v = -v;
+    }
+    result += "0x";
+    char buffer[8];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
+    result.append(std::begin(buffer), ptr);
+  } break;
+  }
+  return result;
+#endif
 }
 
 } // namespace calculator

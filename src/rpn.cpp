@@ -88,17 +88,12 @@ void twindow::process_input_event() {
   }
 }
 
-/** @return The FLTK right-justified formatted output of @p value. */
-static std::string format(const calculator::tvalue &value) {
-  return "@r" + value.format();
-}
-
 void twindow::update_ui() {
   diagnostics_.label(model_.diagnostics_get().c_str());
 
   stack_.clear();
   for (const auto &value : model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), format(value).c_str());
+    stack_.insert(std::numeric_limits<int>::max(), value.c_str());
   stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());
