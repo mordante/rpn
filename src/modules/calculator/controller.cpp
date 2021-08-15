@@ -212,7 +212,26 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   }
 }
 
-void tcontroller::handle_keyboard_input_control(char key) { (void)key; }
+void tcontroller::handle_keyboard_input_control(char key) {
+  switch (key) {
+    /*** Modify selected base ***/
+  case 'b':
+    model_.base_set(tbase::binary);
+    break;
+
+  case 'o':
+    model_.base_set(tbase::octal);
+    break;
+
+  case 'd':
+    model_.base_set(tbase::decimal);
+    break;
+
+  case 'h':
+    model_.base_set(tbase::hexadecimal);
+    break;
+  }
+}
 
 void tcontroller::append(std::string_view data) noexcept {
   try {
