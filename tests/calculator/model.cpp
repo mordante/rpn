@@ -76,8 +76,8 @@ TEST(model, stack_base_default) {
   model.stack_push(100);
   EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}, {"@r100"}}));
 
-  (void)model.stack_pop();
-  (void)model.stack_pop();
+  model.stack_drop();
+  model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
@@ -87,7 +87,7 @@ TEST(model, stack_base_2) {
   model.stack_push(42);
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0b101010"});
 
-  (void)model.stack_pop();
+  model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
@@ -97,7 +97,7 @@ TEST(model, stack_base_8) {
   model.stack_push(42);
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r052"});
 
-  (void)model.stack_pop();
+  model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
@@ -107,7 +107,7 @@ TEST(model, stack_base_10) {
   model.stack_push(42);
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r42"});
 
-  (void)model.stack_pop();
+  model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
@@ -117,7 +117,7 @@ TEST(model, stack_base_16) {
   model.stack_push(42);
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0x2a"});
 
-  (void)model.stack_pop();
+  model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
 }
 
@@ -158,7 +158,7 @@ TEST(model, stack_pop) {
   EXPECT_EQ(model.stack_size(), 0);
   EXPECT_TRUE(model.input_get().empty());
 
-  EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
+  EXPECT_THROW(model.stack_drop(), std::out_of_range);
 }
 
 // *** Diagnostic operations ***
