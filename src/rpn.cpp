@@ -65,7 +65,7 @@ void twindow::process_input_event() {
   switch (Fl::event_key()) {
   case FL_Enter:
   case FL_KP_Enter:
-    controller_.push();
+    controller_.handle_keyboard_input(calculator::tkey::enter);
     return;
   }
 
