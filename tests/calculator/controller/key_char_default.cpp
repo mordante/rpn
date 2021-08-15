@@ -29,15 +29,15 @@ constexpr std::string_view all_characters =
     "0123456789"
     "`-=~!@#$%^&*()_+[]\\{}|;':\",./<>?";
 
-constexpr std::string_view special_characters = "+-/*&|^~<>";
+constexpr std::string_view special_characters_no_modifier = "+-/*&|^~<>";
 
 namespace calculator {
-TEST(controller, key_char_default_special_characters) {
-  for (char c : special_characters) {
+TEST(controller, key_char_default_special_characters_no_modifier) {
+  for (char c : special_characters_no_modifier) {
     tmodel model;
     tcontroller controller{model};
 
-    controller.handle_keyboard_input(c);
+    controller.handle_keyboard_input(tmodifiers::none, c);
     EXPECT_FALSE(model.diagnostics_get().empty());
     EXPECT_TRUE(model.stack_empty());
     EXPECT_TRUE(model.input_get().empty());
@@ -47,9 +47,10 @@ TEST(controller, key_char_default_special_characters) {
 TEST(controller, key_char_default_non_special_characters) {
   for (char c : all_characters) {
 #if __cplusplus > 202002L
-    if (special_characters.contains(c))
+    if (special_characters_no_modifier.contains(c))
 #else
-    if (std::any_of(special_characters.begin(), special_characters.end(),
+    if (std::any_of(special_characters_no_modifier.begin(),
+                    special_characters_no_modifier.end(),
                     [c](char special) { return c == special; }))
 #endif
       continue;
@@ -57,10 +58,24 @@ TEST(controller, key_char_default_non_special_characters) {
     tmodel model;
     tcontroller controller{model};
 
-    controller.handle_keyboard_input(c);
+    controller.handle_keyboard_input(tmodifiers::none, c);
     EXPECT_TRUE(model.diagnostics_get().empty());
     EXPECT_TRUE(model.stack_empty());
     EXPECT_EQ(model.input_get(), std::string(1, c));
+  }
+}
+
+TEST(controller, key_char_default_control) {
+  // For now all special control characters doesn't change the state of the
+  // application. This may change in the future requiring updates to this test.
+  for (char c : all_characters) {
+    tmodel model;
+    tcontroller controller{model};
+
+    controller.handle_keyboard_input(tmodifiers::control, c);
+    EXPECT_TRUE(model.diagnostics_get().empty());
+    EXPECT_TRUE(model.stack_empty());
+    EXPECT_TRUE(model.input_get().empty());
   }
 }
 } // namespace calculator

@@ -25,6 +25,14 @@ import<string_view>;
 namespace calculator {
 
 /**
+ * The pressed keyboard modifiers.
+ *
+ * @note Alt will be added when there's a use-case.
+ * @note The shift won't be processed since it gives a different character.
+ */
+export enum class tmodifiers { none = 0, control = 1 };
+
+/**
  * The special keys on the keyboard.
  *
  * Most keys are processed using their ASCII value. This makes it easier to
@@ -68,7 +76,7 @@ public:
   void handle_keyboard_input(tkey key) noexcept;
 
   /** Handles the keyboard input for normal keys. */
-  void handle_keyboard_input(char key) noexcept;
+  void handle_keyboard_input(tmodifiers modifiers, char key) noexcept;
 
   /**
    * Appends data to the input.
@@ -118,6 +126,10 @@ private:
    */
   void push();
 
+  /** Implementation of the keyboard per modifier. */
+  void handle_keyboard_input_no_modifiers(char key);
+  void handle_keyboard_input_control(char key);
+
   tmodel &model_;
 };
 
@@ -132,60 +144,75 @@ void tcontroller::handle_keyboard_input(tkey key) noexcept {
   }
 }
 
-void tcontroller::handle_keyboard_input(char key) noexcept {
+void tcontroller::handle_keyboard_input(tmodifiers modifiers,
+                                        char key) noexcept {
   try {
-    switch (key) {
-      /*** Basic arithmetic operations ***/
-    case '+':
-      math_binary_operation(math::add);
+    switch (modifiers) {
+    case tmodifiers::none:
+      handle_keyboard_input_no_modifiers(key);
       break;
 
-    case '-':
-      math_binary_operation(math::sub);
+    case tmodifiers::control:
+      handle_keyboard_input_control(key);
       break;
-
-    case '*':
-      math_binary_operation(math::mul);
-      break;
-
-    case '/':
-      math_binary_operation(math::div);
-      break;
-
-      /*** Bitwise operations ***/
-    case '&':
-      math_binary_operation(math::bit_and);
-      break;
-
-    case '|':
-      math_binary_operation(math::bit_or);
-      break;
-
-    case '^':
-      math_binary_operation(math::bit_xor);
-      break;
-
-    case '~':
-      math_unary_operation(math::bit_complement);
-      break;
-
-      /*** Bitwise shifts ***/
-    case '<':
-      math_binary_operation(math::shl);
-      break;
-
-    case '>':
-      math_binary_operation(math::shr);
-      break;
-
-      /*** Others ***/
-    default:
-      model_.input_append(key);
     }
   } catch (const std::exception &e) {
     diagnostics_set(e);
   }
 }
+
+void tcontroller::handle_keyboard_input_no_modifiers(char key) {
+  switch (key) {
+    /*** Basic arithmetic operations ***/
+  case '+':
+    math_binary_operation(math::add);
+    break;
+
+  case '-':
+    math_binary_operation(math::sub);
+    break;
+
+  case '*':
+    math_binary_operation(math::mul);
+    break;
+
+  case '/':
+    math_binary_operation(math::div);
+    break;
+
+    /*** Bitwise operations ***/
+  case '&':
+    math_binary_operation(math::bit_and);
+    break;
+
+  case '|':
+    math_binary_operation(math::bit_or);
+    break;
+
+  case '^':
+    math_binary_operation(math::bit_xor);
+    break;
+
+  case '~':
+    math_unary_operation(math::bit_complement);
+    break;
+
+    /*** Bitwise shifts ***/
+  case '<':
+    math_binary_operation(math::shl);
+    break;
+
+  case '>':
+    math_binary_operation(math::shr);
+    break;
+
+    /*** Others ***/
+  default:
+    model_.input_append(key);
+  }
+}
+
+void tcontroller::handle_keyboard_input_control(char key) { (void)key; }
 
 void tcontroller::append(std::string_view data) noexcept {
   try {

@@ -77,7 +77,7 @@ void twindow::process_input_event() {
 
   case 1:
     // *** The normal characters ***
-    controller_.handle_keyboard_input(text[0]);
+    controller_.handle_keyboard_input(calculator::tmodifiers::none, text[0]);
     break;
 
   default:

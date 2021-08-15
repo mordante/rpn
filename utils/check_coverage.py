@@ -29,7 +29,7 @@ not_covered = {
     path + '/src/modules/calculator/controller.cpp' :
         {
             'lines' : 5,
-            'branches' : 4,
+            'branches' : 5,
             'regions': 3,
         },
     path + '/src/modules/calculator/model.cpp' :
