@@ -13,6 +13,7 @@ add_executable(tests
 	calculator/controller/key_char_tilde.cpp
 	calculator/controller/key_backspace.cpp
 	calculator/controller/key_enter.cpp
+	calculator/controller/change_base.cpp
 	calculator/model.cpp
 	calculator/model/change_base.cpp
 	calculator/model/input.cpp

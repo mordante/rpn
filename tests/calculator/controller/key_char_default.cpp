@@ -30,6 +30,7 @@ constexpr std::string_view all_characters =
     "`-=~!@#$%^&*()_+[]\\{}|;':\",./<>?";
 
 constexpr std::string_view special_characters_no_modifier = "+-/*&|^~<>";
+constexpr std::string_view special_characters_control = "bodh";
 
 namespace calculator {
 TEST(controller, key_char_default_special_characters_no_modifier) {
@@ -66,9 +67,15 @@ TEST(controller, key_char_default_non_special_characters) {
 }
 
 TEST(controller, key_char_default_control) {
-  // For now all special control characters doesn't change the state of the
-  // application. This may change in the future requiring updates to this test.
   for (char c : all_characters) {
+#if __cplusplus > 202002L
+    if (special_characters_control.contains(c))
+#else
+    if (std::any_of(special_characters_control.begin(),
+                    special_characters_control.end(),
+                    [c](char special) { return c == special; }))
+#endif
+      continue;
     tmodel model;
     tcontroller controller{model};
 
