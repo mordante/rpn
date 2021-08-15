@@ -250,10 +250,28 @@ static void validate(std::errc ec) {
   }
 }
 
+int determine_base(std::string_view &input) {
+  if (input.size() < 2 || input[0] != '0')
+    return 10;
+
+  switch (input[1]) {
+  case 'b':
+    input.remove_prefix(2);
+    return 2;
+  default:
+    input.remove_prefix(1);
+    return 8;
+  case 'x':
+    input.remove_prefix(2);
+    return 16;
+  }
+}
+
 void tcontroller::parse(std::string_view input) {
+  int base = determine_base(input);
   int64_t value;
   std::from_chars_result result =
-      std::from_chars(input.begin(), input.end(), value);
+      std::from_chars(input.begin(), input.end(), value, base);
 
   validate(result.ec);
   if (result.ptr != input.end())
