@@ -74,13 +74,6 @@ public:
    */
   void append(std::string_view data) noexcept;
 
-  /**
-   * Pushes the current input to the stack.
-   *
-   * Upon success the diagnostics are cleared, else they contain the last error.
-   */
-  void push() noexcept;
-
   /** Calculates @ref math_binary_operation addition. */
   void math_add() noexcept;
 
@@ -148,6 +141,15 @@ private:
   void math_binary_operation(tbinary_operation operation) noexcept;
 
   void diagnostics_set(const std::exception &e);
+
+  /**
+   * Pushes the current input to the stack.
+   *
+   * Upon success the diagnostics are cleared, else passes the exception thrown
+   * to its parent.
+   */
+  void push();
+
   tmodel &model_;
 };
 
@@ -165,15 +167,6 @@ void tcontroller::handle_keyboard_input(tkey key) noexcept {
 void tcontroller::append(std::string_view data) noexcept {
   try {
     model_.input_append(data);
-  } catch (const std::exception &e) {
-    diagnostics_set(e);
-  }
-}
-
-void tcontroller::push() noexcept {
-  try {
-    push(model_.input_steal());
-    model_.diagnostics_clear();
   } catch (const std::exception &e) {
     diagnostics_set(e);
   }
@@ -275,4 +268,10 @@ void tcontroller::diagnostics_set(const std::exception &e) {
   model_.diagnostics_set(e.what());
 #endif
 }
+
+void tcontroller::push() {
+  push(model_.input_steal());
+  model_.diagnostics_clear();
+}
+
 } // namespace calculator
