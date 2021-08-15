@@ -25,6 +25,14 @@ import<string_view>;
 namespace calculator {
 
 /**
+ * The pressed keyboard modifiers.
+ *
+ * @note Alt will be added when there's a use-case.
+ * @note The shift won't be processed since it gives a different character.
+ */
+export enum class tmodifiers { none = 0, control = 1 };
+
+/**
  * The special keys on the keyboard.
  *
  * Most keys are processed using their ASCII value. This makes it easier to
@@ -68,7 +76,7 @@ public:
   void handle_keyboard_input(tkey key) noexcept;
 
   /** Handles the keyboard input for normal keys. */
-  void handle_keyboard_input(char key) noexcept;
+  void handle_keyboard_input(tmodifiers modifiers, char key) noexcept;
 
   /**
    * Appends data to the input.
@@ -118,6 +126,10 @@ private:
    */
   void push();
 
+  /** Implementation of the keyboard per modifier. */
+  void handle_keyboard_input_no_modifiers(char key);
+  void handle_keyboard_input_control(char key);
+
   tmodel &model_;
 };
 
@@ -132,58 +144,92 @@ void tcontroller::handle_keyboard_input(tkey key) noexcept {
   }
 }
 
-void tcontroller::handle_keyboard_input(char key) noexcept {
+void tcontroller::handle_keyboard_input(tmodifiers modifiers,
+                                        char key) noexcept {
   try {
-    switch (key) {
-      /*** Basic arithmetic operations ***/
-    case '+':
-      math_binary_operation(math::add);
+    switch (modifiers) {
+    case tmodifiers::none:
+      handle_keyboard_input_no_modifiers(key);
       break;
 
-    case '-':
-      math_binary_operation(math::sub);
+    case tmodifiers::control:
+      handle_keyboard_input_control(key);
       break;
-
-    case '*':
-      math_binary_operation(math::mul);
-      break;
-
-    case '/':
-      math_binary_operation(math::div);
-      break;
-
-      /*** Bitwise operations ***/
-    case '&':
-      math_binary_operation(math::bit_and);
-      break;
-
-    case '|':
-      math_binary_operation(math::bit_or);
-      break;
-
-    case '^':
-      math_binary_operation(math::bit_xor);
-      break;
-
-    case '~':
-      math_unary_operation(math::bit_complement);
-      break;
-
-      /*** Bitwise shifts ***/
-    case '<':
-      math_binary_operation(math::shl);
-      break;
-
-    case '>':
-      math_binary_operation(math::shr);
-      break;
-
-      /*** Others ***/
-    default:
-      model_.input_append(key);
     }
   } catch (const std::exception &e) {
     diagnostics_set(e);
+  }
+}
+
+void tcontroller::handle_keyboard_input_no_modifiers(char key) {
+  switch (key) {
+    /*** Basic arithmetic operations ***/
+  case '+':
+    math_binary_operation(math::add);
+    break;
+
+  case '-':
+    math_binary_operation(math::sub);
+    break;
+
+  case '*':
+    math_binary_operation(math::mul);
+    break;
+
+  case '/':
+    math_binary_operation(math::div);
+    break;
+
+    /*** Bitwise operations ***/
+  case '&':
+    math_binary_operation(math::bit_and);
+    break;
+
+  case '|':
+    math_binary_operation(math::bit_or);
+    break;
+
+  case '^':
+    math_binary_operation(math::bit_xor);
+    break;
+
+  case '~':
+    math_unary_operation(math::bit_complement);
+    break;
+
+    /*** Bitwise shifts ***/
+  case '<':
+    math_binary_operation(math::shl);
+    break;
+
+  case '>':
+    math_binary_operation(math::shr);
+    break;
+
+    /*** Others ***/
+  default:
+    model_.input_append(key);
+  }
+}
+
+void tcontroller::handle_keyboard_input_control(char key) {
+  switch (key) {
+    /*** Modify selected base ***/
+  case 'b':
+    model_.base_set(tbase::binary);
+    break;
+
+  case 'o':
+    model_.base_set(tbase::octal);
+    break;
+
+  case 'd':
+    model_.base_set(tbase::decimal);
+    break;
+
+  case 'h':
+    model_.base_set(tbase::hexadecimal);
+    break;
   }
 }
 
@@ -250,10 +296,28 @@ static void validate(std::errc ec) {
   }
 }
 
+int determine_base(std::string_view &input) {
+  if (input.size() < 2 || input[0] != '0')
+    return 10;
+
+  switch (input[1]) {
+  case 'b':
+    input.remove_prefix(2);
+    return 2;
+  default:
+    input.remove_prefix(1);
+    return 8;
+  case 'x':
+    input.remove_prefix(2);
+    return 16;
+  }
+}
+
 void tcontroller::parse(std::string_view input) {
+  int base = determine_base(input);
   int64_t value;
   std::from_chars_result result =
-      std::from_chars(input.begin(), input.end(), value);
+      std::from_chars(input.begin(), input.end(), value, base);
 
   validate(result.ec);
   if (result.ptr != input.end())

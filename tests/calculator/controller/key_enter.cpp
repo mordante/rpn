@@ -142,4 +142,83 @@ TEST(controller, key_enter_diagnostics_cleared) {
   EXPECT_EQ(model.stack_pop().get(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
+
+TEST(controller, key_enter_base_2_only_prefix) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0b");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_2_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0b2");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_8_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("010");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 8);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_8_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("08");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_16_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0x10");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 16);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_16_only_prefix) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0x");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_base_16_invalid_value) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("0xg");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
 } // namespace calculator

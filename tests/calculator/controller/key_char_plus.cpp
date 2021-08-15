@@ -25,14 +25,14 @@ TEST(controller, key_char_plus_too_few_elements) {
   tmodel model;
   tcontroller controller{model};
 
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
 
   model.stack_push(42);
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
   EXPECT_EQ(model.stack_size(), 1);
@@ -46,7 +46,7 @@ TEST(controller, key_char_plus_stack_input) {
   model.stack_push(42);
   model.input_append("42");
 
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), 84);
@@ -59,7 +59,7 @@ TEST(controller, key_char_plus_stack_stack) {
   model.stack_push(42);
   model.stack_push(42);
 
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), 84);
@@ -73,7 +73,7 @@ TEST(controller, key_char_plus_diagnostics_cleared) {
   model.stack_push(42);
   model.stack_push(42);
 
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), 84);
@@ -86,7 +86,7 @@ TEST(controller, key_char_plus_input_invalid) {
   model.stack_push(42);
   model.input_append("abc");
 
-  controller.handle_keyboard_input('+');
+  controller.handle_keyboard_input(tmodifiers::none, '+');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), 42);

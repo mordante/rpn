@@ -60,12 +60,33 @@ private:
   calculator::tcontroller controller_{model_};
 };
 
+static int convert_key_pad(int key) {
+  if (key >= FL_KP && key <= FL_KP + 9)
+    return '0' + key - FL_KP;
+
+  return key;
+}
+
+// Note this expects ASCII.
+static bool is_printable(int key) { return key >= 32 && key <= 127; }
+
 void twindow::process_input_event() {
   // *** Handle special keys ***
+  int key = Fl::event_key();
   switch (Fl::event_key()) {
   case FL_Enter:
   case FL_KP_Enter:
     controller_.handle_keyboard_input(calculator::tkey::enter);
+    return;
+  }
+
+  // *** Handle control pressed ***
+  const bool control =
+      Fl::event_key(FL_Control_L) || Fl::event_key(FL_Control_R);
+  if (control) {
+    key = convert_key_pad(key);
+    if (is_printable(key))
+      controller_.handle_keyboard_input(calculator::tmodifiers::control, key);
     return;
   }
 
@@ -77,7 +98,7 @@ void twindow::process_input_event() {
 
   case 1:
     // *** The normal characters ***
-    controller_.handle_keyboard_input(text[0]);
+    controller_.handle_keyboard_input(calculator::tmodifiers::none, text[0]);
     break;
 
   default:
@@ -88,17 +109,12 @@ void twindow::process_input_event() {
   }
 }
 
-/** @return The FLTK right-justified formatted output of @p value. */
-static std::string format(const calculator::tvalue &value) {
-  return "@r" + value.format();
-}
-
 void twindow::update_ui() {
   diagnostics_.label(model_.diagnostics_get().c_str());
 
   stack_.clear();
   for (const auto &value : model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), format(value).c_str());
+    stack_.insert(std::numeric_limits<int>::max(), value.c_str());
   stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());

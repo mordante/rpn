@@ -25,7 +25,7 @@ TEST(controller, key_char_tilde_too_few_elements) {
   tmodel model;
   tcontroller controller{model};
 
-  controller.handle_keyboard_input('~');
+  controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain an element"));
   EXPECT_TRUE(model.stack_empty());
@@ -37,7 +37,7 @@ TEST(controller, key_char_tilde_input) {
   tcontroller controller{model};
   model.input_append("3");
 
-  controller.handle_keyboard_input('~');
+  controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), ~3);
@@ -49,7 +49,7 @@ TEST(controller, key_char_tilde_stack) {
   tcontroller controller{model};
   model.stack_push(3);
 
-  controller.handle_keyboard_input('~');
+  controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), ~3);
@@ -62,7 +62,7 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
   model.diagnostics_set("Cleared");
   model.stack_push(42);
 
-  controller.handle_keyboard_input('~');
+  controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_EQ(model.stack_pop().get(), ~42);
@@ -74,7 +74,7 @@ TEST(controller, key_char_tilde_input_invalid) {
   tcontroller controller{model};
   model.input_append("abc");
 
-  controller.handle_keyboard_input('~');
+  controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
