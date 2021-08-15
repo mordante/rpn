@@ -76,6 +76,43 @@ void twindow::process_input_event() {
     case '+':
       controller_.math_add();
       return;
+
+    case '-':
+      controller_.math_sub();
+      return;
+
+    case '*':
+      controller_.math_mul();
+      return;
+
+    case '/':
+      controller_.math_div();
+      return;
+
+      /*** Bitwise ***/
+    case '&':
+      controller_.math_and();
+      return;
+
+    case '|':
+      controller_.math_or();
+      return;
+
+    case '^':
+      controller_.math_xor();
+      return;
+
+    case '~':
+      controller_.math_complement();
+      return;
+
+    case '<':
+      controller_.math_shl();
+      return;
+
+    case '>':
+      controller_.math_shr();
+      return;
     }
   }
 

@@ -24,4 +24,60 @@ export namespace math {
 [[nodiscard]] int64_t add(int64_t lhs, int64_t rhs) noexcept {
   return lhs + rhs;
 }
+
+/**
+ * @returns The value @p lhs subtracted to @p rhs.
+ * @pre INT64_MIN <= lhs - rhs <= INT64_MAX
+ */
+[[nodiscard]] int64_t sub(int64_t lhs, int64_t rhs) noexcept {
+  return lhs - rhs;
+}
+
+/**
+ * @returns The value @p lhs multiplied by @p rhs.
+ * @pre INT64_MIN <= lhs * rhs <= INT64_MAX
+ */
+[[nodiscard]] int64_t mul(int64_t lhs, int64_t rhs) noexcept {
+  return lhs * rhs;
+}
+
+/**
+ * @returns The value @p lhs multiplied by @p rhs.
+ * @pre rhs != 0
+ * @pre INT64_MIN <= lhs / rhs <= INT64_MAX
+ */
+[[nodiscard]] int64_t div(int64_t lhs, int64_t rhs) noexcept {
+  return lhs / rhs;
+}
+
+/*** Bitwise operations ***/
+
+/** @returns The value @p lhs and-ed with @p rhs. */
+[[nodiscard]] int64_t bit_and(int64_t lhs, int64_t rhs) noexcept {
+  return lhs & rhs;
+}
+
+/** @returns The value @p lhs or-ed with @p rhs. */
+[[nodiscard]] int64_t bit_or(int64_t lhs, int64_t rhs) noexcept {
+  return lhs | rhs;
+}
+
+/** @returns The value @p lhs xor-ed with @p rhs. */
+[[nodiscard]] int64_t bit_xor(int64_t lhs, int64_t rhs) noexcept {
+  return lhs ^ rhs;
+}
+
+/** @returns The bitwise complement of @p value. */
+[[nodiscard]] int64_t bit_complement(int64_t value) noexcept { return ~value; }
+
+/** @returns The value @p lhs shifted left by @p rhs. */
+[[nodiscard]] int64_t shl(int64_t lhs, int64_t rhs) noexcept {
+  return lhs << rhs;
+}
+
+/** @returns The value @p lhs shifted right by @p rhs. */
+[[nodiscard]] int64_t shr(int64_t lhs, int64_t rhs) noexcept {
+  return lhs >> rhs;
+}
+
 } // namespace math

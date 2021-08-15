@@ -60,21 +60,71 @@ public:
    */
   void push() noexcept;
 
-  /**
-   * Calculates the sum of two values.
-   *
-   * When the input isn't empty equivalent @c pop() @em op @a input
-   * else equivalent @c pop() @em op @c pop()
-   *
-   * Upon success the diagnostics are cleared, else they contain the last error.
-   */
+  /** Calculates @ref math_binary_operation addition. */
   void math_add() noexcept;
+
+  /** Calculates @ref math_binary_operation subraction. */
+  void math_sub() noexcept;
+
+  /** Calculates @ref math_binary_operation multiplication. */
+  void math_mul() noexcept;
+
+  /**
+   * Calculates @ref math_binary_operation division.
+   *
+   * @note The result is always an integer value instead of a floating-point
+   * value.
+   *
+   * @todo Guard against division by zero.
+   */
+  void math_div() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise and. */
+  void math_and() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise or. */
+  void math_or() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise xor. */
+  void math_xor() noexcept;
+
+  /** Calculates @ref math_unary_operation bitwise complement. */
+  void math_complement() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise shl. */
+  void math_shl() noexcept;
+
+  /** Calculates @ref math_binary_operation bitwise shr. */
+  void math_shr() noexcept;
 
 private:
   void push(std::string_view input);
 
   void duplicate_last_entry();
   void parse(std::string_view input);
+
+  using tunary_operation = int64_t (*)(int64_t) noexcept;
+  using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
+
+  /**
+   * Calculates the unary operation on a value.
+   *
+   * When the input isn't empty equivalent @em op @a input
+   * else equivalent @em op @c pop()
+   *
+   * Upon success the diagnostics are cleared, else they contain the last error.
+   */
+  void math_unary_operation(tunary_operation operation) noexcept;
+
+  /**
+   * Calculates the binary operation on two values.
+   *
+   * When the input isn't empty equivalent @c pop() @em op @a input
+   * else equivalent @c pop() @em op @c pop()
+   *
+   * Upon success the diagnostics are cleared, else they contain the last error.
+   */
+  void math_binary_operation(tbinary_operation operation) noexcept;
 
   void diagnostics_set(const std::exception &e);
   tmodel &model_;
@@ -97,19 +147,52 @@ void tcontroller::push() noexcept {
   }
 }
 
-void tcontroller::math_add() noexcept {
+void tcontroller::math_binary_operation(tbinary_operation operation) noexcept {
   try {
     if (const std::string input = model_.input_steal(); !input.empty())
       push(input);
 
-    const tvalue lhs = model_.stack_pop();
+    if (model_.stack_size() < 2)
+      throw std::out_of_range("Stack doesn't contain two elements");
+
     const tvalue rhs = model_.stack_pop();
-    model_.stack_push(math::add(lhs.get(), rhs.get()));
+    const tvalue lhs = model_.stack_pop();
+    model_.stack_push(operation(lhs.get(), rhs.get()));
     model_.diagnostics_clear();
   } catch (const std::exception &e) {
     diagnostics_set(e);
   }
 }
+
+void tcontroller::math_unary_operation(tunary_operation operation) noexcept {
+  try {
+    if (const std::string input = model_.input_steal(); !input.empty())
+      push(input);
+
+    if (model_.stack_empty())
+      throw std::out_of_range("Stack doesn't contain an element");
+
+    const tvalue value = model_.stack_pop();
+    model_.stack_push(operation(value.get()));
+    model_.diagnostics_clear();
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
+
+void tcontroller::math_add() noexcept { math_binary_operation(math::add); }
+void tcontroller::math_sub() noexcept { math_binary_operation(math::sub); }
+void tcontroller::math_mul() noexcept { math_binary_operation(math::mul); }
+void tcontroller::math_div() noexcept { math_binary_operation(math::div); }
+
+void tcontroller::math_and() noexcept { math_binary_operation(math::bit_and); }
+void tcontroller::math_or() noexcept { math_binary_operation(math::bit_or); }
+void tcontroller::math_xor() noexcept { math_binary_operation(math::bit_xor); }
+void tcontroller::math_complement() noexcept {
+  math_unary_operation(math::bit_complement);
+}
+void tcontroller::math_shl() noexcept { math_binary_operation(math::shl); }
+void tcontroller::math_shr() noexcept { math_binary_operation(math::shr); }
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())

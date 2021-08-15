@@ -22,3 +22,65 @@ TEST(math, add) {
   EXPECT_EQ(math::add(1, 0), 1);
   EXPECT_EQ(math::add(1, 1), 2);
 }
+
+TEST(math, sub) {
+  EXPECT_EQ(math::sub(0, 0), 0);
+  EXPECT_EQ(math::sub(0, 1), -1);
+  EXPECT_EQ(math::sub(1, 0), 1);
+  EXPECT_EQ(math::sub(1, 1), 0);
+}
+
+TEST(math, mul) {
+  EXPECT_EQ(math::mul(0, 0), 0);
+  EXPECT_EQ(math::mul(2, -2), -4);
+  EXPECT_EQ(math::mul(-2, 2), -4);
+  EXPECT_EQ(math::mul(-2, -2), 4);
+  EXPECT_EQ(math::mul(2, 2), 4);
+}
+
+TEST(math, div) {
+  EXPECT_EQ(math::div(0, 1), 0);
+  EXPECT_EQ(math::div(2, -2), -1);
+  EXPECT_EQ(math::div(-2, 2), -1);
+  EXPECT_EQ(math::div(-2, -2), 1);
+  EXPECT_EQ(math::div(2, 2), 1);
+  EXPECT_EQ(math::div(4, 2), 2);
+  EXPECT_EQ(math::div(4, 3), 1);
+  EXPECT_EQ(math::div(3, 4), 0);
+}
+
+TEST(math, bit_and) {
+  EXPECT_EQ(math::bit_and(0, 1), 0);
+  EXPECT_EQ(math::bit_and(2, 2), 2);
+  EXPECT_EQ(math::bit_and(2, 3), 2);
+}
+
+TEST(math, bit_or) {
+  EXPECT_EQ(math::bit_or(0, 1), 1);
+  EXPECT_EQ(math::bit_or(2, 2), 2);
+  EXPECT_EQ(math::bit_or(2, 3), 3);
+}
+
+TEST(math, bit_xor) {
+  EXPECT_EQ(math::bit_xor(0, 1), 1);
+  EXPECT_EQ(math::bit_xor(2, 2), 0);
+  EXPECT_EQ(math::bit_xor(2, 3), 1);
+}
+
+TEST(math, bit_complement) {
+  EXPECT_EQ(math::bit_complement(0), ~0);
+  EXPECT_EQ(math::bit_complement(2), ~2);
+  EXPECT_EQ(math::bit_complement(-2), ~-2);
+}
+
+TEST(math, shl) {
+  EXPECT_EQ(math::shl(0, 32), 0);
+  EXPECT_EQ(math::shl(1, 2), 0b100);
+  EXPECT_EQ(math::shl(0b1010, 3), 0b1010000);
+}
+
+TEST(math, shr) {
+  EXPECT_EQ(math::shr(0xffff, 32), 0);
+  EXPECT_EQ(math::shr(2, 1), 0b1);
+  EXPECT_EQ(math::shr(0b1010, 3), 0b1);
+}
