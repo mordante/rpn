@@ -49,9 +49,9 @@ for file in coverage["data"][0]["files"] :
     kind = None
     if expected == None:
         if lines != 0 or branches != 0 or regions != 0:
-            kind = 'Explicit'
+            kind = 'implicit'
     elif lines != expected['lines'] or branches != expected['branches'] or regions != expected['regions']:
-        kind = 'Implicit'
+        kind = 'Explicit'
 
     if kind != None:
         passed = False
