@@ -11,9 +11,12 @@ add_executable(tests
 	calculator/controller/key_char_plus.cpp
 	calculator/controller/key_char_star.cpp
 	calculator/controller/key_char_tilde.cpp
+	calculator/controller/key_backspace.cpp
 	calculator/controller/key_enter.cpp
 	calculator/model.cpp
 	calculator/model/change_base.cpp
+	calculator/model/input.cpp
+	calculator/model/stack.cpp
 	calculator/value.cpp
 	format_error.cpp
 	math.cpp

@@ -86,6 +86,12 @@ public:
    */
   [[nodiscard]] tvalue stack_pop();
 
+  /**
+   * Removes the last element at the back of the stack
+   * @throws @ref std::out_of_range when the stack is empty.
+   */
+  void stack_drop();
+
   // * Input *
 
   /**
@@ -109,6 +115,18 @@ public:
    */
   void input_append(char data) { input_.push_back(data); }
   void input_append(std::string_view data) { input_.append(data); }
+
+  /**
+   * Removes the last character of the @ref input_.
+   *
+   * @returns Whether an element was removed.
+   */
+  [[nodiscard]] bool input_pop_back() {
+    if (input_.empty())
+      return false;
+    input_.pop_back();
+    return true;
+  }
 
   [[nodiscard]] const std::string &input_get() const noexcept { return input_; }
 
@@ -170,6 +188,14 @@ tvalue tmodel::stack_pop() {
   stack_.pop_back();
   display_.pop_back();
   return result;
+}
+
+void tmodel::stack_drop() {
+  if (stack_.empty())
+    throw std::out_of_range("Stack is empty");
+
+  stack_.pop_back();
+  display_.pop_back();
 }
 
 void tmodel::synchronise_display() const {

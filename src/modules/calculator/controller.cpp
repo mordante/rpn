@@ -47,6 +47,7 @@ export enum class tmodifiers { none = 0, control = 1 };
  */
 export enum class tkey {
   /* Sorted list */
+  backspace,
   enter
 };
 
@@ -130,14 +131,27 @@ private:
   void handle_keyboard_input_no_modifiers(char key);
   void handle_keyboard_input_control(char key);
 
+  /**
+   * Removes an element.
+   *
+   * If the input isn't empty removes the last element from the buffer.
+   * Else drops an item of the stack.
+   */
+  void remove();
+
   tmodel &model_;
 };
 
 void tcontroller::handle_keyboard_input(tkey key) noexcept {
   try {
     switch (key) {
+    case tkey::backspace:
+      remove();
+      break;
+
     case tkey::enter:
       push();
+      break;
     }
   } catch (const std::exception &e) {
     diagnostics_set(e);
@@ -337,6 +351,11 @@ void tcontroller::diagnostics_set(const std::exception &e) {
 void tcontroller::push() {
   push(model_.input_steal());
   model_.diagnostics_clear();
+}
+
+void tcontroller::remove() {
+  if (!model_.input_pop_back())
+    model_.stack_drop();
 }
 
 } // namespace calculator
