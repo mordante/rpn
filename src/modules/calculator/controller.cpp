@@ -67,6 +67,9 @@ public:
   /** Handles the keyboard input for special keys. */
   void handle_keyboard_input(tkey key) noexcept;
 
+  /** Handles the keyboard input for normal keys. */
+  void handle_keyboard_input(char key) noexcept;
+
   /**
    * Appends data to the input.
    *
@@ -158,6 +161,61 @@ void tcontroller::handle_keyboard_input(tkey key) noexcept {
     switch (key) {
     case tkey::enter:
       push();
+    }
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
+
+void tcontroller::handle_keyboard_input(char key) noexcept {
+  try {
+    switch (key) {
+      /*** Basic arithmetic operations ***/
+    case '+':
+      math_add();
+      break;
+
+    case '-':
+      math_sub();
+      break;
+
+    case '*':
+      math_mul();
+      break;
+
+    case '/':
+      math_div();
+      break;
+
+      /*** Bitwise operations ***/
+    case '&':
+      math_and();
+      break;
+
+    case '|':
+      math_or();
+      break;
+
+    case '^':
+      math_xor();
+      break;
+
+    case '~':
+      math_complement();
+      break;
+
+      /*** Bitwise shifts ***/
+    case '<':
+      math_shl();
+      break;
+
+    case '>':
+      math_shr();
+      break;
+
+      /*** Others ***/
+    default:
+      model_.input_append(key);
     }
   } catch (const std::exception &e) {
     diagnostics_set(e);

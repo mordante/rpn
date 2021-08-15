@@ -163,7 +163,23 @@ TEST(model, input_get) {
   static_assert(noexcept(model.input_get()));
 }
 
-TEST(model, input_append) {
+TEST(model, input_append_char) {
+  tmodel model;
+
+  model.input_append('a');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_EQ(model.input_get(), "a");
+
+  model.input_append('b');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 0);
+  EXPECT_EQ(model.input_get(), "ab");
+}
+
+TEST(model, input_append_string) {
   tmodel model;
 
   model.input_append("abc");

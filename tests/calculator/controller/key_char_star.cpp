@@ -20,63 +20,75 @@ import tests.format_error;
 #include <gtest/gtest.h>
 
 namespace calculator {
-
-TEST(controller, math_complement_too_few_elements) {
+TEST(controller, key_char_star_too_few_elements) {
   tmodel model;
   tcontroller controller{model};
 
-  controller.math_complement();
+  controller.handle_keyboard_input('*');
   EXPECT_EQ(model.diagnostics_get(),
-            format_error("Stack doesn't contain an element"));
+            format_error("Stack doesn't contain two elements"));
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
-}
 
-TEST(controller, math_complement_input) {
-  tmodel model;
-  tcontroller controller{model};
-  model.input_append("3");
-
-  controller.math_complement();
-  EXPECT_TRUE(model.diagnostics_get().empty());
+  model.stack_push(42);
+  controller.handle_keyboard_input('*');
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Stack doesn't contain two elements"));
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~3);
+  EXPECT_EQ(model.stack_pop().get(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, math_complement_stack) {
+TEST(controller, key_char_star_stack_input) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(3);
+  model.stack_push(2);
+  model.input_append("21");
 
-  controller.math_complement();
+  controller.handle_keyboard_input('*');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~3);
+  EXPECT_EQ(model.stack_pop().get(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, math_complement_diagnostics_cleared) {
+TEST(controller, key_char_star_stack_stack) {
+  tmodel model;
+  tcontroller controller{model};
+  model.stack_push(2);
+  model.stack_push(21);
+
+  controller.handle_keyboard_input('*');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_char_star_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(42);
+  model.stack_push(2);
+  model.stack_push(21);
 
-  controller.math_complement();
+  controller.handle_keyboard_input('*');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~42);
+  EXPECT_EQ(model.stack_pop().get(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, math_complement_input_invalid) {
+TEST(controller, key_char_star_input_invalid) {
   tmodel model;
   tcontroller controller{model};
+  model.stack_push(42);
   model.input_append("abc");
 
-  controller.math_complement();
+  controller.handle_keyboard_input('*');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop().get(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 } // namespace calculator
