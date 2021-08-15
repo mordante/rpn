@@ -74,6 +74,10 @@ void twindow::process_input_event() {
   // *** Handle special keys ***
   int key = Fl::event_key();
   switch (Fl::event_key()) {
+  case FL_BackSpace:
+    controller_.handle_keyboard_input(calculator::tkey::backspace);
+    return;
+
   case FL_Enter:
   case FL_KP_Enter:
     controller_.handle_keyboard_input(calculator::tkey::enter);
