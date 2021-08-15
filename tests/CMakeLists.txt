@@ -1,5 +1,6 @@
 add_executable(tests
 	calculator/controller.cpp
+	calculator/controller/key_enter.cpp
 	calculator/controller/math_add.cpp
 	calculator/controller/math_sub.cpp
 	calculator/controller/math_mul.cpp

@@ -25,6 +25,24 @@ import<string_view>;
 namespace calculator {
 
 /**
+ * The special keys on the keyboard.
+ *
+ * Most keys are processed using their ASCII value. This makes it easier to
+ * handle the two ways to enter a + character on the keyboard.
+ *
+ * @note This set only contains the keys the controller is interested in. For
+ * example:
+ * - there's no control key, that is already part of @ref tmodifier,
+ * - there's only on enter, since both enters on the keyboard are treated the
+ *   same.
+ * This means adding functionality may add new keys.
+ */
+export enum class tkey {
+  /* Sorted list */
+  enter
+};
+
+/**
  * The controller of the calculator.
  *
  * For now a very basic version of this class.
@@ -45,6 +63,9 @@ public:
   tcontroller &operator=(tcontroller &&) = delete;
 
   // *** Operations ***
+
+  /** Handles the keyboard input for special keys. */
+  void handle_keyboard_input(tkey key) noexcept;
 
   /**
    * Appends data to the input.
@@ -129,6 +150,17 @@ private:
   void diagnostics_set(const std::exception &e);
   tmodel &model_;
 };
+
+void tcontroller::handle_keyboard_input(tkey key) noexcept {
+  try {
+    switch (key) {
+    case tkey::enter:
+      push();
+    }
+  } catch (const std::exception &e) {
+    diagnostics_set(e);
+  }
+}
 
 void tcontroller::append(std::string_view data) noexcept {
   try {
