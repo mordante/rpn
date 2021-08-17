@@ -19,7 +19,7 @@ jobs:
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo sh -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list'
           sudo apt update
-          sudo apt-get install -y clang-14 libc++-14-dev libc++abi-14-dev libunwind-14-dev
+          sudo apt-get install -y clang-14 libc++-14-dev libc++abi-14-dev libunwind-14-dev python3-sphinx
       - name: Build
         run: |
           mkdir build
@@ -30,6 +30,13 @@ jobs:
           ../utils/check_coverage.py
           make ccov-tests
           cp -r ccov/tests/* ../www/coverage/
+
+      - name: Documentation
+        run: |
+          # These directories are required by Sphinx but since they are empty they're not in git.
+          mkdir doc/_static
+          mkdir doc/_templates
+          sphinx-build -b html doc www
 
       - name: Update website
         uses: s0/git-publish-subdir-action@develop
