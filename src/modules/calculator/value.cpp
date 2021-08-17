@@ -16,8 +16,11 @@ export module calculator.value;
 
 import<cinttypes>;
 import<string>;
+export import<variant>;
 
 namespace calculator {
+
+using tstorage = std::variant<int64_t, uint64_t>;
 
 /**
  * Basic value class for the entries on the calculator's stack.
@@ -37,10 +40,12 @@ public:
   /** Converting constructor. */
   constexpr tvalue(int64_t value) noexcept : value_(value) {}
 
-  [[nodiscard]] constexpr int64_t get() const noexcept { return value_; }
+  [[nodiscard]] constexpr int64_t get() const noexcept {
+    return std::get<int64_t>(value_);
+  }
 
 private:
-  int64_t value_{0};
+  tstorage value_{0};
 };
 
 } // namespace calculator
