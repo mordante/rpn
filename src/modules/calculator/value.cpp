@@ -40,6 +40,15 @@ public:
   /** Converting constructor. */
   constexpr tvalue(int64_t value) noexcept : value_(value) {}
 
+  /**
+   * A visitor to use the internal values of the stored value.
+   *
+   * @todo This there are no unit tests for this interface yet.
+   */
+  template <class Visitor> auto visit(Visitor &&visitor) const {
+    return std::visit(std::forward<Visitor>(visitor), value_);
+  }
+
   [[nodiscard]] constexpr int64_t get() const noexcept {
     return std::get<int64_t>(value_);
   }
