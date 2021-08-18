@@ -91,8 +91,8 @@ private:
   void duplicate_last_entry();
   void parse(std::string_view input);
 
-  using tunary_operation_v2 = void (tvalue::*)();
-  using tbinary_operation_v2 = void (tvalue::*)(const tvalue &);
+  using tunary_operation = void (tvalue::*)();
+  using tbinary_operation = void (tvalue::*)(const tvalue &);
 
   /**
    * Calculates the unary operation on a value.
@@ -103,7 +103,7 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_unary_operation(tunary_operation_v2 operation);
+  void math_unary_operation(tunary_operation operation);
 
   /**
    * Calculates the binary operation on two values.
@@ -114,7 +114,7 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_binary_operation(tbinary_operation_v2 operation);
+  void math_binary_operation(tbinary_operation operation);
 
   void diagnostics_set(const std::exception &e);
 
@@ -259,7 +259,7 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
-void tcontroller::math_binary_operation(tbinary_operation_v2 operation) {
+void tcontroller::math_binary_operation(tbinary_operation operation) {
   if (const std::string input = model_.input_steal(); !input.empty())
     push(input);
 
@@ -273,7 +273,7 @@ void tcontroller::math_binary_operation(tbinary_operation_v2 operation) {
   model_.diagnostics_clear();
 }
 
-void tcontroller::math_unary_operation(tunary_operation_v2 operation) {
+void tcontroller::math_unary_operation(tunary_operation operation) {
   if (const std::string input = model_.input_steal(); !input.empty())
     push(input);
 

@@ -35,7 +35,7 @@ TEST(controller, key_char_star_too_few_elements) {
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_EQ(model.stack_pop(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -48,7 +48,7 @@ TEST(controller, key_char_star_stack_input) {
   controller.handle_keyboard_input(tmodifiers::none, '*');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_EQ(model.stack_pop(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -61,7 +61,7 @@ TEST(controller, key_char_star_stack_stack) {
   controller.handle_keyboard_input(tmodifiers::none, '*');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_EQ(model.stack_pop(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -75,7 +75,7 @@ TEST(controller, key_char_star_diagnostics_cleared) {
   controller.handle_keyboard_input(tmodifiers::none, '*');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_EQ(model.stack_pop(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -88,7 +88,7 @@ TEST(controller, key_char_star_input_invalid) {
   controller.handle_keyboard_input(tmodifiers::none, '*');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), 42);
+  EXPECT_EQ(model.stack_pop(), 42);
   EXPECT_TRUE(model.input_get().empty());
 }
 } // namespace calculator

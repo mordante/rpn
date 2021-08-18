@@ -145,14 +145,14 @@ TEST(model, stack_pop) {
   model.stack_push(1);
 
   value = model.stack_pop();
-  EXPECT_EQ(value.get(), 1);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_TRUE(model.input_get().empty());
 
   value = model.stack_pop();
-  EXPECT_EQ(value.get(), 42);
+  EXPECT_EQ(value, 42);
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
