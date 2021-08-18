@@ -72,9 +72,4 @@ TEST(value, move_assignment) {
   EXPECT_EQ(value, 1);
 }
 
-TEST(value, get) {
-  constexpr tvalue value;
-  static_assert(noexcept(value.get()));
-}
-
 } // namespace calculator

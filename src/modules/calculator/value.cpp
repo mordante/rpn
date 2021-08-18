@@ -103,10 +103,6 @@ public:
     value_ = std::get<int64_t>(value_) >> std::get<int64_t>(rhs.value_);
   }
 
-  [[nodiscard]] constexpr int64_t get() const noexcept {
-    return std::get<int64_t>(value_);
-  }
-
 private:
   tstorage value_{0};
 
