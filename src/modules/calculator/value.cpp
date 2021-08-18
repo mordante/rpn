@@ -52,6 +52,26 @@ public:
 
   /*** Arithmetic ***/
 
+  /** Adds @p rhs to the current value. */
+  void add(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) + std::get<int64_t>(rhs.value_);
+  }
+
+  /** Subtracts @p rhs from the current value. */
+  void sub(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) - std::get<int64_t>(rhs.value_);
+  }
+
+  /** Multiplies the current value by @p rhs. */
+  void mul(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) * std::get<int64_t>(rhs.value_);
+  }
+
+  /** Divides the current value by @p rhs. */
+  void div(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) / std::get<int64_t>(rhs.value_);
+  }
+
   /** Negates the current value. */
   void negate();
 
@@ -59,6 +79,29 @@ public:
 
   /** Bitwise and the current value with @p rhs. */
   void bit_and(const tvalue &rhs);
+
+  /** Bitwise or the current value with @p rhs. */
+  void bit_or(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) | std::get<int64_t>(rhs.value_);
+  }
+
+  /** Bitwise xor the current value with @p rhs. */
+  void bit_xor(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) ^ std::get<int64_t>(rhs.value_);
+  }
+
+  /** Replace the current value by its bitwise complement. */
+  void complement() { value_ = ~std::get<int64_t>(value_); }
+
+  /** Bitwise shifts the current value @p rhs positions to the left. */
+  void shl(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) << std::get<int64_t>(rhs.value_);
+  }
+
+  /** Bitwise shifts the current value @p rhs positions to the right. */
+  void shr(const tvalue &rhs) {
+    value_ = std::get<int64_t>(value_) >> std::get<int64_t>(rhs.value_);
+  }
 
   [[nodiscard]] constexpr int64_t get() const noexcept {
     return std::get<int64_t>(value_);

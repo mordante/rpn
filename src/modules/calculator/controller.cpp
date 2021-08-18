@@ -183,19 +183,19 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   switch (key) {
     /*** Basic arithmetic operations ***/
   case '+':
-    math_binary_operation(math::add);
+    math_binary_operation(&tvalue::add);
     break;
 
   case '-':
-    math_binary_operation(math::sub);
+    math_binary_operation(&tvalue::sub);
     break;
 
   case '*':
-    math_binary_operation(math::mul);
+    math_binary_operation(&tvalue::mul);
     break;
 
   case '/':
-    math_binary_operation(math::div);
+    math_binary_operation(&tvalue::div);
     break;
 
     /*** Bitwise operations ***/
@@ -204,24 +204,24 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
     break;
 
   case '|':
-    math_binary_operation(math::bit_or);
+    math_binary_operation(&tvalue::bit_or);
     break;
 
   case '^':
-    math_binary_operation(math::bit_xor);
+    math_binary_operation(&tvalue::bit_xor);
     break;
 
   case '~':
-    math_unary_operation(math::bit_complement);
+    math_unary_operation(&tvalue::complement);
     break;
 
     /*** Bitwise shifts ***/
   case '<':
-    math_binary_operation(math::shl);
+    math_binary_operation(&tvalue::shl);
     break;
 
   case '>':
-    math_binary_operation(math::shr);
+    math_binary_operation(&tvalue::shr);
     break;
 
     /*** Others ***/
