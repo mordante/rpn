@@ -37,7 +37,6 @@ public:
   /** Converting constructor. */
   constexpr tvalue(int64_t value) noexcept : value_(value) {}
 
-  constexpr void set(int64_t value) noexcept { value_ = value; }
   [[nodiscard]] constexpr int64_t get() const noexcept { return value_; }
 
 private:

@@ -72,16 +72,6 @@ TEST(value, move_assignment) {
   EXPECT_EQ(value.get(), 1);
 }
 
-TEST(value, set) {
-  tvalue value;
-  static_assert(noexcept(value.set(42)));
-  value.set(42);
-  EXPECT_EQ(value.get(), 42);
-
-  value.set(1);
-  EXPECT_EQ(value.get(), 1);
-}
-
 TEST(value, get) {
   constexpr tvalue value;
   static_assert(noexcept(value.get()));
