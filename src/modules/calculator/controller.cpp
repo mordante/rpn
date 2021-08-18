@@ -95,6 +95,7 @@ private:
   using tunary_operation = int64_t (*)(int64_t) noexcept;
   using tunary_operation_v2 = void (tvalue::*)();
   using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
+  using tbinary_operation_v2 = void (tvalue::*)(const tvalue &);
 
   /**
    * Calculates the unary operation on a value.
@@ -118,6 +119,7 @@ private:
    * to its parent.
    */
   void math_binary_operation(tbinary_operation operation);
+  void math_binary_operation(tbinary_operation_v2 operation);
 
   void diagnostics_set(const std::exception &e);
 
@@ -198,7 +200,7 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
 
     /*** Bitwise operations ***/
   case '&':
-    math_binary_operation(math::bit_and);
+    math_binary_operation(&tvalue::bit_and);
     break;
 
   case '|':
@@ -270,8 +272,22 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
     throw std::out_of_range("Stack doesn't contain two elements");
 
   const tvalue rhs = model_.stack_pop();
-  const tvalue lhs = model_.stack_pop();
+  tvalue lhs = model_.stack_pop();
   model_.stack_push(operation(lhs.get(), rhs.get()));
+  model_.diagnostics_clear();
+}
+
+void tcontroller::math_binary_operation(tbinary_operation_v2 operation) {
+  if (const std::string input = model_.input_steal(); !input.empty())
+    push(input);
+
+  if (model_.stack_size() < 2)
+    throw std::out_of_range("Stack doesn't contain two elements");
+
+  const tvalue rhs = model_.stack_pop();
+  tvalue lhs = model_.stack_pop();
+  (lhs.*operation)(rhs);
+  model_.stack_push(lhs);
   model_.diagnostics_clear();
 }
 

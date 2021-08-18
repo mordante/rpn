@@ -50,8 +50,15 @@ public:
     return std::visit(std::forward<Visitor>(visitor), value_);
   }
 
+  /*** Arithmetic ***/
+
   /** Negates the current value. */
   void negate();
+
+  /*** Bitwise ***/
+
+  /** Bitwise and the current value with @p rhs. */
+  void bit_and(const tvalue &rhs);
 
   [[nodiscard]] constexpr int64_t get() const noexcept {
     return std::get<int64_t>(value_);
@@ -69,6 +76,13 @@ private:
     return static_cast<int64_t>(std::get<uint64_t>(lhs.value_)) == rhs;
   }
 };
+
+template <class T> static T as(const tstorage &value) {
+  if (std::holds_alternative<T>(value))
+    return std::get<T>(value);
+
+  return std::visit([](auto value) { return static_cast<T>(value); }, value);
+}
 
 /**
  * @todo Determine proper return type. It now toggles between the signed and
@@ -88,5 +102,19 @@ static tstorage negate(tstorage value) {
 }
 
 void tvalue::negate() { value_ = calculator::negate(value_); }
+
+template <class T> static T bit_and(T lhs, T rhs) { return lhs & rhs; }
+
+static tstorage bit_and(tstorage lhs, tstorage rhs) {
+  if (std::holds_alternative<int64_t>(lhs) ||
+      std::holds_alternative<int64_t>(rhs))
+    return bit_and(std::get<int64_t>(lhs), std::get<int64_t>(rhs));
+
+  return bit_and(as<uint64_t>(lhs), as<uint64_t>(rhs));
+}
+
+void tvalue::bit_and(const tvalue &rhs) {
+  value_ = calculator::bit_and(value_, rhs.value_);
+}
 
 } // namespace calculator
