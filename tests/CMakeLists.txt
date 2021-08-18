@@ -21,7 +21,6 @@ add_executable(tests
 	calculator/model/stack.cpp
 	calculator/value.cpp
 	format_error.cpp
-	math.cpp
 )
 target_compile_options(tests
 	PRIVATE
@@ -30,7 +29,6 @@ target_compile_options(tests
 target_link_libraries(tests
 	PRIVATE
 		calculator
-		math
 		gtest_main
 		c++
 )

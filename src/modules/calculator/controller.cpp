@@ -15,7 +15,6 @@
 export module calculator.controller;
 
 import calculator.model;
-import math;
 
 import<charconv>;
 import<format>;
@@ -92,9 +91,7 @@ private:
   void duplicate_last_entry();
   void parse(std::string_view input);
 
-  using tunary_operation = int64_t (*)(int64_t) noexcept;
   using tunary_operation_v2 = void (tvalue::*)();
-  using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
   using tbinary_operation_v2 = void (tvalue::*)(const tvalue &);
 
   /**
@@ -106,7 +103,6 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_unary_operation(tunary_operation operation);
   void math_unary_operation(tunary_operation_v2 operation);
 
   /**
@@ -118,7 +114,6 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_binary_operation(tbinary_operation operation);
   void math_binary_operation(tbinary_operation_v2 operation);
 
   void diagnostics_set(const std::exception &e);
@@ -264,19 +259,6 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
-void tcontroller::math_binary_operation(tbinary_operation operation) {
-  if (const std::string input = model_.input_steal(); !input.empty())
-    push(input);
-
-  if (model_.stack_size() < 2)
-    throw std::out_of_range("Stack doesn't contain two elements");
-
-  const tvalue rhs = model_.stack_pop();
-  tvalue lhs = model_.stack_pop();
-  model_.stack_push(operation(lhs.get(), rhs.get()));
-  model_.diagnostics_clear();
-}
-
 void tcontroller::math_binary_operation(tbinary_operation_v2 operation) {
   if (const std::string input = model_.input_steal(); !input.empty())
     push(input);
@@ -288,18 +270,6 @@ void tcontroller::math_binary_operation(tbinary_operation_v2 operation) {
   tvalue lhs = model_.stack_pop();
   (lhs.*operation)(rhs);
   model_.stack_push(lhs);
-  model_.diagnostics_clear();
-}
-
-void tcontroller::math_unary_operation(tunary_operation operation) {
-  if (const std::string input = model_.input_steal(); !input.empty())
-    push(input);
-
-  if (model_.stack_empty())
-    throw std::out_of_range("Stack doesn't contain an element");
-
-  const tvalue value = model_.stack_pop();
-  model_.stack_push(operation(value.get()));
   model_.diagnostics_clear();
 }
 
