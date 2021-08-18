@@ -93,6 +93,7 @@ private:
   void parse(std::string_view input);
 
   using tunary_operation = int64_t (*)(int64_t) noexcept;
+  using tunary_operation_v2 = void (tvalue::*)();
   using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
 
   /**
@@ -105,6 +106,7 @@ private:
    * to its parent.
    */
   void math_unary_operation(tunary_operation operation);
+  void math_unary_operation(tunary_operation_v2 operation);
 
   /**
    * Calculates the binary operation on two values.
@@ -245,9 +247,9 @@ void tcontroller::handle_keyboard_input_control(char key) {
     model_.base_set(tbase::hexadecimal);
     break;
 
-	/*** Miscellaneous ***/
+    /*** Miscellaneous ***/
   case 'n':
-    math_unary_operation(math::negate);
+    math_unary_operation(&tvalue::negate);
     break;
   }
 }
@@ -282,6 +284,19 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
 
   const tvalue value = model_.stack_pop();
   model_.stack_push(operation(value.get()));
+  model_.diagnostics_clear();
+}
+
+void tcontroller::math_unary_operation(tunary_operation_v2 operation) {
+  if (const std::string input = model_.input_steal(); !input.empty())
+    push(input);
+
+  if (model_.stack_empty())
+    throw std::out_of_range("Stack doesn't contain an element");
+
+  tvalue value = model_.stack_pop();
+  (value.*operation)();
+  model_.stack_push(value);
   model_.diagnostics_clear();
 }
 

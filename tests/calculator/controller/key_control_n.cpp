@@ -40,7 +40,7 @@ TEST(controller, key_char_control_n_input) {
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), -3);
+  EXPECT_EQ(model.stack_pop(), -3);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -52,7 +52,25 @@ TEST(controller, key_char_control_n_stack) {
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), -3);
+  EXPECT_EQ(model.stack_pop(), -3);
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+// TODO test with INT64_MIN
+TEST(controller, key_char_control_n_round_trip) {
+  tmodel model;
+  tcontroller controller{model};
+  model.stack_push(3);
+
+  // Note 2 round-trips just for coverage.
+  // TODO make this one round-trip.
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack_pop(), 3);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -65,7 +83,7 @@ TEST(controller, key_char_control_n_diagnostics_cleared) {
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), -42);
+  EXPECT_EQ(model.stack_pop(), -42);
   EXPECT_TRUE(model.input_get().empty());
 }
 
