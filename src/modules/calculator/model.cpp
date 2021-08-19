@@ -211,77 +211,65 @@ void tmodel::synchronise_display() const {
 }
 
 #if !defined(__cpp_lib_format)
-static std::string format_binary(const tvalue &value) {
-  return value.visit([](auto v) {
+static std::string format_binary(uint64_t v) {
+  std::string result;
+  result += "0b";
+  char buffer[64];
+  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
+  result.append(std::begin(buffer), ptr);
+  return result;
+}
+
+static std::string format_octal(uint64_t v) {
+  std::string result;
+  if (v != 0)
+    result += "0";
+  char buffer[22];
+  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
+  result.append(std::begin(buffer), ptr);
+  return result;
+}
+
+static std::string format_decimal(uint64_t v) { return std::to_string(v); }
+
+static std::string format_hexadecimal(uint64_t v) {
+  std::string result;
+  result += "0x";
+  char buffer[8];
+  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
+  result.append(std::begin(buffer), ptr);
+  return result;
+}
+
+static std::string format(tbase base, const tvalue &value) {
+  return value.visit([base](auto v) {
     static_assert(std::same_as<int64_t, decltype(v)> ||
                   std::same_as<uint64_t, decltype(v)>);
     std::string result;
     if constexpr (std::same_as<int64_t, decltype(v)>)
       if (v < 0) {
         result += '-';
-        // Note -v may not work properly. However std::format doesn't have this
-        // issue.
+        // Note -v may not work properly. However std::format doesn't have
+        // this issue.
         v = -v;
       }
-
-    result += "0b";
-    char buffer[64];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
-    result.append(std::begin(buffer), ptr);
+    switch (base) {
+    case tbase::binary:
+      result.append(format_binary(v));
+      break;
+    case tbase::octal:
+      result.append(format_octal(v));
+      break;
+    case tbase::decimal:
+      result.append(format_decimal(v));
+      break;
+    case tbase::hexadecimal:
+      result.append(format_hexadecimal(v));
+      break;
+    }
     return result;
   });
 }
-
-static std::string format_octal(const tvalue &value) {
-  return value.visit([](auto v) {
-    static_assert(std::same_as<int64_t, decltype(v)> ||
-                  std::same_as<uint64_t, decltype(v)>);
-    std::string result;
-    if constexpr (std::same_as<int64_t, decltype(v)>)
-      if (v < 0) {
-        result += '-';
-        // Note -v may not work properly. However std::format doesn't have this
-        // issue.
-        v = -v;
-      }
-    if (v != 0)
-      result += "0";
-    char buffer[22];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
-    result.append(std::begin(buffer), ptr);
-    return result;
-  });
-}
-
-static std::string format_decimal(const tvalue &value) {
-  return value.visit([](auto v) {
-    static_assert(std::same_as<int64_t, decltype(v)> ||
-                  std::same_as<uint64_t, decltype(v)>);
-    return std::to_string(v);
-  });
-}
-
-static std::string format_hexadecimal(const tvalue &value) {
-  return value.visit([](auto v) {
-    static_assert(std::same_as<int64_t, decltype(v)> ||
-                  std::same_as<uint64_t, decltype(v)>);
-    std::string result;
-    if constexpr (std::same_as<int64_t, decltype(v)>)
-      if (v < 0) {
-        result += '-';
-        // Note -v may not work properly. However std::format doesn't have this
-        // issue.
-        v = -v;
-      }
-
-    result += "0x";
-    char buffer[8];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
-    result.append(std::begin(buffer), ptr);
-    return result;
-  });
-}
-
 #endif
 
 [[nodiscard]] std::string tmodel::format(const tvalue &value) const {
@@ -301,23 +289,8 @@ static std::string format_hexadecimal(const tvalue &value) {
   __builtin_unreachable();
 #else
   // Initialize with right alignment for FLTK.
-  std::string result = "@r";
+  return "@r" + calculator::format(base_, value);
 
-  switch (base_) {
-  case tbase::binary:
-    result.append(format_binary(value));
-    break;
-  case tbase::octal:
-    result.append(format_octal(value));
-    break;
-  case tbase::decimal:
-    result.append(format_decimal(value));
-    break;
-  case tbase::hexadecimal:
-    result.append(format_hexadecimal(value));
-    break;
-  }
-  return result;
 #endif
 }
 
