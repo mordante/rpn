@@ -29,4 +29,16 @@ TEST(model, stack_drop) {
   EXPECT_TRUE(model.input_get().empty());
   EXPECT_TRUE(model.stack_empty());
 }
+
+TEST(model, stack_display_double) {
+  tmodel model;
+  model.stack_push(tvalue{-42.0});
+  model.stack_push(tvalue{0.1});
+  model.stack_push(tvalue{42.23});
+  model.stack_push(tvalue{100.456});
+  // Note these results are expected to change when std::format will be used.
+  EXPECT_EQ(model.stack(),
+            (std::vector<std::string>{
+                {"@r-42"}, {"@r0.1"}, {"@r42.23"}, {"@r100.456"}}));
+}
 } // namespace calculator

@@ -36,7 +36,7 @@ not_covered = {
         {
             'lines' : 0,
             'branches' : 2,
-            'regions': 0,
+            'regions': 1,
         },
     path + '/src/modules/calculator/value.cpp' :
         {

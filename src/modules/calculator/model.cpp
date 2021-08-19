@@ -244,30 +244,38 @@ static std::string format_hexadecimal(uint64_t v) {
 static std::string format(tbase base, const tvalue &value) {
   return value.visit([base](auto v) {
     static_assert(std::same_as<int64_t, decltype(v)> ||
-                  std::same_as<uint64_t, decltype(v)>);
-    std::string result;
-    if constexpr (std::same_as<int64_t, decltype(v)>)
-      if (v < 0) {
-        result += '-';
-        // Note -v may not work properly. However std::format doesn't have
-        // this issue.
-        v = -v;
+                  std::same_as<uint64_t, decltype(v)> ||
+                  std::same_as<double, decltype(v)>);
+    if constexpr (std::same_as<int64_t, decltype(v)> ||
+                  std::same_as<uint64_t, decltype(v)>) {
+      std::string result;
+      if constexpr (std::same_as<int64_t, decltype(v)>)
+        if (v < 0) {
+          result += '-';
+          // Note -v may not work properly. However std::format doesn't have
+          // this issue.
+          v = -v;
+        }
+      switch (base) {
+      case tbase::binary:
+        result.append(format_binary(v));
+        break;
+      case tbase::octal:
+        result.append(format_octal(v));
+        break;
+      case tbase::decimal:
+        result.append(format_decimal(v));
+        break;
+      case tbase::hexadecimal:
+        result.append(format_hexadecimal(v));
+        break;
       }
-    switch (base) {
-    case tbase::binary:
-      result.append(format_binary(v));
-      break;
-    case tbase::octal:
-      result.append(format_octal(v));
-      break;
-    case tbase::decimal:
-      result.append(format_decimal(v));
-      break;
-    case tbase::hexadecimal:
-      result.append(format_hexadecimal(v));
-      break;
+      return result;
+    } else {
+      char buf[128];
+      std::sprintf(buf, "%g", v);
+      return std::string{buf};
     }
-    return result;
   });
 }
 #endif
