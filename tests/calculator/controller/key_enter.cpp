@@ -40,7 +40,7 @@ TEST(controller, key_enter_duplicate_empty_stack) {
 TEST(controller, key_enter_duplicate_non_empty_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());

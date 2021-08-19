@@ -343,7 +343,8 @@ void tcontroller::parse(std::string_view input) {
   if (result.ptr != input.end())
     throw std::domain_error("Invalid numeric value");
 
-  model_.stack_push(value);
+  // TODO add stack_emplace?
+  model_.stack_push(tvalue{value});
 }
 
 void tcontroller::diagnostics_set(const std::exception &e) {

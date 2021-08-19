@@ -47,7 +47,7 @@ TEST(controller, key_char_tilde_input) {
 TEST(controller, key_char_tilde_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(3);
+  model.stack_push(tvalue{3});
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
@@ -60,7 +60,7 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());

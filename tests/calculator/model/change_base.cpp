@@ -22,10 +22,10 @@ namespace calculator {
 
 TEST(model, base_set) {
   tmodel model;
-  model.stack_push(-42);
-  model.stack_push(0);
-  model.stack_push(42);
-  model.stack_push(100);
+  model.stack_push(tvalue{-42});
+  model.stack_push(tvalue{0});
+  model.stack_push(tvalue{42});
+  model.stack_push(tvalue{100});
   EXPECT_EQ(model.stack(), (std::vector<std::string>{
                                {"@r-42"}, {"@r0"}, {"@r42"}, {"@r100"}}));
 

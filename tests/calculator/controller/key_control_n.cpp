@@ -47,7 +47,7 @@ TEST(controller, key_char_control_n_input) {
 TEST(controller, key_char_control_n_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(3);
+  model.stack_push(tvalue{3});
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
@@ -60,7 +60,7 @@ TEST(controller, key_char_control_n_stack) {
 TEST(controller, key_char_control_n_round_trip) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(3);
+  model.stack_push(tvalue{3});
 
   // Note 2 round-trips just for coverage.
   // TODO make this one round-trip.
@@ -78,7 +78,7 @@ TEST(controller, key_char_control_n_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());

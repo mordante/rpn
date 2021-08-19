@@ -72,8 +72,8 @@ TEST(model, stack_base_default) {
   }
 
   tmodel model;
-  model.stack_push(42);
-  model.stack_push(100);
+  model.stack_push(tvalue{42});
+  model.stack_push(tvalue{100});
   EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}, {"@r100"}}));
 
   model.stack_drop();
@@ -84,7 +84,7 @@ TEST(model, stack_base_default) {
 TEST(model, stack_base_2) {
   tmodel model;
   model.base_set(tbase::binary);
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0b101010"});
 
   model.stack_drop();
@@ -94,7 +94,7 @@ TEST(model, stack_base_2) {
 TEST(model, stack_base_8) {
   tmodel model;
   model.base_set(tbase::octal);
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r052"});
 
   model.stack_drop();
@@ -104,7 +104,7 @@ TEST(model, stack_base_8) {
 TEST(model, stack_base_10) {
   tmodel model;
   model.base_set(tbase::decimal);
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r42"});
 
   model.stack_drop();
@@ -114,7 +114,7 @@ TEST(model, stack_base_10) {
 TEST(model, stack_base_16) {
   tmodel model;
   model.base_set(tbase::hexadecimal);
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0x2a"});
 
   model.stack_drop();
@@ -124,13 +124,13 @@ TEST(model, stack_base_16) {
 TEST(model, stack_push) {
   tmodel model;
 
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_TRUE(model.input_get().empty());
 
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 2);
@@ -141,8 +141,8 @@ TEST(model, stack_pop) {
   tmodel model;
   tvalue value;
 
-  model.stack_push(42);
-  model.stack_push(1);
+  model.stack_push(tvalue{42});
+  model.stack_push(tvalue{1});
 
   value = model.stack_pop();
   EXPECT_EQ(value, 1);

@@ -40,7 +40,7 @@ TEST(controller, key_backspace_empty_input_empty_stack) {
 TEST(controller, key_backspace_non_empty_input_non_empty_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   model.input_append("abc");
 
   controller.handle_keyboard_input(tkey::backspace);

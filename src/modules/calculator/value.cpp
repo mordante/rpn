@@ -21,7 +21,7 @@ export import<variant>;
 
 namespace calculator {
 
-using tstorage = std::variant<int64_t, uint64_t>;
+using tstorage = std::variant<int64_t, uint64_t, double>;
 
 /**
  * Basic value class for the entries on the calculator's stack.
@@ -38,8 +38,11 @@ export class tvalue final {
 public:
   tvalue() = default;
 
-  /** Converting constructor. */
-  constexpr tvalue(int64_t value) noexcept : value_(value) {}
+  /** @todo This constructor is a hack to avoid ambigious overloads. */
+  explicit constexpr tvalue(int value) noexcept
+      : tvalue(static_cast<int64_t>(value)) {}
+  explicit constexpr tvalue(int64_t value) noexcept : value_(value) {}
+  explicit constexpr tvalue(double value) noexcept : value_(value) {}
 
   /**
    * A visitor to use the internal values of the stored value.
