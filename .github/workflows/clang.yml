@@ -29,7 +29,6 @@ jobs:
           make ccov-export-tests
           ../utils/check_coverage.py
           make ccov-tests
-          cp -r ccov/tests/* ../www/coverage/
 
       - name: Documentation
         run: |
@@ -37,6 +36,7 @@ jobs:
           mkdir doc/_static
           mkdir doc/_templates
           sphinx-build -b html doc www
+          cp -r build/ccov/tests www/coverage
 
       - name: Update website
         uses: s0/git-publish-subdir-action@develop
