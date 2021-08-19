@@ -1,5 +1,5 @@
 # Copied from
-# https://github.com/StableCoder/cmake-scripts/blob/e07087b0682da7ae0d2d9f9292fa4a7a6c821067/code-coverage.cmake
+# https://github.com/StableCoder/cmake-scripts/blob/9bc4e0f51be4c1e0d124aae4315d1680211dd595/code-coverage.cmake
 
 #
 # Copyright (C) 2018-2020 by George Cave - gcave@stablecoder.ca
