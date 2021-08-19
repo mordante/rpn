@@ -38,8 +38,7 @@ export class tvalue final {
 public:
   tvalue() = default;
 
-  /** Converting constructor. */
-  constexpr tvalue(int64_t value) noexcept : value_(value) {}
+  explicit constexpr tvalue(int64_t value) noexcept : value_(value) {}
 
   /**
    * A visitor to use the internal values of the stored value.

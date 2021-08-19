@@ -22,7 +22,7 @@ namespace calculator {
 
 TEST(model, stack_drop) {
   tmodel model;
-  model.stack_push(0);
+  model.stack_push(tvalue(0));
 
   model.stack_drop();
   EXPECT_TRUE(model.diagnostics_get().empty());

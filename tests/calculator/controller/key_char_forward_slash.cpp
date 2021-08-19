@@ -30,7 +30,7 @@ TEST(controller, key_char_forward_slash_too_few_elements) {
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
 
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
@@ -42,7 +42,7 @@ TEST(controller, key_char_forward_slash_too_few_elements) {
 TEST(controller, key_char_forward_slash_stack_input) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   model.input_append("2");
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
@@ -55,8 +55,8 @@ TEST(controller, key_char_forward_slash_stack_input) {
 TEST(controller, key_char_forward_slash_stack_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
-  model.stack_push(2);
+  model.stack_push(tvalue{42});
+  model.stack_push(tvalue{2});
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_TRUE(model.diagnostics_get().empty());
@@ -69,8 +69,8 @@ TEST(controller, key_char_forward_slash_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(42);
-  model.stack_push(2);
+  model.stack_push(tvalue{42});
+  model.stack_push(tvalue{2});
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_TRUE(model.diagnostics_get().empty());
@@ -82,7 +82,7 @@ TEST(controller, key_char_forward_slash_diagnostics_cleared) {
 TEST(controller, key_char_forward_slash_input_invalid) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
@@ -96,7 +96,7 @@ TEST(controller, key_char_forward_slash_by_zero) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   model.stack_push(0);
 
   controller.handle_keyboard_input(tmodifiers::none,'/');

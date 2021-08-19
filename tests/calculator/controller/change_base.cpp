@@ -23,7 +23,7 @@ namespace calculator {
 TEST(controller, key_char_control_base) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(42);
+  model.stack_push(tvalue{42});
   EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}}));
 
   controller.handle_keyboard_input(tmodifiers::control, 'b');
