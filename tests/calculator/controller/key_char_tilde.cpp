@@ -40,7 +40,7 @@ TEST(controller, key_char_tilde_input) {
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~3);
+  EXPECT_EQ(model.stack_pop(), ~3);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -52,7 +52,7 @@ TEST(controller, key_char_tilde_stack) {
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~3);
+  EXPECT_EQ(model.stack_pop(), ~3);
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -65,7 +65,7 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop().get(), ~42);
+  EXPECT_EQ(model.stack_pop(), ~42);
   EXPECT_TRUE(model.input_get().empty());
 }
 

@@ -38,6 +38,12 @@ not_covered = {
             'branches' : 2,
             'regions': 0,
         },
+    path + '/src/modules/calculator/value.cpp' :
+        {
+            'lines' : 7,
+            'branches' : 5,
+            'regions': 7,
+        },
 }
 
 file = open(path + '/build/ccov/tests.json')

@@ -15,7 +15,6 @@
 export module calculator.controller;
 
 import calculator.model;
-import math;
 
 import<charconv>;
 import<format>;
@@ -92,8 +91,8 @@ private:
   void duplicate_last_entry();
   void parse(std::string_view input);
 
-  using tunary_operation = int64_t (*)(int64_t) noexcept;
-  using tbinary_operation = int64_t (*)(int64_t, int64_t) noexcept;
+  using tunary_operation = void (tvalue::*)();
+  using tbinary_operation = void (tvalue::*)(const tvalue &);
 
   /**
    * Calculates the unary operation on a value.
@@ -179,45 +178,45 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   switch (key) {
     /*** Basic arithmetic operations ***/
   case '+':
-    math_binary_operation(math::add);
+    math_binary_operation(&tvalue::add);
     break;
 
   case '-':
-    math_binary_operation(math::sub);
+    math_binary_operation(&tvalue::sub);
     break;
 
   case '*':
-    math_binary_operation(math::mul);
+    math_binary_operation(&tvalue::mul);
     break;
 
   case '/':
-    math_binary_operation(math::div);
+    math_binary_operation(&tvalue::div);
     break;
 
     /*** Bitwise operations ***/
   case '&':
-    math_binary_operation(math::bit_and);
+    math_binary_operation(&tvalue::bit_and);
     break;
 
   case '|':
-    math_binary_operation(math::bit_or);
+    math_binary_operation(&tvalue::bit_or);
     break;
 
   case '^':
-    math_binary_operation(math::bit_xor);
+    math_binary_operation(&tvalue::bit_xor);
     break;
 
   case '~':
-    math_unary_operation(math::bit_complement);
+    math_unary_operation(&tvalue::complement);
     break;
 
     /*** Bitwise shifts ***/
   case '<':
-    math_binary_operation(math::shl);
+    math_binary_operation(&tvalue::shl);
     break;
 
   case '>':
-    math_binary_operation(math::shr);
+    math_binary_operation(&tvalue::shr);
     break;
 
     /*** Others ***/
@@ -245,9 +244,9 @@ void tcontroller::handle_keyboard_input_control(char key) {
     model_.base_set(tbase::hexadecimal);
     break;
 
-	/*** Miscellaneous ***/
+    /*** Miscellaneous ***/
   case 'n':
-    math_unary_operation(math::negate);
+    math_unary_operation(&tvalue::negate);
     break;
   }
 }
@@ -268,8 +267,9 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
     throw std::out_of_range("Stack doesn't contain two elements");
 
   const tvalue rhs = model_.stack_pop();
-  const tvalue lhs = model_.stack_pop();
-  model_.stack_push(operation(lhs.get(), rhs.get()));
+  tvalue lhs = model_.stack_pop();
+  (lhs.*operation)(rhs);
+  model_.stack_push(lhs);
   model_.diagnostics_clear();
 }
 
@@ -280,8 +280,9 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
   if (model_.stack_empty())
     throw std::out_of_range("Stack doesn't contain an element");
 
-  const tvalue value = model_.stack_pop();
-  model_.stack_push(operation(value.get()));
+  tvalue value = model_.stack_pop();
+  (value.*operation)();
+  model_.stack_push(value);
   model_.diagnostics_clear();
 }
 

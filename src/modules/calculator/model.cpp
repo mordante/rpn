@@ -17,6 +17,7 @@ export module calculator.model;
 export import calculator.value;
 
 import<charconv>;
+import<concepts>;
 import<format>;
 import<string>;
 import<string_view>;
@@ -209,9 +210,84 @@ void tmodel::synchronise_display() const {
   dirty_ = false;
 }
 
+#if !defined(__cpp_lib_format)
+static std::string format_binary(const tvalue &value) {
+  return value.visit([](auto v) {
+    static_assert(std::same_as<int64_t, decltype(v)> ||
+                  std::same_as<uint64_t, decltype(v)>);
+    std::string result;
+    if constexpr (std::same_as<int64_t, decltype(v)>)
+      if (v < 0) {
+        result += '-';
+        // Note -v may not work properly. However std::format doesn't have this
+        // issue.
+        v = -v;
+      }
+
+    result += "0b";
+    char buffer[64];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
+    result.append(std::begin(buffer), ptr);
+    return result;
+  });
+}
+
+static std::string format_octal(const tvalue &value) {
+  return value.visit([](auto v) {
+    static_assert(std::same_as<int64_t, decltype(v)> ||
+                  std::same_as<uint64_t, decltype(v)>);
+    std::string result;
+    if constexpr (std::same_as<int64_t, decltype(v)>)
+      if (v < 0) {
+        result += '-';
+        // Note -v may not work properly. However std::format doesn't have this
+        // issue.
+        v = -v;
+      }
+    if (v != 0)
+      result += "0";
+    char buffer[22];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
+    result.append(std::begin(buffer), ptr);
+    return result;
+  });
+}
+
+static std::string format_decimal(const tvalue &value) {
+  return value.visit([](auto v) {
+    static_assert(std::same_as<int64_t, decltype(v)> ||
+                  std::same_as<uint64_t, decltype(v)>);
+    return std::to_string(v);
+  });
+}
+
+static std::string format_hexadecimal(const tvalue &value) {
+  return value.visit([](auto v) {
+    static_assert(std::same_as<int64_t, decltype(v)> ||
+                  std::same_as<uint64_t, decltype(v)>);
+    std::string result;
+    if constexpr (std::same_as<int64_t, decltype(v)>)
+      if (v < 0) {
+        result += '-';
+        // Note -v may not work properly. However std::format doesn't have this
+        // issue.
+        v = -v;
+      }
+
+    result += "0x";
+    char buffer[8];
+    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
+    result.append(std::begin(buffer), ptr);
+    return result;
+  });
+}
+
+#endif
+
 [[nodiscard]] std::string tmodel::format(const tvalue &value) const {
 #if defined(__cpp_lib_format)
   // All formats use the '@r' prefix, this uses the right alignment in FLTK.
+  // TODO Adjust for visitor.
   switch (base_) {
   case tbase::binary:
     return std::format("@r{:#b}", value.get());
@@ -228,50 +304,18 @@ void tmodel::synchronise_display() const {
   std::string result = "@r";
 
   switch (base_) {
-  case tbase::binary: {
-    int64_t v = value.get();
-    if (v < 0) {
-      result += '-';
-      // Note -v may not work properly. However std::format doesn't have this
-      // issue.
-      v = -v;
-    }
-    result += "0b";
-    char buffer[64];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
-    result.append(std::begin(buffer), ptr);
-  } break;
-  case tbase::octal: {
-    int64_t v = value.get();
-    if (v < 0) {
-      result += '-';
-      // Note -v may not work properly. However std::format doesn't have this
-      // issue.
-      v = -v;
-    }
-    if (v != 0)
-      result += "0";
-    char buffer[22];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
-    result.append(std::begin(buffer), ptr);
-  } break;
-  case tbase::decimal:
-    result += std::to_string(value.get());
+  case tbase::binary:
+    result.append(format_binary(value));
     break;
-
-  case tbase::hexadecimal: {
-    int64_t v = value.get();
-    if (v < 0) {
-      result += '-';
-      // Note -v may not work properly. However std::format doesn't have this
-      // issue.
-      v = -v;
-    }
-    result += "0x";
-    char buffer[8];
-    char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
-    result.append(std::begin(buffer), ptr);
-  } break;
+  case tbase::octal:
+    result.append(format_octal(value));
+    break;
+  case tbase::decimal:
+    result.append(format_decimal(value));
+    break;
+  case tbase::hexadecimal:
+    result.append(format_hexadecimal(value));
+    break;
   }
   return result;
 #endif
