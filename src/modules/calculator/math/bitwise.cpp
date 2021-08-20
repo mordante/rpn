@@ -14,21 +14,20 @@
 
 export module calculator.math.bitwise;
 
-import calculator.math.core;
-
-import<variant>;
+export import calculator.math.core;
 
 namespace calculator {
 namespace math {
 
 template <class T> static T bit_and(T lhs, T rhs) { return lhs & rhs; }
 
-export tstorage bit_and(tstorage lhs, tstorage rhs) {
-  if (std::holds_alternative<int64_t>(lhs) ||
+/** @see https://mordante.github.io/rpn/calculation.html#generic */
+export tstorage bit_and(const tstorage &lhs, const tstorage &rhs) {
+  if (std::holds_alternative<int64_t>(lhs) &&
       std::holds_alternative<int64_t>(rhs))
     return bit_and(std::get<int64_t>(lhs), std::get<int64_t>(rhs));
 
-  return bit_and(as<uint64_t>(lhs), as<uint64_t>(rhs));
+  return bit_and(bitwise_cast(lhs), bitwise_cast(rhs));
 }
 
 } // namespace math

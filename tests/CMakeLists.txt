@@ -20,6 +20,8 @@ add_executable(tests
 	calculator/model/input.cpp
 	calculator/model/stack.cpp
 	calculator/value.cpp
+	calculator/value/math/bitwise/and.cpp
+	calculator/value/math/core.cpp
 	format_error.cpp
 )
 target_compile_options(tests
