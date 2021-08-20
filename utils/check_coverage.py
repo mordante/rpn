@@ -32,17 +32,23 @@ not_covered = {
             'branches' : 4,
             'regions': 3,
         },
+    path + '/src/modules/calculator/math/bitwise.cpp' :
+        {
+            'lines' : 1,
+            'branches' : 3,
+            'regions': 2,
+        },
+    path + '/src/modules/calculator/math/core.cpp' :
+        {
+            'lines' : 7,
+            'branches' : 2,
+            'regions': 5,
+        },
     path + '/src/modules/calculator/model.cpp' :
         {
             'lines' : 0,
             'branches' : 2,
             'regions': 1,
-        },
-    path + '/src/modules/calculator/value.cpp' :
-        {
-            'lines' : 7,
-            'branches' : 5,
-            'regions': 7,
         },
 }
 
