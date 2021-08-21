@@ -85,6 +85,9 @@ In these operations step 4 is optional. When the operation is performed with a
 non-empty input this input will be pushed on the stack before the
 operation [#note-stack]_.
 
+This is a short summary of the operations, but behind the scenes the
+`calculations <calculation.html>`_ have more complexity.
+
 * Arithmetic:
 
   ``+``
@@ -187,6 +190,11 @@ improvement has dropped low on the priority list.
 
 Links
 =====
+
+.. toctree::
+   :maxdepth: 1
+
+   calculation
 
 * `Coverage report <coverage/index.html>`_
 
