@@ -21,6 +21,9 @@ add_executable(tests
 	calculator/model/stack.cpp
 	calculator/value.cpp
 	calculator/value/math/bitwise/and.cpp
+	calculator/value/math/bitwise/complement.cpp
+	calculator/value/math/bitwise/or.cpp
+	calculator/value/math/bitwise/xor.cpp
 	calculator/value/math/core.cpp
 	format_error.cpp
 )
