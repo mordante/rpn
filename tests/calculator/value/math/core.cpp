@@ -110,5 +110,122 @@ TEST(core, positive_integral_cast_double) {
                std::range_error);
 }
 
+template <class I> static void to_storage_double() {
+  ASSERT_TRUE(std::holds_alternative<double>(
+      to_storage<I>(__int128_t(std::numeric_limits<int64_t>::min()) - 1)));
+  EXPECT_EQ(
+      std::get<double>(
+          to_storage<I>(__int128_t(std::numeric_limits<int64_t>::min()) - 1)),
+      static_cast<double>(__int128_t(std::numeric_limits<int64_t>::min()) - 1));
+
+  ASSERT_TRUE(std::holds_alternative<double>(
+      to_storage<I>(__int128_t(std::numeric_limits<uint64_t>::max()) + 1)));
+  EXPECT_EQ(std::get<double>(to_storage<I>(
+                __int128_t(std::numeric_limits<uint64_t>::max()) + 1)),
+            static_cast<double>(
+                __int128_t(std::numeric_limits<uint64_t>::max()) + 1));
+}
+
+TEST(core, to_storage_int128_prefer_int64_t) {
+  /*** int64_t ***/
+
+  ASSERT_TRUE(std::holds_alternative<int64_t>(
+      to_storage<int64_t>(__int128_t(std::numeric_limits<int64_t>::min()))));
+  EXPECT_EQ(std::get<int64_t>(to_storage<int64_t>(
+                __int128_t(std::numeric_limits<int64_t>::min()))),
+            std::numeric_limits<int64_t>::min());
+
+  ASSERT_TRUE(std::holds_alternative<int64_t>(
+      to_storage<int64_t>(__int128_t(std::numeric_limits<int64_t>::max()))));
+  EXPECT_EQ(std::get<int64_t>(to_storage<int64_t>(
+                __int128_t(std::numeric_limits<int64_t>::max()))),
+            std::numeric_limits<int64_t>::max());
+
+  /*** uint64_t ***/
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(to_storage<int64_t>(
+      __int128_t(std::numeric_limits<int64_t>::max()) + 1)));
+  EXPECT_EQ(std::get<uint64_t>(to_storage<int64_t>(
+                __int128_t(std::numeric_limits<int64_t>::max()) + 1)),
+            uint64_t(std::numeric_limits<int64_t>::max()) + 1);
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(
+      to_storage<int64_t>(__int128_t(std::numeric_limits<uint64_t>::max()))));
+  EXPECT_EQ(std::get<uint64_t>(to_storage<int64_t>(
+                __int128_t(std::numeric_limits<uint64_t>::max()))),
+            std::numeric_limits<uint64_t>::max());
+
+  /*** double ***/
+  to_storage_double<int64_t>();
+}
+
+TEST(core, to_storage_int128_prefer_uint64_t) {
+  /*** int64_t ***/
+
+  ASSERT_TRUE(std::holds_alternative<int64_t>(
+      to_storage<uint64_t>(__int128_t(std::numeric_limits<int64_t>::min()))));
+  EXPECT_EQ(std::get<int64_t>(to_storage<uint64_t>(
+                __int128_t(std::numeric_limits<int64_t>::min()))),
+            std::numeric_limits<int64_t>::min());
+
+  ASSERT_TRUE(
+      std::holds_alternative<int64_t>(to_storage<uint64_t>(__int128_t(-1))));
+  EXPECT_EQ(std::get<int64_t>(to_storage<uint64_t>(__int128_t(-1))), -1);
+
+  /*** uint64_t ***/
+
+  ASSERT_TRUE(
+      std::holds_alternative<uint64_t>(to_storage<uint64_t>(__int128_t(0))));
+  EXPECT_EQ(std::get<uint64_t>(to_storage<uint64_t>(__int128_t(0))), 0);
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(
+      to_storage<uint64_t>(__int128_t(std::numeric_limits<uint64_t>::max()))));
+  EXPECT_EQ(std::get<uint64_t>(to_storage<uint64_t>(
+                __int128_t(std::numeric_limits<uint64_t>::max()))),
+            std::numeric_limits<uint64_t>::max());
+
+  /*** double ***/
+  to_storage_double<uint64_t>();
+}
+
+TEST(core, to_storage_int128_defaulted_preference) {
+  /*** int64_t ***/
+
+  ASSERT_TRUE(std::holds_alternative<int64_t>(
+      to_storage(__int128_t(std::numeric_limits<int64_t>::min()))));
+  EXPECT_EQ(std::get<int64_t>(
+                to_storage(__int128_t(std::numeric_limits<int64_t>::min()))),
+            std::numeric_limits<int64_t>::min());
+
+  ASSERT_TRUE(std::holds_alternative<int64_t>(to_storage(__int128_t(-1))));
+  EXPECT_EQ(std::get<int64_t>(to_storage(__int128_t(-1))), -1);
+
+  /*** uint64_t ***/
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(to_storage(__int128_t(0))));
+  EXPECT_EQ(std::get<uint64_t>(to_storage(__int128_t(0))), 0);
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(
+      to_storage(__int128_t(std::numeric_limits<uint64_t>::max()))));
+  EXPECT_EQ(std::get<uint64_t>(
+                to_storage(__int128_t(std::numeric_limits<uint64_t>::max()))),
+            std::numeric_limits<uint64_t>::max());
+
+  /*** double ***/
+  ASSERT_TRUE(std::holds_alternative<double>(
+      to_storage(__int128_t(std::numeric_limits<int64_t>::min()) - 1)));
+  EXPECT_EQ(
+      std::get<double>(
+          to_storage(__int128_t(std::numeric_limits<int64_t>::min()) - 1)),
+      static_cast<double>(__int128_t(std::numeric_limits<int64_t>::min()) - 1));
+
+  ASSERT_TRUE(std::holds_alternative<double>(
+      to_storage(__int128_t(std::numeric_limits<uint64_t>::max()) + 1)));
+  EXPECT_EQ(std::get<double>(to_storage(
+                __int128_t(std::numeric_limits<uint64_t>::max()) + 1)),
+            static_cast<double>(
+                __int128_t(std::numeric_limits<uint64_t>::max()) + 1));
+}
+
 } // namespace math
 } // namespace calculator

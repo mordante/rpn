@@ -14,12 +14,55 @@
 
 export module calculator.math.arithmetic;
 
-import calculator.math.core;
+export import calculator.math.core;
 
-import<variant>;
+export import<variant>;
 
 namespace calculator {
 namespace math {
+
+static tstorage add(int64_t lhs, int64_t rhs) {
+  return to_storage<int64_t>(static_cast<__int128_t>(lhs) +
+                             static_cast<__int128_t>(rhs));
+}
+
+static tstorage add(uint64_t lhs, uint64_t rhs) {
+  uint64_t result = lhs + rhs;
+  if (result >= lhs)
+    return result;
+
+  return static_cast<double>(lhs) + static_cast<double>(rhs);
+}
+
+static tstorage add(uint64_t lhs, int64_t rhs) {
+  return to_storage(static_cast<__int128_t>(lhs) +
+                    static_cast<__int128_t>(rhs));
+}
+
+static double add(double lhs, double rhs) { return lhs + rhs; }
+
+/** @see https://mordante.github.io/rpn/calculation.html#add */
+export tstorage add(const tstorage &lhs, const tstorage &rhs) {
+  if (std::holds_alternative<double>(lhs) ||
+      std::holds_alternative<double>(rhs))
+    return add(double_cast(lhs), double_cast(rhs));
+
+  if (std::holds_alternative<int64_t>(lhs) &&
+      std::holds_alternative<int64_t>(rhs))
+    return add(get<int64_t>(lhs), get<int64_t>(rhs));
+
+  if (std::holds_alternative<uint64_t>(lhs) &&
+      std::holds_alternative<uint64_t>(rhs))
+    return add(get<uint64_t>(lhs), get<uint64_t>(rhs));
+
+  // At this point either lhs or rhs is an uint64_t and the other is an
+  // int64_t. Since addition is communative use one helper function for both.
+
+  if (std::holds_alternative<uint64_t>(lhs))
+    return add(get<uint64_t>(lhs), get<int64_t>(rhs));
+
+  return add(get<uint64_t>(rhs), get<int64_t>(lhs));
+}
 
 /**
  * @todo Determine proper return type. It now toggles between the signed and

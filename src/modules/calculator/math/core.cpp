@@ -87,5 +87,48 @@ export uint64_t positive_integral_cast(const tstorage &value) {
   return std::visit([](auto v) { return positive_integral_cast(v); }, value);
 }
 
+static double double_cast(int64_t value) { return value; }
+
+static double double_cast(uint64_t value) { return value; }
+
+static double double_cast(double value) { return value; }
+
+/** Catches changes of @ref tstorage. */
+template <class T> static double double_cast(T) = delete;
+
+export double double_cast(const tstorage &value) {
+  return std::visit([](auto v) { return double_cast(v); }, value);
+}
+
+/**
+ * Converts the @p value to the proper @ref tstorage type.
+ *
+ * Some of the calculations use an @c __int128_t internally for their
+ * calculations. This function does the generic store in the best storage type
+ * action.
+ *
+ * When the result can be stored in both an @c uint64_t and an @c int64_t this
+ * version preferes the @c uint64_t.
+ */
+export template <class T = uint64_t>
+requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>) tstorage
+    to_storage(__int128_t value) {
+  if (value < std::numeric_limits<int64_t>::min() ||
+      value > std::numeric_limits<uint64_t>::max())
+    return static_cast<double>(value);
+
+  if constexpr (std::same_as<T, uint64_t>) {
+    if (value < 0)
+      return static_cast<int64_t>(value);
+
+    return static_cast<uint64_t>(value);
+  } else {
+    if (value > std::numeric_limits<int64_t>::max())
+      return static_cast<uint64_t>(value);
+
+    return static_cast<int64_t>(value);
+  }
+}
+
 } // namespace math
 } // namespace calculator

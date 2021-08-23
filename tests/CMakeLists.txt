@@ -20,6 +20,7 @@ add_executable(tests
 	calculator/model/input.cpp
 	calculator/model/stack.cpp
 	calculator/value.cpp
+	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/bitwise/and.cpp
 	calculator/value/math/bitwise/complement.cpp
 	calculator/value/math/bitwise/or.cpp
