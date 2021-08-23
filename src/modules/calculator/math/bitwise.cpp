@@ -61,5 +61,34 @@ export tstorage complement(const tstorage &value) {
 
   return complement(bitwise_cast(value));
 }
+
+template <class T> static T shl(T lhs, uint64_t rhs) { return lhs << rhs; }
+
+/** @see https://mordante.github.io/rpn/ calculation.html#bitwise-shifts */
+export tstorage shl(const tstorage &lhs, const tstorage &rhs) {
+  const uint64_t shift = positive_integral_cast(rhs);
+  if (shift > 64)
+    throw std::range_error("Shift too large");
+
+  if (std::holds_alternative<int64_t>(lhs))
+    return shl(std::get<int64_t>(lhs), shift);
+
+  return shl(bitwise_cast(lhs), shift);
+}
+
+template <class T> static T shr(T lhs, uint64_t rhs) { return lhs >> rhs; }
+
+/** @see https://mordante.github.io/rpn/calculation.html#bitwise-shifts */
+export tstorage shr(const tstorage &lhs, const tstorage &rhs) {
+  const uint64_t shift = positive_integral_cast(rhs);
+  if (shift > 64)
+    throw std::range_error("Shift too large");
+
+  if (std::holds_alternative<int64_t>(lhs))
+    return shr(std::get<int64_t>(lhs), shift);
+
+  return shr(bitwise_cast(lhs), shift);
+}
+
 } // namespace math
 } // namespace calculator

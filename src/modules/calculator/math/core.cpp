@@ -15,6 +15,7 @@
 export module calculator.math.core;
 
 import<bit>;
+import<cmath>;
 import<concepts>;
 export import<variant>;
 
@@ -51,6 +52,39 @@ template <class T> static uint64_t bitwise_cast(T) = delete;
  */
 export uint64_t bitwise_cast(const tstorage &value) {
   return std::visit([](auto v) { return bitwise_cast(v); }, value);
+}
+
+static uint64_t positive_integral_cast(int64_t value) {
+  if (value <= 0)
+    throw std::range_error("Not a positive value");
+  return value;
+}
+
+static uint64_t positive_integral_cast(uint64_t value) {
+  if (value == 0)
+    throw std::range_error("Not a positive value");
+  return value;
+}
+
+static uint64_t positive_integral_cast(double value) {
+  // This tests means we don't need to test for -0 later.
+  if (value <= 0.)
+    throw std::range_error("Not a positive value");
+
+  if (value > static_cast<double>(std::numeric_limits<uint64_t>::max()))
+    throw std::range_error("Value too large");
+
+  double result;
+  if (modf(value, &result) != 0.)
+    throw std::range_error("Not an integral");
+  return result;
+}
+
+/** Catches changes of @ref tstorage. */
+template <class T> static uint64_t positive_integral_cast(T) = delete;
+
+export uint64_t positive_integral_cast(const tstorage &value) {
+  return std::visit([](auto v) { return positive_integral_cast(v); }, value);
 }
 
 } // namespace math
