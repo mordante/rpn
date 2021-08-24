@@ -64,6 +64,57 @@ export tstorage add(const tstorage &lhs, const tstorage &rhs) {
   return add(get<uint64_t>(rhs), get<int64_t>(lhs));
 }
 
+static tstorage sub(int64_t lhs, int64_t rhs) {
+  const __int128_t result =
+      static_cast<__int128_t>(lhs) - static_cast<__int128_t>(rhs);
+
+  if (result >= std::numeric_limits<int64_t>::min() &&
+      result <= std::numeric_limits<int64_t>::max())
+    return static_cast<int64_t>(result);
+
+  return static_cast<uint64_t>(result);
+}
+
+static tstorage sub(uint64_t lhs, uint64_t rhs) {
+  return to_storage(static_cast<__int128_t>(lhs) -
+                    static_cast<__int128_t>(rhs));
+}
+static tstorage sub(uint64_t lhs, int64_t rhs) {
+  return to_storage(static_cast<__int128_t>(lhs) -
+                    static_cast<__int128_t>(rhs));
+}
+
+static tstorage sub(int64_t lhs, uint64_t rhs) {
+  const __int128_t result =
+      static_cast<__int128_t>(lhs) - static_cast<__int128_t>(rhs);
+
+  return to_storage(result);
+}
+
+static double sub(double lhs, double rhs) { return lhs - rhs; }
+
+/** @see https://mordante.github.io/rpn/calculation.html#sub */
+export tstorage sub(const tstorage &lhs, const tstorage &rhs) {
+  if (std::holds_alternative<double>(lhs) ||
+      std::holds_alternative<double>(rhs))
+    return sub(double_cast(lhs), double_cast(rhs));
+
+  if (std::holds_alternative<int64_t>(lhs) &&
+      std::holds_alternative<int64_t>(rhs))
+    return sub(get<int64_t>(lhs), get<int64_t>(rhs));
+
+  if (std::holds_alternative<uint64_t>(lhs) &&
+      std::holds_alternative<uint64_t>(rhs))
+    return sub(get<uint64_t>(lhs), get<uint64_t>(rhs));
+
+  // At this point either lhs or rhs is an uint64_t and the other is an
+  // int64_t.
+  if (std::holds_alternative<uint64_t>(lhs))
+    return sub(get<uint64_t>(lhs), get<int64_t>(rhs));
+
+  return sub(get<int64_t>(lhs), get<uint64_t>(rhs));
+}
+
 /**
  * @todo Determine proper return type. It now toggles between the signed and
  * unsigned integral type. This is mainly done for testing. Instead it should

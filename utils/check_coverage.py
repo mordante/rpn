@@ -32,6 +32,12 @@ not_covered = {
             'branches' : 4,
             'regions': 3,
         },
+    path + '/src/modules/calculator/math/arithmetic.cpp' :
+        {
+            'lines' : 0,
+            'branches' : 1,
+            'regions': 0,
+        },
     path + '/src/modules/calculator/math/core.cpp' :
         {
             'lines' : 0,
