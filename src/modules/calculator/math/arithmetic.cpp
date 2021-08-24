@@ -156,6 +156,18 @@ export tstorage mul(const tstorage &lhs, const tstorage &rhs) {
   return mul(get<uint64_t>(rhs), get<int64_t>(lhs));
 }
 
+static double div(double lhs, double rhs) {
+  if (rhs == 0.)
+    throw std::domain_error("Division by zero");
+
+  return lhs / rhs;
+}
+
+/** @see https://mordante.github.io/rpn/calculation.html#division */
+export tstorage div(const tstorage &lhs, const tstorage &rhs) {
+  return div(double_cast(lhs), double_cast(rhs));
+}
+
 /**
  * @todo Determine proper return type. It now toggles between the signed and
  * unsigned integral type. This is mainly done for testing. Instead it should
