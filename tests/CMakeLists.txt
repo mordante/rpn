@@ -23,6 +23,7 @@ add_executable(tests
 	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/arithmetic/division.cpp
 	calculator/value/math/arithmetic/multiply.cpp
+	calculator/value/math/arithmetic/negate.cpp
 	calculator/value/math/arithmetic/subtract.cpp
 	calculator/value/math/bitwise/and.cpp
 	calculator/value/math/bitwise/complement.cpp

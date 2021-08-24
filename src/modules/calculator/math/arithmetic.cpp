@@ -168,21 +168,24 @@ export tstorage div(const tstorage &lhs, const tstorage &rhs) {
   return div(double_cast(lhs), double_cast(rhs));
 }
 
-/**
- * @todo Determine proper return type. It now toggles between the signed and
- * unsigned integral type. This is mainly done for testing. Instead it should
- * properly validate the best return type.
- */
-export tstorage negate(tstorage value) {
-  if (std::holds_alternative<int64_t>(value)) {
-    int64_t v = std::get<int64_t>(value);
-    if (v < 0)
-      return uint64_t(-v);
-    else
-      return -v;
-  }
+static tstorage negate(int64_t value) {
+  // Unlike other signed int operations negate prefers to store as unsigned.
+  return to_storage(-static_cast<__int128_t>(value));
+}
 
-  return -int64_t(std::get<uint64_t>(value));
+static tstorage negate(uint64_t value) {
+  return to_storage(-static_cast<__int128_t>(value));
+}
+
+static tstorage negate(double value) { return -value; }
+
+export tstorage negate(tstorage value) {
+  if (std::holds_alternative<int64_t>(value))
+    return negate(get<int64_t>(value));
+  if (std::holds_alternative<uint64_t>(value))
+    return negate(get<uint64_t>(value));
+
+  return negate(get<double>(value));
 }
 
 } // namespace math
