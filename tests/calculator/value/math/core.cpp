@@ -227,5 +227,22 @@ TEST(core, to_storage_int128_defaulted_preference) {
                 __int128_t(std::numeric_limits<uint64_t>::max()) + 1));
 }
 
+TEST(core, to_storage_uint128) {
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(to_storage(__uint128_t(0))));
+  ASSERT_EQ(std::get<uint64_t>(to_storage(__uint128_t(0))), 0);
+
+  ASSERT_TRUE(std::holds_alternative<uint64_t>(
+      to_storage(__uint128_t(std::numeric_limits<uint64_t>::max()))));
+  ASSERT_EQ(std::get<uint64_t>(
+                to_storage(__uint128_t(std::numeric_limits<uint64_t>::max()))),
+            std::numeric_limits<uint64_t>::max());
+
+  ASSERT_TRUE(std::holds_alternative<double>(
+      to_storage(__uint128_t(std::numeric_limits<uint64_t>::max()) + 1)));
+  ASSERT_EQ(std::get<double>(to_storage(
+                __uint128_t(std::numeric_limits<uint64_t>::max()) + 1)),
+            double(__uint128_t(std::numeric_limits<uint64_t>::max()) + 1));
+}
+
 } // namespace math
 } // namespace calculator

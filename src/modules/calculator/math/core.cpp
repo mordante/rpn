@@ -130,5 +130,11 @@ requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>) tstorage
   }
 }
 
+export tstorage to_storage(__uint128_t value) {
+  if (value > std::numeric_limits<uint64_t>::max())
+    return static_cast<double>(value);
+
+  return static_cast<uint64_t>(value);
+}
 } // namespace math
 } // namespace calculator

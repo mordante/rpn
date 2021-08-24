@@ -79,6 +79,7 @@ static tstorage sub(uint64_t lhs, uint64_t rhs) {
   return to_storage(static_cast<__int128_t>(lhs) -
                     static_cast<__int128_t>(rhs));
 }
+
 static tstorage sub(uint64_t lhs, int64_t rhs) {
   return to_storage(static_cast<__int128_t>(lhs) -
                     static_cast<__int128_t>(rhs));
@@ -113,6 +114,46 @@ export tstorage sub(const tstorage &lhs, const tstorage &rhs) {
     return sub(get<uint64_t>(lhs), get<int64_t>(rhs));
 
   return sub(get<int64_t>(lhs), get<uint64_t>(rhs));
+}
+
+static tstorage mul(int64_t lhs, int64_t rhs) {
+  return to_storage<int64_t>(static_cast<__int128_t>(lhs) *
+                             static_cast<__int128_t>(rhs));
+}
+
+static tstorage mul(uint64_t lhs, uint64_t rhs) {
+  return to_storage(static_cast<__uint128_t>(lhs) *
+                    static_cast<__uint128_t>(rhs));
+}
+
+static tstorage mul(uint64_t lhs, int64_t rhs) {
+  return to_storage(static_cast<__int128_t>(lhs) *
+                    static_cast<__int128_t>(rhs));
+}
+
+static double mul(double lhs, double rhs) { return lhs * rhs; }
+
+/** @see https://mordante.github.io/rpn/calculation.html#multiply */
+export tstorage mul(const tstorage &lhs, const tstorage &rhs) {
+  if (std::holds_alternative<double>(lhs) ||
+      std::holds_alternative<double>(rhs))
+    return mul(double_cast(lhs), double_cast(rhs));
+
+  if (std::holds_alternative<int64_t>(lhs) &&
+      std::holds_alternative<int64_t>(rhs))
+    return mul(get<int64_t>(lhs), get<int64_t>(rhs));
+
+  if (std::holds_alternative<uint64_t>(lhs) &&
+      std::holds_alternative<uint64_t>(rhs))
+    return mul(get<uint64_t>(lhs), get<uint64_t>(rhs));
+
+  // At this point either lhs or rhs is an uint64_t and the other is an
+  // int64_t. Since addition is communative use one helper function for both.
+
+  if (std::holds_alternative<uint64_t>(lhs))
+    return mul(get<uint64_t>(lhs), get<int64_t>(rhs));
+
+  return mul(get<uint64_t>(rhs), get<int64_t>(lhs));
 }
 
 /**
