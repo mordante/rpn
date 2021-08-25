@@ -33,6 +33,7 @@ add_executable(tests
 	calculator/value/math/bitwise/xor.cpp
 	calculator/value/math/core.cpp
 	format_error.cpp
+	handle_input.cpp
 )
 target_compile_options(tests
 	PRIVATE
@@ -45,7 +46,9 @@ target_link_libraries(tests
 		c++
 )
 add_module(tests.format_error format_error.cpp)
+add_module(tests.handle_input handle_input.cpp)
 add_dependencies(tests
 	tests.format_error.pcm
+	tests.handle_input.pcm
 )
 target_code_coverage(tests)

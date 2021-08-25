@@ -16,6 +16,7 @@ import calculator.controller;
 
 import calculator.model;
 import tests.format_error;
+import tests.handle_input;
 
 #include <gtest/gtest.h>
 
@@ -31,65 +32,89 @@ TEST(controller, key_char_less_than_too_few_elements) {
   EXPECT_TRUE(model.stack_empty());
   EXPECT_TRUE(model.input_get().empty());
 
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "42");
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_less_than_stack_input) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
-  model.stack_push(tvalue{0b101010});
+  handle_input(controller, model, "0b101010");
   model.input_append("2");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 0b10101000);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_less_than_stack_stack) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
-  model.stack_push(tvalue{0b101010});
-  model.stack_push(tvalue{2});
+  handle_input(controller, model, "0b101010");
+  handle_input(controller, model, "2");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 0b10101000);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_less_than_diagnostics_cleared) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(tvalue{0b101010});
-  model.stack_push(tvalue{2});
+  handle_input(controller, model, "0b101010");
+  handle_input(controller, model, "2");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 0b10101000);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_less_than_input_invalid) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "0b101010");
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
+
+TEST(controller, key_char_less_than_shift_too_small) {
+  tmodel model;
+  tcontroller controller{model};
+  handle_input(controller, model, "42");
+  handle_input(controller, model, "1");
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+
+  controller.handle_keyboard_input(tmodifiers::none, '<');
+  EXPECT_EQ(model.diagnostics_get(), "Not a positive value");
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_char_less_than_shift_too_large) {
+  tmodel model;
+  tcontroller controller{model};
+  handle_input(controller, model, "42");
+  handle_input(controller, model, "65");
+
+  controller.handle_keyboard_input(tmodifiers::none, '<');
+  EXPECT_EQ(model.diagnostics_get(), "Shift too large");
+  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
+
 } // namespace calculator
