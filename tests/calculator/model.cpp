@@ -74,7 +74,7 @@ TEST(model, stack_base_default) {
   tmodel model;
   model.stack_push(tvalue{42});
   model.stack_push(tvalue{100});
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"@r42"}, {"@r100"}}));
+  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}, {"100"}}));
 
   model.stack_drop();
   model.stack_drop();
@@ -85,7 +85,7 @@ TEST(model, stack_base_2) {
   tmodel model;
   model.base_set(tbase::binary);
   model.stack_push(tvalue{42});
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0b101010"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b101010"});
 
   model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
@@ -95,7 +95,7 @@ TEST(model, stack_base_8) {
   tmodel model;
   model.base_set(tbase::octal);
   model.stack_push(tvalue{42});
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r052"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"052"});
 
   model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
@@ -105,7 +105,7 @@ TEST(model, stack_base_10) {
   tmodel model;
   model.base_set(tbase::decimal);
   model.stack_push(tvalue{42});
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r42"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
 
   model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});
@@ -115,7 +115,7 @@ TEST(model, stack_base_16) {
   tmodel model;
   model.base_set(tbase::hexadecimal);
   model.stack_push(tvalue{42});
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"@r0x2a"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0x2a"});
 
   model.stack_drop();
   EXPECT_EQ(model.stack(), std::vector<std::string>{});

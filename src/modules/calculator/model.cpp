@@ -282,22 +282,21 @@ static std::string format(tbase base, const tvalue &value) {
 
 [[nodiscard]] std::string tmodel::format(const tvalue &value) const {
 #if defined(__cpp_lib_format)
-  // All formats use the '@r' prefix, this uses the right alignment in FLTK.
   // TODO Adjust for visitor.
   switch (base_) {
   case tbase::binary:
-    return std::format("@r{:#b}", value.get());
+    return std::format("{:#b}", value.get());
   case tbase::octal:
-    return std::format("@r{:#o}", value.get());
+    return std::format("{:#o}", value.get());
   case tbase::decimal:
-    return std::format("@r{}", value.get());
+    return std::format("{}", value.get());
   case tbase::hexadecimal:
-    return std::format("@r{:#x}", value.get());
+    return std::format("{:#x}", value.get());
   }
   __builtin_unreachable();
 #else
   // Initialize with right alignment for FLTK.
-  return "@r" + calculator::format(base_, value);
+  return calculator::format(base_, value);
 
 #endif
 }

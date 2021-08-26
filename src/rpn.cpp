@@ -113,12 +113,18 @@ void twindow::process_input_event() {
   }
 }
 
+static std::string align_right(std::string &&value) {
+  return "@r" + std::move(value);
+}
+
 void twindow::update_ui() {
   diagnostics_.label(model_.diagnostics_get().c_str());
 
   stack_.clear();
-  for (const auto &value : model_.stack())
-    stack_.insert(std::numeric_limits<int>::max(), value.c_str());
+  for (auto value : model_.stack()) {
+    stack_.insert(std::numeric_limits<int>::max(),
+                  align_right(std::move(value)).c_str());
+  }
   stack_.bottomline(stack_.size());
 
   input_.label(model_.input_get().c_str());
