@@ -18,19 +18,22 @@ import calculator.value;
 
 namespace calculator {
 TEST(value, converting_constructor) {
-  static_assert(noexcept(tvalue{1}));
+  static_assert(noexcept(tvalue{uint64_t(1)}));
+  static_assert(noexcept(tvalue{double(1)}));
 }
 
 TEST(value, copy_constructor) {
-  constexpr tvalue v{1};
+  constexpr tvalue v{uint64_t(1)};
   static_assert(noexcept(tvalue{v}));
 }
 
 TEST(value, move_constructor) {
-  constexpr tvalue v{1};
+  constexpr tvalue v{uint64_t(1)};
   static_assert(noexcept(tvalue{std::move(v)}));
 }
 
-TEST(value, destructor) { static_assert(noexcept(tvalue{1}.~tvalue())); }
+TEST(value, destructor) {
+  static_assert(noexcept(tvalue{uint64_t(1)}.~tvalue()));
+}
 
 } // namespace calculator

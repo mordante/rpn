@@ -335,7 +335,7 @@ int determine_base(std::string_view &input) {
 
 void tcontroller::parse(std::string_view input) {
   int base = determine_base(input);
-  int64_t value;
+  uint64_t value;
   std::from_chars_result result =
       std::from_chars(input.begin(), input.end(), value, base);
 
