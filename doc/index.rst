@@ -183,6 +183,7 @@ Links
    :maxdepth: 1
 
    calculation
+   changelog
 
 * `Coverage report <coverage/index.html>`_
 
