@@ -16,6 +16,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calculations" href="calculation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -40,12 +41,11 @@
 </li>
 <li><a class="reference internal" href="#known-limitations" id="id9">Known limitations</a><ul>
 <li><a class="reference internal" href="#building-requires-a-git-build-of-clang-and-libc" id="id10">Building requires a git build of Clang and libc++</a></li>
-<li><a class="reference internal" href="#the-calculator-can-t-properly-divide" id="id11">The calculator can’t properly divide</a></li>
-<li><a class="reference internal" href="#the-gui-isn-t-great" id="id12">The GUI isn’t great</a></li>
-<li><a class="reference internal" href="#the-gui-is-inefficient" id="id13">The GUI is inefficient</a></li>
+<li><a class="reference internal" href="#the-gui-isn-t-great" id="id11">The GUI isn’t great</a></li>
+<li><a class="reference internal" href="#the-gui-is-inefficient" id="id12">The GUI is inefficient</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#links" id="id14">Links</a></li>
+<li><a class="reference internal" href="#links" id="id13">Links</a></li>
 </ul>
 </div>
 <p>This is yet another
@@ -121,6 +121,8 @@ stack</li>
 <p>In these operations step 4 is optional. When the operation is performed with a
 non-empty input this input will be pushed on the stack before the
 operation <a class="footnote-reference" href="#note-stack" id="id4">[2]</a>.</p>
+<p>This is a short summary of the operations, but behind the scenes the
+<a class="reference external" href="calculation.html">calculations</a> have more complexity.</p>
 <ul>
 <li><p class="first">Arithmetic:</p>
 <dl class="docutils">
@@ -135,8 +137,7 @@ values. Entering negative values is done with <code class="docutils literal notr
 <dd><p class="first last">Multiplies two elements on the stack.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">/</span></code></dt>
-<dd><p class="first last">Divides two elements on the stack. At the moment the division
-truncates the fractional part.</p>
+<dd><p class="first last">Divides two elements on the stack.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">n</span></code></dt>
 <dd><p class="first last">Negates one element on the stack. This is the way to get negative values.</p>
@@ -213,23 +214,14 @@ in various compilers is in various stages of development I want to focus on one
 toolchain. Once modules becomes production quality in both compilers and CMake
 other compiler might be supported.</p>
 </div>
-<div class="section" id="the-calculator-can-t-properly-divide">
-<h3><a class="toc-backref" href="#id11">The calculator can’t properly divide</a><a class="headerlink" href="#the-calculator-can-t-properly-divide" title="Permalink to this headline">¶</a></h3>
-<p>At the moment the numeric type used in the calculator is always an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>.
-This means divisions will truncate. The goal of the calculator is to be useful
-for me. Since most calculators have poor support for doing bitwise operations or
-easily change display bases this has been the focus of the application. There
-are enough other calculators which do floating point well enough for me.</p>
-<p>Obviously it’s intended to add proper floating point support.</p>
-</div>
 <div class="section" id="the-gui-isn-t-great">
-<h3><a class="toc-backref" href="#id12">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
 <p>Basically the GUI is only used for output nothing else at the moment. The user
 interaction is low on the priority list. The initial goal is to get something
 usable for me.</p>
 </div>
 <div class="section" id="the-gui-is-inefficient">
-<h3><a class="toc-backref" href="#id13">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
 <p>The application is quite happy to redraw too many elements. An attempt has been
 made to improve this. An observer was created, however it seems that Clang
 modules and vtables don’t play along nicely with the linker. These linker errors
@@ -238,7 +230,13 @@ improvement has dropped low on the priority list.</p>
 </div>
 </div>
 <div class="section" id="links">
-<h2><a class="toc-backref" href="#id14">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="calculation.html">Calculations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+</div>
 <ul class="simple">
 <li><a class="reference external" href="coverage/index.html">Coverage report</a></li>
 </ul>
