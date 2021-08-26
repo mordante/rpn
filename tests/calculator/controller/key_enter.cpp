@@ -60,37 +60,14 @@ TEST(controller, key_enter_value_0) {
   EXPECT_TRUE(model.input_get().empty());
 }
 
-TEST(controller, key_enter_value_min) {
-  tmodel model;
-  tcontroller controller{model};
-
-  model.input_append("-9223372036854775808");
-  controller.handle_keyboard_input(tkey::enter);
-  EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-9223372036854775808"});
-  EXPECT_TRUE(model.input_get().empty());
-}
-
-TEST(controller, key_enter_value_underflow) {
-  tmodel model;
-  tcontroller controller{model};
-
-  model.input_append("-9223372036854775809");
-  controller.handle_keyboard_input(tkey::enter);
-  EXPECT_EQ(model.diagnostics_get(),
-            format_error("Value outside of the representable range"));
-  EXPECT_TRUE(model.stack_empty());
-  EXPECT_TRUE(model.input_get().empty());
-}
-
 TEST(controller, key_enter_value_max) {
   tmodel model;
   tcontroller controller{model};
 
-  model.input_append("9223372036854775807");
+  model.input_append("18446744073709551615");
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"9223372036854775807"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"18446744073709551615"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -98,7 +75,7 @@ TEST(controller, key_enter_value_overflow) {
   tmodel model;
   tcontroller controller{model};
 
-  model.input_append("9223372036854775808");
+  model.input_append("18446744073709551616");
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Value outside of the representable range"));

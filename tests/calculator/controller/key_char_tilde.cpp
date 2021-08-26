@@ -35,35 +35,41 @@ TEST(controller, key_char_tilde_too_few_elements) {
 
 TEST(controller, key_char_tilde_input) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
   model.input_append("3");
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-4"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{
+		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_tilde_stack) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "3");
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-4"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{
+		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_tilde_diagnostics_cleared) {
   tmodel model;
+  model.base_set(tbase::binary);
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  handle_input(controller, model, "42");
+  handle_input(controller, model, "3");
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-43"});
+  EXPECT_EQ(model.stack(), std::vector<std::string>{
+		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

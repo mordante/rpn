@@ -58,12 +58,17 @@ TEST(controller, key_char_control_n_stack) {
 TEST(controller, key_char_control_n_round_trip) {
   tmodel model;
   tcontroller controller{model};
-  handle_input(controller, model, "-9223372036854775808");
+  // -std::numerical_limits<int64_t>::min() is the largest integral round-trip.
+  handle_input(controller, model, "9223372036854775808");
 
-  controller.handle_keyboard_input(tmodifiers::control, 'n');
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.stack(), std::vector<std::string>{"-9223372036854775808"});
+  EXPECT_TRUE(model.input_get().empty());
+
+  controller.handle_keyboard_input(tmodifiers::control, 'n');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"9223372036854775808"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
