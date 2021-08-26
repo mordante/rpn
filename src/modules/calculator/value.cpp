@@ -38,8 +38,6 @@ namespace calculator {
  */
 export class tvalue final {
 public:
-  tvalue() = default;
-
   /** @todo This constructor is a hack to avoid ambigious overloads. */
   explicit constexpr tvalue(int value) noexcept
       : tvalue(static_cast<int64_t>(value)) {}
@@ -98,15 +96,6 @@ public:
 
 private:
   math::tstorage value_{0};
-
-  /** @todo This there are no unit tests for this interface yet. */
-  friend auto operator==(const tvalue &lhs, int64_t rhs) {
-    if (std::holds_alternative<int64_t>(lhs.value_))
-      return std::get<int64_t>(lhs.value_) == rhs;
-
-    // TODO first test whether it's in the proper range
-    return static_cast<int64_t>(std::get<uint64_t>(lhs.value_)) == rhs;
-  }
 };
 
 } // namespace calculator

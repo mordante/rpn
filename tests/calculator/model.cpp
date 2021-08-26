@@ -139,20 +139,16 @@ TEST(model, stack_push) {
 
 TEST(model, stack_pop) {
   tmodel model;
-  tvalue value;
-
   model.stack_push(tvalue{42});
   model.stack_push(tvalue{1});
 
-  value = model.stack_pop();
-  EXPECT_EQ(value, 1);
+  (void)model.stack_pop();
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_FALSE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 1);
   EXPECT_TRUE(model.input_get().empty());
 
-  value = model.stack_pop();
-  EXPECT_EQ(value, 42);
+  (void)model.stack_pop();
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.stack_empty());
   EXPECT_EQ(model.stack_size(), 0);
