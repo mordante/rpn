@@ -139,8 +139,24 @@ TEST(model, stack_push) {
   EXPECT_TRUE(model.input_get().empty());
 }
 
+TEST(model, stack_duplicate) {
+  tmodel model;
+
+  EXPECT_THROW(model.stack_duplicate(), std::out_of_range);
+
+  model.stack_push(tvalue{uint64_t(42)});
+  model.stack_duplicate();
+
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}, {"42"}}));
+}
+
 TEST(model, stack_pop) {
   tmodel model;
+
+  EXPECT_THROW((void)model.stack_pop(), std::out_of_range);
+
   model.stack_push(tvalue{uint64_t(42)});
   model.stack_push(tvalue{uint64_t(1)});
 

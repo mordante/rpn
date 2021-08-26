@@ -88,7 +88,6 @@ public:
 private:
   void push(std::string_view input);
 
-  void duplicate_last_entry();
   void parse(std::string_view input);
 
   using tunary_operation = void (tvalue::*)();
@@ -288,15 +287,9 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())
-    duplicate_last_entry();
+    model_.stack_duplicate();
   else
     parse(input);
-}
-
-void tcontroller::duplicate_last_entry() {
-  tvalue value = model_.stack_pop();
-  model_.stack_push(value);
-  model_.stack_push(value);
 }
 
 static void validate(std::errc ec) {

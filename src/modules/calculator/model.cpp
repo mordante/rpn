@@ -81,6 +81,9 @@ public:
     dirty_ = true;
   }
 
+  /** Duplicates the last entry on the stack. */
+  void stack_duplicate();
+
   /**
    * @returns The last element at the back of the stack.
    * @throws @ref std::out_of_range when the stack is empty.
@@ -180,6 +183,14 @@ private:
    */
   tbase base_{tbase::decimal};
 };
+
+void tmodel::stack_duplicate() {
+  if (stack_.empty())
+    throw std::out_of_range("Stack is empty");
+
+  stack_.push_back(stack_.back());
+  display_.push_back(display_.back());
+}
 
 tvalue tmodel::stack_pop() {
   if (stack_.empty())

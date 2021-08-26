@@ -22,6 +22,9 @@ namespace calculator {
 
 TEST(model, stack_drop) {
   tmodel model;
+
+  EXPECT_THROW(model.stack_drop(), std::out_of_range);
+
   model.stack_push(tvalue{uint64_t(42)});
 
   model.stack_drop();
