@@ -20,7 +20,20 @@ add_executable(tests
 	calculator/model/input.cpp
 	calculator/model/stack.cpp
 	calculator/value.cpp
+	calculator/value/math/arithmetic/add.cpp
+	calculator/value/math/arithmetic/division.cpp
+	calculator/value/math/arithmetic/multiply.cpp
+	calculator/value/math/arithmetic/negate.cpp
+	calculator/value/math/arithmetic/subtract.cpp
+	calculator/value/math/bitwise/and.cpp
+	calculator/value/math/bitwise/complement.cpp
+	calculator/value/math/bitwise/or.cpp
+	calculator/value/math/bitwise/shl.cpp
+	calculator/value/math/bitwise/shr.cpp
+	calculator/value/math/bitwise/xor.cpp
+	calculator/value/math/core.cpp
 	format_error.cpp
+	handle_input.cpp
 )
 target_compile_options(tests
 	PRIVATE
@@ -33,7 +46,9 @@ target_link_libraries(tests
 		c++
 )
 add_module(tests.format_error format_error.cpp)
+add_module(tests.handle_input handle_input.cpp)
 add_dependencies(tests
 	tests.format_error.pcm
+	tests.handle_input.pcm
 )
 target_code_coverage(tests)

@@ -16,6 +16,7 @@ import calculator.controller;
 
 import calculator.model;
 import tests.format_error;
+import tests.handle_input;
 
 #include <gtest/gtest.h>
 
@@ -39,20 +40,18 @@ TEST(controller, key_char_tilde_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), ~3);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-4"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_tilde_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{3});
+  handle_input(controller, model, "3");
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), ~3);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-4"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -60,12 +59,11 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "42");
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), ~42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-43"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

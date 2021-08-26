@@ -85,6 +85,9 @@ In these operations step 4 is optional. When the operation is performed with a
 non-empty input this input will be pushed on the stack before the
 operation [#note-stack]_.
 
+This is a short summary of the operations, but behind the scenes the
+`calculations <calculation.html>`_ have more complexity.
+
 * Arithmetic:
 
   ``+``
@@ -95,8 +98,7 @@ operation [#note-stack]_.
   ``*``
     Multiplies two elements on the stack.
   ``/``
-    Divides two elements on the stack. At the moment the division
-    truncates the fractional part.
+    Divides two elements on the stack.
   ``Ctrl + n``
     Negates one element on the stack. This is the way to get negative values.
 
@@ -158,17 +160,6 @@ in various compilers is in various stages of development I want to focus on one
 toolchain. Once modules becomes production quality in both compilers and CMake
 other compiler might be supported.
 
-The calculator can't properly divide
-------------------------------------
-
-At the moment the numeric type used in the calculator is always an ``int64_t``.
-This means divisions will truncate. The goal of the calculator is to be useful
-for me. Since most calculators have poor support for doing bitwise operations or
-easily change display bases this has been the focus of the application. There
-are enough other calculators which do floating point well enough for me.
-
-Obviously it's intended to add proper floating point support.
-
 The GUI isn't great
 -------------------
 
@@ -187,6 +178,11 @@ improvement has dropped low on the priority list.
 
 Links
 =====
+
+.. toctree::
+   :maxdepth: 1
+
+   calculation
 
 * `Coverage report <coverage/index.html>`_
 

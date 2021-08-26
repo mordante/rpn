@@ -14,14 +14,16 @@
 
 export module calculator.value;
 
+import calculator.math.arithmetic;
+import calculator.math.bitwise;
+import calculator.math.core;
+
 import<cinttypes>;
 import<concepts>;
 import<string>;
 export import<variant>;
 
 namespace calculator {
-
-using tstorage = std::variant<int64_t, uint64_t, double>;
 
 /**
  * Basic value class for the entries on the calculator's stack.
@@ -56,58 +58,46 @@ public:
   /*** Arithmetic ***/
 
   /** Adds @p rhs to the current value. */
-  void add(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) + std::get<int64_t>(rhs.value_);
-  }
+  void add(const tvalue &rhs) { value_ = math::add(value_, rhs.value_); }
 
   /** Subtracts @p rhs from the current value. */
-  void sub(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) - std::get<int64_t>(rhs.value_);
-  }
+  void sub(const tvalue &rhs) { value_ = math::sub(value_, rhs.value_); }
 
   /** Multiplies the current value by @p rhs. */
-  void mul(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) * std::get<int64_t>(rhs.value_);
-  }
+  void mul(const tvalue &rhs) { value_ = math::mul(value_, rhs.value_); }
 
   /** Divides the current value by @p rhs. */
-  void div(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) / std::get<int64_t>(rhs.value_);
-  }
+  void div(const tvalue &rhs) { value_ = math::div(value_, rhs.value_); }
 
   /** Negates the current value. */
-  void negate();
+  void negate() { value_ = math::negate(value_); }
 
   /*** Bitwise ***/
 
   /** Bitwise and the current value with @p rhs. */
-  void bit_and(const tvalue &rhs);
+  void bit_and(const tvalue &rhs) {
+    value_ = math::bit_and(value_, rhs.value_);
+  }
 
   /** Bitwise or the current value with @p rhs. */
-  void bit_or(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) | std::get<int64_t>(rhs.value_);
-  }
+  void bit_or(const tvalue &rhs) { value_ = math::bit_or(value_, rhs.value_); }
 
   /** Bitwise xor the current value with @p rhs. */
   void bit_xor(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) ^ std::get<int64_t>(rhs.value_);
+    value_ = math::bit_xor(value_, rhs.value_);
   }
 
   /** Replace the current value by its bitwise complement. */
-  void complement() { value_ = ~std::get<int64_t>(value_); }
+  void complement() { value_ = math::complement(value_); }
 
   /** Bitwise shifts the current value @p rhs positions to the left. */
-  void shl(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) << std::get<int64_t>(rhs.value_);
-  }
+  void shl(const tvalue &rhs) { value_ = math::shl(value_, rhs.value_); }
 
   /** Bitwise shifts the current value @p rhs positions to the right. */
-  void shr(const tvalue &rhs) {
-    value_ = std::get<int64_t>(value_) >> std::get<int64_t>(rhs.value_);
-  }
+  void shr(const tvalue &rhs) { value_ = math::shr(value_, rhs.value_); }
 
 private:
-  tstorage value_{0};
+  math::tstorage value_{0};
 
   /** @todo This there are no unit tests for this interface yet. */
   friend auto operator==(const tvalue &lhs, int64_t rhs) {
@@ -118,45 +108,5 @@ private:
     return static_cast<int64_t>(std::get<uint64_t>(lhs.value_)) == rhs;
   }
 };
-
-template <class T> static T as(const tstorage &value) {
-  if (std::holds_alternative<T>(value))
-    return std::get<T>(value);
-
-  return std::visit([](auto value) { return static_cast<T>(value); }, value);
-}
-
-/**
- * @todo Determine proper return type. It now toggles between the signed and
- * unsigned integral type. This is mainly done for testing. Instead it should
- * properly validate the best return type.
- */
-static tstorage negate(tstorage value) {
-  if (std::holds_alternative<int64_t>(value)) {
-    int64_t v = std::get<int64_t>(value);
-    if (v < 0)
-      return uint64_t(-v);
-    else
-      return -v;
-  }
-
-  return -int64_t(std::get<uint64_t>(value));
-}
-
-void tvalue::negate() { value_ = calculator::negate(value_); }
-
-template <class T> static T bit_and(T lhs, T rhs) { return lhs & rhs; }
-
-static tstorage bit_and(tstorage lhs, tstorage rhs) {
-  if (std::holds_alternative<int64_t>(lhs) ||
-      std::holds_alternative<int64_t>(rhs))
-    return bit_and(std::get<int64_t>(lhs), std::get<int64_t>(rhs));
-
-  return bit_and(as<uint64_t>(lhs), as<uint64_t>(rhs));
-}
-
-void tvalue::bit_and(const tvalue &rhs) {
-  value_ = calculator::bit_and(value_, rhs.value_);
-}
 
 } // namespace calculator
