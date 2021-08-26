@@ -17,6 +17,10 @@ export module calculator.math.core;
 import<bit>;
 import<cmath>;
 import<concepts>;
+export import<stdexcept>;
+#ifndef __cpp_lib_bit_cast
+import<cstring>;
+#endif
 export import<variant>;
 
 namespace calculator {
