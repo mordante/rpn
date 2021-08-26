@@ -36,7 +36,7 @@ TEST(controller, key_char_less_than_too_few_elements) {
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -49,7 +49,7 @@ TEST(controller, key_char_less_than_stack_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -62,7 +62,7 @@ TEST(controller, key_char_less_than_stack_stack) {
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -76,7 +76,7 @@ TEST(controller, key_char_less_than_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b10101000"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0b10101000"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -88,7 +88,7 @@ TEST(controller, key_char_less_than_input_invalid) {
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

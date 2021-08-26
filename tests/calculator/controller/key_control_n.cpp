@@ -40,7 +40,7 @@ TEST(controller, key_char_control_n_input) {
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-3"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"-3"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -51,7 +51,7 @@ TEST(controller, key_char_control_n_stack) {
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-3"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"-3"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -63,12 +63,12 @@ TEST(controller, key_char_control_n_round_trip) {
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-9223372036854775808"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"-9223372036854775808"});
   EXPECT_TRUE(model.input_get().empty());
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"9223372036854775808"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"9223372036854775808"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -80,7 +80,7 @@ TEST(controller, key_char_control_n_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"-42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"-42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

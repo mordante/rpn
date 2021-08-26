@@ -41,8 +41,9 @@ TEST(controller, key_char_tilde_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -54,8 +55,9 @@ TEST(controller, key_char_tilde_stack) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -68,8 +70,9 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

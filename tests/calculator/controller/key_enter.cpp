@@ -45,7 +45,7 @@ TEST(controller, key_enter_duplicate_non_empty_stack) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}, {"42"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"42"}, {"42"}}));
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -56,7 +56,7 @@ TEST(controller, key_enter_value_0) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -67,7 +67,7 @@ TEST(controller, key_enter_value_max) {
   model.input_append("18446744073709551615");
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"18446744073709551615"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"18446744073709551615"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -113,7 +113,7 @@ TEST(controller, key_enter_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -146,7 +146,7 @@ TEST(controller, key_enter_base_8_valid) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"8"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"8"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -168,7 +168,7 @@ TEST(controller, key_enter_base_16_valid) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"16"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"16"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

@@ -46,17 +46,17 @@ TEST(controller, key_backspace_non_empty_input_non_empty_stack) {
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "ab");
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "a");
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 
   controller.handle_keyboard_input(tkey::backspace);

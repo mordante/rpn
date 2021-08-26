@@ -25,21 +25,23 @@ TEST(model, base_set) {
   model.stack_push(tvalue{uint64_t(0)});
   model.stack_push(tvalue{uint64_t(42)});
   model.stack_push(tvalue{uint64_t(100)});
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"0"}, {"42"}, {"100"}}));
+  EXPECT_EQ(model.strings(),
+            (std::vector<std::string>{{"0"}, {"42"}, {"100"}}));
 
   model.base_set(tbase::binary);
-  EXPECT_EQ(model.stack(),
+  EXPECT_EQ(model.strings(),
             (std::vector<std::string>{{"0b0"}, {"0b101010"}, {"0b1100100"}}));
 
   model.base_set(tbase::octal);
-  EXPECT_EQ(model.stack(),
+  EXPECT_EQ(model.strings(),
             (std::vector<std::string>{{"0"}, {"052"}, {"0144"}}));
 
   model.base_set(tbase::decimal);
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"0"}, {"42"}, {"100"}}));
+  EXPECT_EQ(model.strings(),
+            (std::vector<std::string>{{"0"}, {"42"}, {"100"}}));
 
   model.base_set(tbase::hexadecimal);
-  EXPECT_EQ(model.stack(),
+  EXPECT_EQ(model.strings(),
             (std::vector<std::string>{{"0x0"}, {"0x2a"}, {"0x64"}}));
 }
 } // namespace calculator

@@ -36,7 +36,7 @@ TEST(controller, key_char_circumflex_too_few_elements) {
   controller.handle_keyboard_input(tmodifiers::none, '^');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -49,7 +49,7 @@ TEST(controller, key_char_circumflex_stack_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '^');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b1101"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0b1101"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -62,7 +62,7 @@ TEST(controller, key_char_circumflex_stack_stack) {
 
   controller.handle_keyboard_input(tmodifiers::none, '^');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0b1101"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0b1101"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -75,7 +75,7 @@ TEST(controller, key_char_circumflex_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::none, '^');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"0"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"0"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -87,7 +87,7 @@ TEST(controller, key_char_circumflex_input_invalid) {
 
   controller.handle_keyboard_input(tmodifiers::none, '^');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 } // namespace calculator

@@ -25,18 +25,18 @@ TEST(controller, key_char_control_base) {
   tmodel model;
   tcontroller controller{model};
   handle_input(controller, model, "42");
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"42"}}));
 
   controller.handle_keyboard_input(tmodifiers::control, 'b');
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"0b101010"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"0b101010"}}));
 
   controller.handle_keyboard_input(tmodifiers::control, 'o');
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"052"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"052"}}));
 
   controller.handle_keyboard_input(tmodifiers::control, 'd');
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"42"}}));
 
   controller.handle_keyboard_input(tmodifiers::control, 'h');
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"0x2a"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{{"0x2a"}}));
 }
 } // namespace calculator

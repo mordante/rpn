@@ -40,7 +40,7 @@ TEST(model, stack_display_double) {
   model.stack_push(tvalue{42.23});
   model.stack_push(tvalue{100.456});
   // Note these results are expected to change when std::format will be used.
-  EXPECT_EQ(model.stack(), (std::vector<std::string>{
-                               {"-42"}, {"0.1"}, {"42.23"}, {"100.456"}}));
+  EXPECT_EQ(model.strings(), (std::vector<std::string>{
+                                 {"-42"}, {"0.1"}, {"42.23"}, {"100.456"}}));
 }
 } // namespace calculator
