@@ -17,58 +17,20 @@ import calculator.value;
 #include <gtest/gtest.h>
 
 namespace calculator {
-TEST(value, default_constructor) {
-  static_assert(noexcept(tvalue{}));
-  constexpr tvalue value;
-  EXPECT_EQ(value, 0);
-}
-
 TEST(value, converting_constructor) {
   static_assert(noexcept(tvalue{1}));
-  constexpr tvalue value{1};
-  EXPECT_EQ(value, 1);
 }
 
 TEST(value, copy_constructor) {
   constexpr tvalue v{1};
   static_assert(noexcept(tvalue{v}));
-
-  constexpr tvalue value{v};
-  EXPECT_EQ(v, 1);
-  EXPECT_EQ(value, 1);
 }
 
 TEST(value, move_constructor) {
   constexpr tvalue v{1};
   static_assert(noexcept(tvalue{std::move(v)}));
-
-  constexpr tvalue value{std::move(v)};
-  EXPECT_EQ(v, 1);
 }
 
-TEST(value, destructor) { static_assert(noexcept(tvalue{}.~tvalue())); }
-
-TEST(value, copy_assignment) {
-  constexpr tvalue v{1};
-  tvalue value;
-  static_assert(noexcept(value.operator=(v)));
-
-  value = v;
-  EXPECT_EQ(v, 1);
-
-  EXPECT_EQ(value, 1);
-
-  value = tvalue{42};
-  EXPECT_EQ(value, 42);
-}
-
-TEST(value, move_assignment) {
-  constexpr tvalue v{1};
-  tvalue value;
-  static_assert(noexcept(value.operator=(std::move(v))));
-
-  value = std::move(v);
-  EXPECT_EQ(value, 1);
-}
+TEST(value, destructor) { static_assert(noexcept(tvalue{1}.~tvalue())); }
 
 } // namespace calculator

@@ -16,6 +16,7 @@ import calculator.controller;
 
 import calculator.model;
 import tests.format_error;
+import tests.handle_input;
 
 #include <gtest/gtest.h>
 
@@ -40,13 +41,11 @@ TEST(controller, key_enter_duplicate_empty_stack) {
 TEST(controller, key_enter_duplicate_non_empty_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "42");
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 2);
-  EXPECT_EQ(model.stack_pop(), 42);
-  EXPECT_EQ(model.stack_pop(), 42);
+  EXPECT_EQ(model.stack(), (std::vector<std::string>{{"42"}, {"42"}}));
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -57,22 +56,24 @@ TEST(controller, key_enter_value_0) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 0);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"0"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_enter_value_min) {
   tmodel model;
   tcontroller controller{model};
-  const int64_t minimum = -9223372036854775807ll - 1;
 
   model.input_append("-9223372036854775808");
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), minimum);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-9223372036854775808"});
   EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_value_underflow) {
+  tmodel model;
+  tcontroller controller{model};
 
   model.input_append("-9223372036854775809");
   controller.handle_keyboard_input(tkey::enter);
@@ -85,14 +86,17 @@ TEST(controller, key_enter_value_min) {
 TEST(controller, key_enter_value_max) {
   tmodel model;
   tcontroller controller{model};
-  const int64_t maximum = 9223372036854775807ll;
 
   model.input_append("9223372036854775807");
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), maximum);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"9223372036854775807"});
   EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_value_overflow) {
+  tmodel model;
+  tcontroller controller{model};
 
   model.input_append("9223372036854775808");
   controller.handle_keyboard_input(tkey::enter);
@@ -132,8 +136,7 @@ TEST(controller, key_enter_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -166,8 +169,7 @@ TEST(controller, key_enter_base_8_valid) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 8);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"8"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -189,8 +191,7 @@ TEST(controller, key_enter_base_16_valid) {
 
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 16);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"16"});
   EXPECT_TRUE(model.input_get().empty());
 }
 

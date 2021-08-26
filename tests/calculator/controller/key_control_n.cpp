@@ -16,6 +16,7 @@ import calculator.controller;
 
 import calculator.model;
 import tests.format_error;
+import tests.handle_input;
 
 #include <gtest/gtest.h>
 
@@ -35,42 +36,34 @@ TEST(controller, key_char_control_n_too_few_elements) {
 TEST(controller, key_char_control_n_input) {
   tmodel model;
   tcontroller controller{model};
-  model.input_append("3");
+  handle_input(controller, model, "3");
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), -3);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-3"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
 TEST(controller, key_char_control_n_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{3});
+  handle_input(controller, model, "3");
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), -3);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-3"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
-// TODO test with INT64_MIN
 TEST(controller, key_char_control_n_round_trip) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{3});
+  handle_input(controller, model, "-9223372036854775808");
 
-  // Note 2 round-trips just for coverage.
-  // TODO make this one round-trip.
-  controller.handle_keyboard_input(tmodifiers::control, 'n');
-  controller.handle_keyboard_input(tmodifiers::control, 'n');
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), 3);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-9223372036854775808"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -78,12 +71,11 @@ TEST(controller, key_char_control_n_diagnostics_cleared) {
   tmodel model;
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "42");
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
-  EXPECT_EQ(model.stack_pop(), -42);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"-42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
