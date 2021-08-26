@@ -38,9 +38,6 @@ namespace calculator {
  */
 export class tvalue final {
 public:
-  /** @todo This constructor is a hack to avoid ambigious overloads. */
-  explicit constexpr tvalue(int value) noexcept
-      : tvalue(static_cast<int64_t>(value)) {}
   explicit constexpr tvalue(int64_t value) noexcept : value_(value) {}
   explicit constexpr tvalue(uint64_t value) noexcept : value_(value) {}
   explicit constexpr tvalue(double value) noexcept : value_(value) {}

@@ -16,6 +16,7 @@ import calculator.controller;
 
 import calculator.model;
 import tests.format_error;
+import tests.handle_input;
 
 #include <gtest/gtest.h>
 
@@ -40,22 +41,22 @@ TEST(controller, key_backspace_empty_input_empty_stack) {
 TEST(controller, key_backspace_non_empty_input_non_empty_stack) {
   tmodel model;
   tcontroller controller{model};
-  model.stack_push(tvalue{42});
+  handle_input(controller, model, "42");
   model.input_append("abc");
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "ab");
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "a");
 
   controller.handle_keyboard_input(tkey::backspace);
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack_size(), 1);
+  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 
   controller.handle_keyboard_input(tkey::backspace);
