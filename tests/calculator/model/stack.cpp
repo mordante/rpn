@@ -23,24 +23,25 @@ namespace calculator {
 TEST(model, stack_drop) {
   tmodel model;
 
-  EXPECT_THROW(model.stack_drop(), std::out_of_range);
+  EXPECT_THROW(model.stack().drop(), std::out_of_range);
 
-  model.stack_push(tvalue{uint64_t(42)});
+  model.stack().push(tvalue{uint64_t(42)});
 
-  model.stack_drop();
+  model.stack().drop();
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.input_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
 }
 
 TEST(model, stack_display_double) {
   tmodel model;
-  model.stack_push(tvalue{-42.0});
-  model.stack_push(tvalue{0.1});
-  model.stack_push(tvalue{42.23});
-  model.stack_push(tvalue{100.456});
+  model.stack().push(tvalue{-42.0});
+  model.stack().push(tvalue{0.1});
+  model.stack().push(tvalue{42.23});
+  model.stack().push(tvalue{100.456});
   // Note these results are expected to change when std::format will be used.
-  EXPECT_EQ(model.strings(), (std::vector<std::string>{
-                                 {"-42"}, {"0.1"}, {"42.23"}, {"100.456"}}));
+  EXPECT_EQ(
+      model.stack().strings(),
+      (std::vector<std::string>{{"-42"}, {"0.1"}, {"42.23"}, {"100.456"}}));
 }
 } // namespace calculator

@@ -121,7 +121,7 @@ void twindow::update_ui() {
   diagnostics_.label(model_.diagnostics_get().c_str());
 
   stack_.clear();
-  for (auto value : model_.strings()) {
+  for (auto value : model_.stack().strings()) {
     stack_.insert(std::numeric_limits<int>::max(),
                   align_right(std::move(value)).c_str());
   }

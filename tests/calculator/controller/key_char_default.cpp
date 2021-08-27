@@ -40,7 +40,7 @@ TEST(controller, key_char_default_special_characters_no_modifier) {
 
     controller.handle_keyboard_input(tmodifiers::none, c);
     EXPECT_FALSE(model.diagnostics_get().empty());
-    EXPECT_TRUE(model.stack_empty());
+    EXPECT_TRUE(model.stack().empty());
     EXPECT_TRUE(model.input_get().empty());
   }
 }
@@ -61,7 +61,7 @@ TEST(controller, key_char_default_non_special_characters) {
 
     controller.handle_keyboard_input(tmodifiers::none, c);
     EXPECT_TRUE(model.diagnostics_get().empty());
-    EXPECT_TRUE(model.stack_empty());
+    EXPECT_TRUE(model.stack().empty());
     EXPECT_EQ(model.input_get(), std::string(1, c));
   }
 }
@@ -81,7 +81,7 @@ TEST(controller, key_char_default_control) {
 
     controller.handle_keyboard_input(tmodifiers::control, c);
     EXPECT_TRUE(model.diagnostics_get().empty());
-    EXPECT_TRUE(model.stack_empty());
+    EXPECT_TRUE(model.stack().empty());
     EXPECT_TRUE(model.input_get().empty());
   }
 }

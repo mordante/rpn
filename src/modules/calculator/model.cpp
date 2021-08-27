@@ -43,11 +43,7 @@ public:
 
   // *** Query ***
 
-  [[nodiscard]] bool stack_empty() const noexcept { return stack_.empty(); }
-  [[nodiscard]] size_t stack_size() const noexcept { return stack_.size(); }
-  [[nodiscard]] const std::vector<std::string> &strings() const noexcept {
-    return stack_.strings();
-  }
+  [[nodiscard]] const tstack &stack() const noexcept { return stack_; }
 
   // *** Modifiers ***
 
@@ -66,23 +62,7 @@ public:
 
   // * Stack *
 
-  /** Adds the @p value to the back of the stack. */
-  void stack_push(tvalue value) { stack_.push(value); }
-
-  /** Duplicates the last entry on the stack. */
-  void stack_duplicate() { stack_.duplicate(); }
-
-  /**
-   * @returns The last element at the back of the stack.
-   * @throws @ref std::out_of_range when the stack is empty.
-   */
-  [[nodiscard]] tvalue stack_pop() { return stack_.pop(); }
-
-  /**
-   * Removes the last element at the back of the stack
-   * @throws @ref std::out_of_range when the stack is empty.
-   */
-  void stack_drop() { stack_.drop(); }
+  [[nodiscard]] tstack &stack() noexcept { return stack_; }
 
   // * Input *
 

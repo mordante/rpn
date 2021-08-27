@@ -262,13 +262,13 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
   if (const std::string input = model_.input_steal(); !input.empty())
     push(input);
 
-  if (model_.stack_size() < 2)
+  if (model_.stack().size() < 2)
     throw std::out_of_range("Stack doesn't contain two elements");
 
-  const tvalue rhs = model_.stack_pop();
-  tvalue lhs = model_.stack_pop();
+  const tvalue rhs = model_.stack().pop();
+  tvalue lhs = model_.stack().pop();
   (lhs.*operation)(rhs);
-  model_.stack_push(lhs);
+  model_.stack().push(lhs);
   model_.diagnostics_clear();
 }
 
@@ -276,18 +276,18 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
   if (const std::string input = model_.input_steal(); !input.empty())
     push(input);
 
-  if (model_.stack_empty())
+  if (model_.stack().empty())
     throw std::out_of_range("Stack doesn't contain an element");
 
-  tvalue value = model_.stack_pop();
+  tvalue value = model_.stack().pop();
   (value.*operation)();
-  model_.stack_push(value);
+  model_.stack().push(value);
   model_.diagnostics_clear();
 }
 
 void tcontroller::push(std::string_view input) {
   if (input.empty())
-    model_.stack_duplicate();
+    model_.stack().duplicate();
   else
     parse(input);
 }
@@ -337,7 +337,7 @@ void tcontroller::parse(std::string_view input) {
     throw std::domain_error("Invalid numeric value");
 
   // TODO add stack_emplace?
-  model_.stack_push(tvalue{value});
+  model_.stack().push(tvalue{value});
 }
 
 void tcontroller::diagnostics_set(const std::exception &e) {
@@ -355,7 +355,7 @@ void tcontroller::push() {
 
 void tcontroller::remove() {
   if (!model_.input_pop_back())
-    model_.stack_drop();
+    model_.stack().drop();
 }
 
 } // namespace calculator

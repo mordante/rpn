@@ -26,21 +26,21 @@ TEST(model, input_pop_back) {
   EXPECT_TRUE(model.input_pop_back());
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.input_get(), "ab");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
 
   EXPECT_TRUE(model.input_pop_back());
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_EQ(model.input_get(), "a");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
 
   EXPECT_TRUE(model.input_pop_back());
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.input_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
 
   EXPECT_FALSE(model.input_pop_back());
   EXPECT_TRUE(model.diagnostics_get().empty());
   EXPECT_TRUE(model.input_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
 }
 } // namespace calculator

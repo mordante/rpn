@@ -63,17 +63,17 @@ TEST(controller, append) {
 
   controller.append("abc");
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abc");
 
   controller.append("");
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abc");
 
   controller.append("def");
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abcdef");
 }
 
@@ -84,7 +84,7 @@ TEST(controller, append_diagnostics_unchanged) {
 
   controller.append("abc");
   EXPECT_EQ(model.diagnostics_get(), "Unchanged");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abc");
 }
 } // namespace calculator
