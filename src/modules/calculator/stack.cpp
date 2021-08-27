@@ -80,10 +80,10 @@ private:
   std::vector<tvalue> values_{};
 
   /**
-   * The shadow stack with values rendered as string.
+   * The shadow stack with values rendered as strings.
    *
    * The size always matches the size of @ref values_. The display is a cache of
-   * the rendered value. When it contains an empty string it's contents are out
+   * the rendered value. When it contains an empty string its contents are out
    * of sync. When invalidating a cache entry the @ref dirty_ flag must be set.
    */
   mutable std::vector<std::string> strings_{};
@@ -228,9 +228,7 @@ static std::string format(tbase base, const tvalue &value) {
   }
   __builtin_unreachable();
 #else
-  // Initialize with right alignment for FLTK.
   return calculator::format(base_, value);
-
 #endif
 }
 

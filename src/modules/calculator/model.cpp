@@ -41,13 +41,7 @@ public:
   tmodel &operator=(const tmodel &) = delete;
   tmodel &operator=(tmodel &&) = delete;
 
-  // *** Query ***
-
-  [[nodiscard]] const tstack &stack() const noexcept { return stack_; }
-
-  // *** Modifiers ***
-
-  // * Diagnostics *
+  // *** Diagnostics ****
 
   void diagnostics_set(std::string &&diagnotics) {
     diagnotics_ = std::move(diagnotics);
@@ -60,18 +54,12 @@ public:
   /** Clears the current diagnostics. */
   void diagnostics_clear() noexcept { diagnotics_.clear(); }
 
-  // * Stack *
+  // *** Stack ***
 
+  [[nodiscard]] const tstack &stack() const noexcept { return stack_; }
   [[nodiscard]] tstack &stack() noexcept { return stack_; }
 
-  // * Input *
-
-  /**
-   * Clears the current input.
-   *
-   * TODO Is this function still needed?
-   */
-  void input_clear() noexcept { input_.clear(); }
+  // *** Input ***
 
   /** Returns the clears the input and returns the original value. */
   [[nodiscard]] std::string input_steal() {
@@ -102,8 +90,13 @@ public:
 
   [[nodiscard]] const std::string &input_get() const noexcept { return input_; }
 
-  // * Base *
+  // *** Base ***
 
+  /**
+   * @note The base is part of the stack, but it makes more sense to have the
+   * settings accessed via the model instead of the stack. So keep the function
+   * here.
+   */
   void base_set(tbase base) { stack_.base_set(base); }
 
 private:
