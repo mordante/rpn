@@ -7,6 +7,10 @@ target_compile_options(rpn
 		${module_compile_options}
 		${diagnostic_compile_options}
 )
+set_target_properties(rpn
+	PROPERTIES
+		CXX_CLANG_TIDY "${CLANG_TIDY}"
+)
 # These aren't properly set by fltk itself.
 target_include_directories(rpn
 	SYSTEM PRIVATE

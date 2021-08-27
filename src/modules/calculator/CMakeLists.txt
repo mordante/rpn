@@ -13,6 +13,10 @@ target_compile_options(calculator
 		${module_compile_options}
 		${diagnostic_compile_options}
 )
+set_target_properties(calculator
+	PROPERTIES
+		CXX_CLANG_TIDY "${CLANG_TIDY}"
+)
 add_module(calculator calculator.cpp)
 add_module(calculator.controller controller.cpp)
 add_module(calculator.math.core math/core.cpp)

@@ -32,6 +32,8 @@ set(diagnostic_compile_options
 	-Wpedantic
 )
 
+set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
+
 enable_testing()
 add_code_coverage()
 
