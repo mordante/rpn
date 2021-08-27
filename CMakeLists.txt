@@ -21,6 +21,18 @@ set(module_compile_options
 	-fimplicit-module-maps
 	-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
 )
+set(diagnostic_compile_options
+	-Wall
+	-Wconversion
+	-Wcovered-switch-default
+	-Wdeprecated
+	-Werror
+	-Wextra
+	-Wold-style-cast
+	-Wpedantic
+)
+
+set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
 
 enable_testing()
 add_code_coverage()

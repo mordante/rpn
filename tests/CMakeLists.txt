@@ -38,6 +38,11 @@ add_executable(tests
 target_compile_options(tests
 	PRIVATE
 		${module_compile_options}
+		${diagnostic_compile_options}
+)
+set_target_properties(tests
+	PROPERTIES
+		CXX_CLANG_TIDY "${CLANG_TIDY}"
 )
 target_link_libraries(tests
 	PRIVATE

@@ -90,7 +90,8 @@ void twindow::process_input_event() {
   if (control) {
     key = convert_key_pad(key);
     if (is_printable(key))
-      controller_.handle_keyboard_input(calculator::tmodifiers::control, key);
+      controller_.handle_keyboard_input(calculator::tmodifiers::control,
+                                        static_cast<char>(key));
     return;
   }
 

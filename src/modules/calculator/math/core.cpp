@@ -42,7 +42,9 @@ export template <class To, class From> To bit_cast(const From &from) noexcept {
 }
 #endif
 
-static uint64_t bitwise_cast(int64_t value) { return value; }
+static uint64_t bitwise_cast(int64_t value) {
+  return static_cast<uint64_t>(value);
+}
 
 static uint64_t bitwise_cast(uint64_t value) { return value; }
 
@@ -61,7 +63,7 @@ export uint64_t bitwise_cast(const tstorage &value) {
 static uint64_t positive_integral_cast(int64_t value) {
   if (value <= 0)
     throw std::range_error("Not a positive value");
-  return value;
+  return static_cast<uint64_t>(value);
 }
 
 static uint64_t positive_integral_cast(uint64_t value) {
@@ -81,7 +83,7 @@ static uint64_t positive_integral_cast(double value) {
   double result;
   if (modf(value, &result) != 0.)
     throw std::range_error("Not an integral");
-  return result;
+  return static_cast<uint64_t>(result);
 }
 
 /** Catches changes of @ref tstorage. */
@@ -91,9 +93,9 @@ export uint64_t positive_integral_cast(const tstorage &value) {
   return std::visit([](auto v) { return positive_integral_cast(v); }, value);
 }
 
-static double double_cast(int64_t value) { return value; }
+static double double_cast(int64_t value) { return static_cast<double>(value); }
 
-static double double_cast(uint64_t value) { return value; }
+static double double_cast(uint64_t value) { return static_cast<double>(value); }
 
 static double double_cast(double value) { return value; }
 
