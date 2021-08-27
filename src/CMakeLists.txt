@@ -8,7 +8,7 @@ target_compile_options(rpn
 )
 # These aren't properly set by fltk itself.
 target_include_directories(rpn
-	PRIVATE
+	SYSTEM PRIVATE
 		${fltk_SOURCE_DIR} # Default include directory
 		${fltk_BINARY_DIR} # Contains the build information header
 )
