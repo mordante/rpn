@@ -29,14 +29,14 @@ TEST(controller, key_char_forward_slash_too_few_elements) {
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 
   handle_input(controller, model, "42");
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain two elements"));
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -48,7 +48,7 @@ TEST(controller, key_char_forward_slash_stack_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"21"});
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"21"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -60,7 +60,7 @@ TEST(controller, key_char_forward_slash_stack_stack) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"2.5"});
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"2.5"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -73,7 +73,7 @@ TEST(controller, key_char_forward_slash_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"21"});
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"21"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -85,7 +85,7 @@ TEST(controller, key_char_forward_slash_input_invalid) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_EQ(model.stack(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -98,7 +98,7 @@ TEST(controller, key_char_forward_slash_by_zero) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(), "Division by zero");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }
 

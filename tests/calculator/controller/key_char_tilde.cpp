@@ -29,7 +29,7 @@ TEST(controller, key_char_tilde_too_few_elements) {
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Stack doesn't contain an element"));
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -41,8 +41,9 @@ TEST(controller, key_char_tilde_input) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.stack().strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -54,8 +55,9 @@ TEST(controller, key_char_tilde_stack) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.stack().strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -68,8 +70,9 @@ TEST(controller, key_char_tilde_diagnostics_cleared) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_EQ(model.stack(), std::vector<std::string>{
-		 "0b1111111111111111111111111111111111111111111111111111111111111100"});
+  EXPECT_EQ(model.stack().strings(),
+            std::vector<std::string>{"0b111111111111111111111111111111111111111"
+                                     "1111111111111111111111100"});
   EXPECT_TRUE(model.input_get().empty());
 }
 
@@ -80,7 +83,7 @@ TEST(controller, key_char_tilde_input_invalid) {
 
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
-  EXPECT_TRUE(model.stack_empty());
+  EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }
 } // namespace calculator

@@ -5,6 +5,7 @@ add_library(calculator
 	math/arithmetic.cpp
 	math/bitwise.cpp
 	math/core.cpp
+	stack.cpp
 	value.cpp
 )
 target_compile_options(calculator
@@ -17,6 +18,7 @@ add_module(calculator.math.core math/core.cpp)
 add_module(calculator.math.arithmetic math/arithmetic.cpp)
 add_module(calculator.math.bitwise math/bitwise.cpp)
 add_module(calculator.model model.cpp)
+add_module(calculator.stack stack.cpp)
 add_module(calculator.value value.cpp)
 add_dependencies(calculator.math.arithmetic.pcm
 	calculator.math.core.pcm
@@ -28,8 +30,11 @@ add_dependencies(calculator.value.pcm
 	calculator.math.arithmetic.pcm
 	calculator.math.bitwise.pcm
 )
-add_dependencies(calculator.model.pcm
+add_dependencies(calculator.stack.pcm
 	calculator.value.pcm
+)
+add_dependencies(calculator.model.pcm
+	calculator.stack.pcm
 )
 add_dependencies(calculator.controller.pcm
 	calculator.model.pcm

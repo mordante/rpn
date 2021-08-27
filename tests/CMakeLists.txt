@@ -18,7 +18,7 @@ add_executable(tests
 	calculator/model.cpp
 	calculator/model/change_base.cpp
 	calculator/model/input.cpp
-	calculator/model/stack.cpp
+	calculator/stack.cpp
 	calculator/value.cpp
 	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/arithmetic/division.cpp
