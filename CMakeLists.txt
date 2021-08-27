@@ -23,6 +23,7 @@ set(module_compile_options
 )
 set(diagnostic_compile_options
 	-Wall
+	-Wconversion
 	-Wcovered-switch-default
 	-Wdeprecated
 	-Werror
