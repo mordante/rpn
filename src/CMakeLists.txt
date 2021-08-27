@@ -5,6 +5,7 @@ add_executable(rpn
 target_compile_options(rpn
 	PRIVATE
 		${module_compile_options}
+		${diagnostic_compile_options}
 )
 # These aren't properly set by fltk itself.
 target_include_directories(rpn

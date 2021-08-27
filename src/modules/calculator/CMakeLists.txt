@@ -11,6 +11,7 @@ add_library(calculator
 target_compile_options(calculator
 	PRIVATE
 		${module_compile_options}
+		${diagnostic_compile_options}
 )
 add_module(calculator calculator.cpp)
 add_module(calculator.controller controller.cpp)

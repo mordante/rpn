@@ -38,6 +38,7 @@ add_executable(tests
 target_compile_options(tests
 	PRIVATE
 		${module_compile_options}
+		${diagnostic_compile_options}
 )
 target_link_libraries(tests
 	PRIVATE
