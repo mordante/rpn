@@ -69,6 +69,14 @@ static int convert_key_pad(int key) {
 
 // Note this expects ASCII.
 static bool is_printable(int key) { return key >= 32 && key <= 127; }
+static bool is_lowercase(int key) { return key >= 'a' && key <= 'z'; }
+
+static int uppercase(int key) {
+  if (is_lowercase(key))
+    return std::toupper(key);
+
+  return key;
+}
 
 void twindow::process_input_event() {
   // *** Handle special keys ***
@@ -89,6 +97,10 @@ void twindow::process_input_event() {
       Fl::event_key(FL_Control_L) || Fl::event_key(FL_Control_R);
   if (control) {
     key = convert_key_pad(key);
+    // When the control is used the key send is the lower case for ASCII.
+    // The engine expects upper case.
+    if (Fl::event_key(FL_Shift_L) || Fl::event_key(FL_Shift_L))
+      key = uppercase(key);
     if (is_printable(key))
       controller_.handle_keyboard_input(calculator::tmodifiers::control,
                                         static_cast<char>(key));
