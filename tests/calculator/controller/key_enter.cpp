@@ -82,7 +82,7 @@ TEST(controller, key_enter_value_overflow) {
   EXPECT_EQ(model.diagnostics_get(),
             format_error("Value outside of the representable range"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "18446744073709551616");
 }
 
 TEST(controller, key_enter_invalid_input) {
@@ -93,7 +93,7 @@ TEST(controller, key_enter_invalid_input) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "a");
 }
 
 TEST(controller, key_enter_invalid_input_after_valid_value) {
@@ -104,7 +104,7 @@ TEST(controller, key_enter_invalid_input_after_valid_value) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "0a");
 }
 
 TEST(controller, key_enter_diagnostics_cleared) {
@@ -127,7 +127,7 @@ TEST(controller, key_enter_base_2_only_prefix) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "0b");
 }
 
 TEST(controller, key_enter_base_2_invalid_value) {
@@ -138,7 +138,7 @@ TEST(controller, key_enter_base_2_invalid_value) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "0b2");
 }
 
 TEST(controller, key_enter_base_8_valid) {
@@ -160,7 +160,7 @@ TEST(controller, key_enter_base_8_invalid_value) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "08");
 }
 
 TEST(controller, key_enter_base_16_valid) {
@@ -182,7 +182,7 @@ TEST(controller, key_enter_base_16_only_prefix) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "0x");
 }
 
 TEST(controller, key_enter_base_16_invalid_value) {
@@ -193,6 +193,6 @@ TEST(controller, key_enter_base_16_invalid_value) {
   controller.handle_keyboard_input(tkey::enter);
   EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "0xg");
 }
 } // namespace calculator

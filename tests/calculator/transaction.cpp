@@ -96,6 +96,7 @@ TEST(action, input_steal) {
   (void)transaction.input_steal();
   taction action = std::move(transaction).release();
 
+  model.input_append("zzz"); // Make sure the current content is replaced.
   action.undo();
   EXPECT_EQ(model.input_get(), "abc");
   action.redo();

@@ -85,6 +85,6 @@ TEST(controller, key_char_minus_input_invalid) {
   controller.handle_keyboard_input(tmodifiers::none, '-');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "abc");
 }
 } // namespace calculator

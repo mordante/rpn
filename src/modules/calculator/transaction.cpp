@@ -44,7 +44,11 @@ public:
   /** Handles the stealing of @p input from the model's input. */
   explicit tinput(const std::string &input) : input_(input) {}
 
-  void undo(tmodel &model) override { model.input_append(input_); }
+  void undo(tmodel &model) override {
+    // There's no input setter, so first need to remove the current contents.
+    (void)model.input_steal();
+    model.input_append(input_);
+  }
   void redo(tmodel &model) override { (void)model.input_steal(); }
 
 private:

@@ -86,7 +86,7 @@ TEST(controller, key_char_forward_slash_input_invalid) {
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "abc");
 }
 
 TEST(controller, key_char_forward_slash_by_zero) {
@@ -98,8 +98,8 @@ TEST(controller, key_char_forward_slash_by_zero) {
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
   EXPECT_EQ(model.diagnostics_get(), "Division by zero");
-  EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
+  EXPECT_EQ(model.input_get(), "0");
 }
 
 } // namespace calculator
