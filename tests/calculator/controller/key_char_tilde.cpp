@@ -84,6 +84,6 @@ TEST(controller, key_char_tilde_input_invalid) {
   controller.handle_keyboard_input(tmodifiers::none, '~');
   EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value");
   EXPECT_TRUE(model.stack().empty());
-  EXPECT_TRUE(model.input_get().empty());
+  EXPECT_EQ(model.input_get(), "abc");
 }
 } // namespace calculator

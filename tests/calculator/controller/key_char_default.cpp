@@ -30,7 +30,7 @@ constexpr std::string_view all_characters =
     "`-=~!@#$%^&*()_+[]\\{}|;':\",./<>?";
 
 constexpr std::string_view special_characters_no_modifier = "+-/*&|^~<>";
-constexpr std::string_view special_characters_control = "bodhn";
+constexpr std::string_view special_characters_control = "bodhnzZ";
 
 namespace calculator {
 TEST(controller, key_char_default_special_characters_no_modifier) {

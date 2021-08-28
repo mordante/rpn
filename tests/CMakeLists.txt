@@ -15,10 +15,13 @@ add_executable(tests
 	calculator/controller/key_enter.cpp
 	calculator/controller/change_base.cpp
 	calculator/controller/key_control_n.cpp
+	calculator/controller/key_control_z.cpp
 	calculator/model.cpp
 	calculator/model/change_base.cpp
 	calculator/model/input.cpp
 	calculator/stack.cpp
+	calculator/transaction.cpp
+	calculator/undo_handler.cpp
 	calculator/value.cpp
 	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/arithmetic/division.cpp
