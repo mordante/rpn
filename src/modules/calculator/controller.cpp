@@ -16,6 +16,7 @@ export module calculator.controller;
 
 import calculator.model;
 import calculator.transaction;
+import calculator.undo_handler;
 
 import<charconv>;
 import<format>;
@@ -138,6 +139,8 @@ private:
   void remove();
 
   tmodel &model_;
+
+  tundo_handler undo_handler_;
 };
 
 void tcontroller::handle_keyboard_input(tkey key) noexcept {
@@ -243,6 +246,15 @@ void tcontroller::handle_keyboard_input_control(char key) {
     model_.base_set(tbase::hexadecimal);
     break;
 
+    /*** Undo / redo ***/
+  case 'z':
+    undo_handler_.undo();
+    break;
+
+  case 'Z':
+    undo_handler_.redo();
+    break;
+
     /*** Miscellaneous ***/
   case 'n':
     math_unary_operation(&tvalue::negate);
@@ -271,6 +283,7 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
   (lhs.*operation)(rhs);
   transaction.push(lhs);
   model_.diagnostics_clear();
+  undo_handler_.add(std::move(transaction).release());
 }
 
 void tcontroller::math_unary_operation(tunary_operation operation) {
@@ -286,6 +299,7 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
   (value.*operation)();
   transaction.push(value);
   model_.diagnostics_clear();
+  undo_handler_.add(std::move(transaction).release());
 }
 
 void tcontroller::push(ttransaction &transaction, std::string_view input) {
@@ -354,6 +368,7 @@ void tcontroller::push() {
   ttransaction transaction(model_);
   push(transaction, transaction.input_steal());
   model_.diagnostics_clear();
+  undo_handler_.add(std::move(transaction).release());
 }
 
 void tcontroller::remove() {

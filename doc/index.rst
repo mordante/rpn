@@ -148,7 +148,18 @@ This is a short summary of the operations, but behind the scenes the
     As long as the input buffer isn't empty it removes the last character from
     the input buffer. When the input buffer is empty it discards on element
     from the stack.
-    
+
+  ``Ctrl + z``
+    Undo the last operation. This only affects the input buffer and the stack.
+    Multiple actions can be undo until reaching the initial state of the
+    application.
+
+  ``Ctrl + Z``
+    Redo the last undone operation. Multiple actions can be redone until
+
+    * reaching the final undo action,
+    * doing a regular operation.
+
 Known limitations
 =================
 
