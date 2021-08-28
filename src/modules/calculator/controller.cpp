@@ -88,9 +88,6 @@ public:
   void append(std::string_view data) noexcept;
 
 private:
-  void push(ttransaction &transaction, std::string_view input);
-  void parse(ttransaction &transaction, std::string_view input);
-
   using tunary_operation = void (tvalue::*)();
   using tbinary_operation = void (tvalue::*)(const tvalue &);
 
@@ -227,6 +224,60 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   }
 }
 
+static void validate(std::errc ec) {
+  if (ec == std::errc())
+    return;
+
+  switch (ec) {
+  case std::errc::invalid_argument:
+    throw std::domain_error("Invalid numeric value");
+
+  case std::errc::result_out_of_range:
+    throw std::out_of_range("Value outside of the representable range");
+
+  default:
+    // This happens when the implementation behaves outside the specifications.
+    throw std::domain_error("Unexpected error");
+  }
+}
+
+static int determine_base(std::string_view &input) {
+  if (input.size() < 2 || input[0] != '0')
+    return 10;
+
+  switch (input[1]) {
+  case 'b':
+    input.remove_prefix(2);
+    return 2;
+  default:
+    input.remove_prefix(1);
+    return 8;
+  case 'x':
+    input.remove_prefix(2);
+    return 16;
+  }
+}
+
+static void parse(ttransaction &transaction, std::string_view input) {
+  int base = determine_base(input);
+  uint64_t value;
+  std::from_chars_result result =
+      std::from_chars(input.begin(), input.end(), value, base);
+
+  validate(result.ec);
+  if (result.ptr != input.end())
+    throw std::domain_error("Invalid numeric value");
+
+  transaction.push(tvalue{value});
+}
+
+static void push(ttransaction &transaction, std::string_view input) {
+  if (input.empty())
+    transaction.duplicate();
+  else
+    parse(transaction, input);
+}
+
 void tcontroller::handle_keyboard_input_control(char key) {
   switch (key) {
     /*** Modify selected base ***/
@@ -273,7 +324,7 @@ void tcontroller::append(std::string_view data) noexcept {
 void tcontroller::math_binary_operation(tbinary_operation operation) {
   ttransaction transaction(model_);
   if (const std::string input = transaction.input_steal(); !input.empty())
-    push(transaction, input);
+    calculator::push(transaction, input);
 
   if (model_.stack().size() < 2)
     throw std::out_of_range("Stack doesn't contain two elements");
@@ -289,7 +340,7 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
 void tcontroller::math_unary_operation(tunary_operation operation) {
   ttransaction transaction(model_);
   if (const std::string input = transaction.input_steal(); !input.empty())
-    push(transaction, input);
+    calculator::push(transaction, input);
 
   if (model_.stack().empty()) {
     throw std::out_of_range("Stack doesn't contain an element");
@@ -302,60 +353,6 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
   undo_handler_.add(std::move(transaction).release());
 }
 
-void tcontroller::push(ttransaction &transaction, std::string_view input) {
-  if (input.empty())
-    transaction.duplicate();
-  else
-    parse(transaction, input);
-}
-
-static void validate(std::errc ec) {
-  if (ec == std::errc())
-    return;
-
-  switch (ec) {
-  case std::errc::invalid_argument:
-    throw std::domain_error("Invalid numeric value");
-
-  case std::errc::result_out_of_range:
-    throw std::out_of_range("Value outside of the representable range");
-
-  default:
-    // This happens when the implementation behaves outside the specifications.
-    throw std::domain_error("Unexpected error");
-  }
-}
-
-int determine_base(std::string_view &input) {
-  if (input.size() < 2 || input[0] != '0')
-    return 10;
-
-  switch (input[1]) {
-  case 'b':
-    input.remove_prefix(2);
-    return 2;
-  default:
-    input.remove_prefix(1);
-    return 8;
-  case 'x':
-    input.remove_prefix(2);
-    return 16;
-  }
-}
-
-void tcontroller::parse(ttransaction &transaction, std::string_view input) {
-  int base = determine_base(input);
-  uint64_t value;
-  std::from_chars_result result =
-      std::from_chars(input.begin(), input.end(), value, base);
-
-  validate(result.ec);
-  if (result.ptr != input.end())
-    throw std::domain_error("Invalid numeric value");
-
-  transaction.push(tvalue{value});
-}
-
 void tcontroller::diagnostics_set(const std::exception &e) {
 #if defined(__cpp_lib_format)
   model_.diagnostics_set(std::format("[ERR]{:>80.79}", e.what()));
@@ -366,7 +363,7 @@ void tcontroller::diagnostics_set(const std::exception &e) {
 
 void tcontroller::push() {
   ttransaction transaction(model_);
-  push(transaction, transaction.input_steal());
+  calculator::push(transaction, transaction.input_steal());
   model_.diagnostics_clear();
   undo_handler_.add(std::move(transaction).release());
 }
