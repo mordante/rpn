@@ -44,6 +44,12 @@ not_covered = {
             'branches' : 0,
             'regions': 1,
         },
+    path + '/src/modules/calculator/parser.cpp' :
+        {
+            'lines' : 9,
+            'branches' : 9,
+            'regions': 5,
+        },
     path + '/src/modules/calculator/stack.cpp' :
         {
             'lines' : 0,
