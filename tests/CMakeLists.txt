@@ -20,6 +20,7 @@ add_executable(tests
 	calculator/model/input.cpp
 	calculator/stack.cpp
 	calculator/transaction.cpp
+	calculator/undo_handler.cpp
 	calculator/value.cpp
 	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/arithmetic/division.cpp

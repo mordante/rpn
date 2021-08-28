@@ -117,7 +117,11 @@ public:
   taction(taction &&) = default;
   ~taction() = default;
   taction &operator=(const taction &) = delete;
-  taction &operator=(taction &&) = delete;
+  taction &operator=(taction &&action) {
+    this->~taction();
+    new (this) taction(std::move(action));
+    return *this;
+  }
 
   /**
    * Undo the action.
