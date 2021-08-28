@@ -200,6 +200,18 @@ all elements on the stack. The input is unaffected.</p>
 the input buffer. When the input buffer is empty it discards on element
 from the stack.</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">z</span></code></dt>
+<dd><p class="first last">Undo the last operation. This only affects the input buffer and the stack.
+Multiple actions can be undo until reaching the initial state of the
+application.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">Z</span></code></dt>
+<dd><p class="first">Redo the last undone operation. Multiple actions can be redone until</p>
+<ul class="last simple">
+<li>reaching the final undo action,</li>
+<li>doing a regular operation.</li>
+</ul>
+</dd>
 </dl>
 </li>
 </ul>
