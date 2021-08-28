@@ -57,7 +57,7 @@ private:
 
 class tpop final : public tstep_ {
 public:
-  /** Handles the popping of @p value from the model's stack. */
+  /** Handles the popping or dropping of @p value from the model's stack. */
   explicit tpop(tvalue value) : value_(value) {}
 
   void undo(tmodel &model) override { model.stack().push(value_); }
@@ -189,6 +189,12 @@ public:
     tvalue result = model_.stack().pop();
     steps_.push_back(std::make_unique<tpop>(result));
     return result;
+  }
+
+  /** Handles the dropping of @p value from the model's stack. */
+  void drop() {
+    tvalue result = model_.stack().pop();
+    steps_.push_back(std::make_unique<tpop>(result));
   }
 
   /** Handles the pushing of @p value from the model's stack. */

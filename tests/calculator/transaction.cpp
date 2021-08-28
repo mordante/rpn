@@ -132,6 +132,21 @@ TEST(action, pop) {
   EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42"}));
 }
 
+TEST(action, drop) {
+  tmodel model;
+  model.stack().push(tvalue(uint64_t(42)));
+  model.stack().push(tvalue(uint64_t(0)));
+
+  ttransaction transaction{model};
+  transaction.drop();
+  taction action = std::move(transaction).release();
+
+  action.undo();
+  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{{"42"}, {"0"}}));
+  action.redo();
+  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42"}));
+}
+
 TEST(action, duplicate) {
   tmodel model;
   model.stack().push(tvalue(uint64_t(42)));

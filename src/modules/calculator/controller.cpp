@@ -372,8 +372,13 @@ void tcontroller::push() {
 }
 
 void tcontroller::remove() {
-  if (!model_.input_pop_back())
-    model_.stack().drop();
+  if (model_.input_pop_back())
+    return;
+
+  ttransaction transaction(model_);
+  transaction.drop();
+  model_.diagnostics_clear();
+  undo_handler_.add(std::move(transaction).release());
 }
 
 } // namespace calculator

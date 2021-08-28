@@ -64,4 +64,28 @@ TEST(controller, key_backspace_non_empty_input_non_empty_stack) {
   EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }
+
+TEST(controller, key_backspace_diagnostics_not_cleared) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("abc");
+  model.diagnostics_set("Unchanged");
+
+  controller.handle_keyboard_input(tkey::backspace);
+  EXPECT_EQ(model.diagnostics_get(), "Unchanged");
+  EXPECT_TRUE(model.stack().strings().empty());
+  EXPECT_EQ(model.input_get(), "ab");
+}
+
+TEST(controller, key_backspace_diagnostics_cleared) {
+  tmodel model;
+  tcontroller controller{model};
+  handle_input(controller, model, "42");
+  model.diagnostics_set("Cleared");
+
+  controller.handle_keyboard_input(tkey::backspace);
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_TRUE(model.stack().strings().empty());
+  EXPECT_TRUE(model.input_get().empty());
+}
 } // namespace calculator
