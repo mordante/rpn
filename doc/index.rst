@@ -85,6 +85,9 @@ In these operations step 4 is optional. When the operation is performed with a
 non-empty input this input will be pushed on the stack before the
 operation [#note-stack]_.
 
+An alternative way to do the same operation would be:
+* type ``1 2+``
+
 This is a short summary of the operations, but behind the scenes the
 `calculations <calculation.html>`_ have more complexity.
 

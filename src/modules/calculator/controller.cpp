@@ -271,11 +271,13 @@ static void parse(ttransaction &transaction, std::string_view input) {
   transaction.push(tvalue{value});
 }
 
+// TODO This function can be removed since it now only forwards the arguments.
 static void push(ttransaction &transaction, std::string_view input) {
   if (input.empty())
-    transaction.duplicate();
-  else
-    parse(transaction, input);
+    throw std::logic_error(
+        "The parser should only be called with a non-empty string");
+
+  parse(transaction, input);
 }
 
 void tcontroller::handle_keyboard_input_control(char key) {
@@ -321,10 +323,34 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
+static void parse(ttransaction &transaction, const tparsed_string &input) {
+  switch (input.type) {
+  case tparsed_string::ttype::internal_error:
+    throw std::logic_error("Invalid parsed string");
+
+  case tparsed_string::ttype::invalid_value:
+    throw std::domain_error("Invalid numeric value");
+
+  case tparsed_string::ttype::unsigned_value:
+    push(transaction, input.string);
+    break;
+
+  case tparsed_string::ttype::string_value:
+    throw std::domain_error("Invalid numeric value");
+  }
+}
+
+static void parse(ttransaction &transaction,
+                  const std::vector<tparsed_string> &input) {
+  std::for_each(
+      input.begin(), input.end(),
+      [&transaction](const tparsed_string &i) { parse(transaction, i); });
+}
+
 void tcontroller::math_binary_operation(tbinary_operation operation) {
   ttransaction transaction(model_);
-  if (const std::string input = transaction.input_steal(); !input.empty())
-    calculator::push(transaction, input);
+  parse(transaction, model_.input_process());
+  transaction.input_reset();
 
   if (model_.stack().size() < 2)
     throw std::out_of_range("Stack doesn't contain two elements");
@@ -339,8 +365,8 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
 
 void tcontroller::math_unary_operation(tunary_operation operation) {
   ttransaction transaction(model_);
-  if (const std::string input = transaction.input_steal(); !input.empty())
-    calculator::push(transaction, input);
+  parse(transaction, model_.input_process());
+  transaction.input_reset();
 
   if (model_.stack().empty()) {
     throw std::out_of_range("Stack doesn't contain an element");
@@ -363,7 +389,13 @@ void tcontroller::diagnostics_set(const std::exception &e) {
 
 void tcontroller::push() {
   ttransaction transaction(model_);
-  calculator::push(transaction, transaction.input_steal());
+  if (model_.input_get().empty())
+    transaction.duplicate();
+  else {
+    parse(transaction, model_.input_process());
+    transaction.input_reset();
+  }
+
   model_.diagnostics_clear();
   undo_handler_.add(std::move(transaction).release());
 }

@@ -46,10 +46,10 @@ public:
 
   void undo(tmodel &model) override {
     // There's no input setter, so first need to remove the current contents.
-    (void)model.input_steal();
+    model.input_reset();
     model.input_append(input_);
   }
-  void redo(tmodel &model) override { (void)model.input_steal(); }
+  void redo(tmodel &model) override { model.input_reset(); }
 
 private:
   std::string input_;
@@ -178,10 +178,10 @@ public:
   }
 
   /** Handles the stealing of @p input from the model's input. */
-  [[nodiscard]] std::string input_steal() {
-    std::string result = model_.input_steal();
+  void input_reset() {
+    std::string result = model_.input_get();
+    model_.input_reset();
     steps_.push_back(std::make_unique<tinput>(result));
-    return result;
   }
 
   /** Handles the popping of @p value from the model's stack. */

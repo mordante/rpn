@@ -28,9 +28,9 @@ path = os.path.abspath(path)
 not_covered = {
     path + '/src/modules/calculator/controller.cpp' :
         {
-            'lines' : 5,
-            'branches' : 4,
-            'regions': 3,
+            'lines' : 11,
+            'branches' : 9,
+            'regions': 6,
         },
     path + '/src/modules/calculator/math/arithmetic.cpp' :
         {
@@ -47,7 +47,7 @@ not_covered = {
     path + '/src/modules/calculator/parser.cpp' :
         {
             'lines' : 9,
-            'branches' : 9,
+            'branches' : 8,
             'regions': 5,
         },
     path + '/src/modules/calculator/stack.cpp' :

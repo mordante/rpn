@@ -11,6 +11,11 @@ Version 0.3.0
 
 Focusses on improving the input parsing and adding more operations.
 
+* Improved the input handling:
+
+  * A space can now be used as separator instead of needing to press return
+    after every entry.
+
 Version 0.2.0
 =============
 
