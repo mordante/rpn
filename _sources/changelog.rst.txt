@@ -6,6 +6,11 @@ Changelog
    :local:
 
 
+Version 0.3.0
+=============
+
+Focusses on improving the input parsing and adding more operations.
+
 Version 0.2.0
 =============
 
