@@ -22,14 +22,22 @@ set(module_compile_options
 	-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
 )
 set(diagnostic_compile_options
-	-Wall
-	-Wconversion
-	-Wcovered-switch-default
-	-Wdeprecated
 	-Werror
-	-Wextra
-	-Wold-style-cast
-	-Wpedantic
+	-Weverything
+	-Wno-padded             # Don't care about the padding.
+	-Wno-missing-prototypes # False postives with export.
+	-Wno-switch-enum        # False positives with default.
+	# GoogleTest generated errors. TODO make GoogleTest a system header
+	-Wno-global-constructors
+	# Needs more investigation; anchoring them gives issues with a modular build.
+	-Wno-weak-vtables
+	# Ignore all compatibility with older C++ standards.
+	-Wno-pre-c++20-compat
+	-Wno-c++98-compat
+	-Wno-c++98-compat-pedantic
+	-Wno-c++11-compat
+	-Wno-c++14-compat
+	-Wno-c++17-compat
 )
 
 set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
