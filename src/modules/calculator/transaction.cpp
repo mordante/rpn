@@ -182,7 +182,7 @@ public:
     std::string result = model_.input_steal();
     steps_.push_back(std::make_unique<tinput>(result));
     return result;
-  };
+  }
 
   /** Handles the popping of @p value from the model's stack. */
   [[nodiscard]] tvalue pop() {
@@ -207,7 +207,7 @@ public:
   void duplicate() {
     model_.stack().duplicate();
     steps_.push_back(std::make_unique<tduplicate>());
-  };
+  }
 
   /**
    * Finalises the transaction as succesful.
