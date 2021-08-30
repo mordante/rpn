@@ -95,6 +95,16 @@ TEST(parser, invalid_unsigned_value_base_2) {
                                   {tparsed_string::ttype::invalid_value, ""}}));
 }
 
+TEST(parser, valid_unsigned_value_grouping_base_2) {
+  tparser parser;
+
+  // TODO Add more restrictions to where the grouping is allowed.
+  parser.append("0_,b_,1,_0__0,,0_,_,");
+  EXPECT_EQ(parser.process(),
+            (std::vector<tparsed_string>{
+                {tparsed_string::ttype::unsigned_value, "0b1000"}}));
+}
+
 TEST(parser, valid_unsigned_value_base_8) {
   tparser parser;
 
@@ -121,6 +131,16 @@ TEST(parser, invalid_unsigned_value_base_8) {
               (std::vector<tparsed_string>{
                   {tparsed_string::ttype::invalid_value, ""}}));
   }
+}
+
+TEST(parser, valid_unsigned_value_grouping_base_8) {
+  tparser parser;
+
+  // TODO Add more restrictions to where the grouping is allowed.
+  parser.append("0_,1,_2__3,,4_,_,");
+  EXPECT_EQ(parser.process(),
+            (std::vector<tparsed_string>{
+                {tparsed_string::ttype::unsigned_value, "01234"}}));
 }
 
 TEST(parser, valid_unsigned_value_base_10) {
@@ -151,6 +171,16 @@ TEST(parser, invalid_unsigned_value_base_10) {
   }
 }
 
+TEST(parser, valid_unsigned_value_grouping_base_10) {
+  tparser parser;
+
+  // TODO Add more restrictions to where the grouping is allowed.
+  parser.append("1,_2__3,,4_,_,");
+  EXPECT_EQ(parser.process(),
+            (std::vector<tparsed_string>{
+                {tparsed_string::ttype::unsigned_value, "1234"}}));
+}
+
 TEST(parser, valid_unsigned_value_base_16) {
   tparser parser;
 
@@ -177,6 +207,16 @@ TEST(parser, invalid_unsigned_value_base_16) {
               (std::vector<tparsed_string>{
                   {tparsed_string::ttype::invalid_value, ""}}));
   }
+}
+
+TEST(parser, valid_unsigned_value_grouping_base_16) {
+  tparser parser;
+
+  // TODO Add more restrictions to where the grouping is allowed.
+  parser.append("0_,x_,1,_2__3,,4_,_,");
+  EXPECT_EQ(parser.process(),
+            (std::vector<tparsed_string>{
+                {tparsed_string::ttype::unsigned_value, "0x1234"}}));
 }
 
 } // namespace calculator

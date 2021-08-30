@@ -177,6 +177,9 @@ private:
   }
 
   std::unique_ptr<tparser_> optional_prefix(char c) {
+    if (c == '_' || c == ',')
+      return nullptr;
+
     buffer_ += c;
     state_ = tstate::optional_number;
     switch (c) {
@@ -203,6 +206,9 @@ private:
   }
 
   std::unique_ptr<tparser_> number(char c) {
+    if (c == '_' || c == ',')
+      return nullptr;
+
     if (c == ' ') {
       set_complete(true);
       return nullptr;
