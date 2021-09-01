@@ -29,7 +29,7 @@ not_covered = {
     path + '/src/modules/calculator/controller.cpp' :
         {
             'lines' : 11,
-            'branches' : 9,
+            'branches' : 11,
             'regions': 6,
         },
     path + '/src/modules/calculator/math/arithmetic.cpp' :
@@ -46,9 +46,9 @@ not_covered = {
         },
     path + '/src/modules/calculator/parser.cpp' :
         {
-            'lines' : 9,
-            'branches' : 8,
-            'regions': 5,
+            'lines' : 17,
+            'branches' : 15,
+            'regions': 9,
         },
     path + '/src/modules/calculator/stack.cpp' :
         {

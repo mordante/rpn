@@ -181,7 +181,10 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
     break;
 
   case '-':
-    math_binary_operation(&tvalue::sub);
+    if (model_.input_accept_minus())
+      model_.input_append(key);
+    else
+      math_binary_operation(&tvalue::sub);
     break;
 
   case '*':
@@ -280,6 +283,19 @@ static void push(ttransaction &transaction, std::string_view input) {
   parse(transaction, input);
 }
 
+static void parse_float(ttransaction &transaction, std::string_view input) {
+  // TODO Use std::from_chars once it becomes available.
+  std::string str{input};
+  const char *s = str.c_str();
+  char *ptr = nullptr;
+  double value = strtod(s, &ptr);
+
+  if (!ptr || *ptr != '\0' || errno == ERANGE)
+    throw std::domain_error("Invalid numeric value");
+
+  transaction.push(tvalue{value});
+}
+
 void tcontroller::handle_keyboard_input_control(char key) {
   switch (key) {
     /*** Modify selected base ***/
@@ -333,6 +349,10 @@ static void parse(ttransaction &transaction, const tparsed_string &input) {
 
   case tparsed_string::ttype::unsigned_value:
     push(transaction, input.string);
+    break;
+
+  case tparsed_string::ttype::floating_point_value:
+    parse_float(transaction, input.string);
     break;
 
   case tparsed_string::ttype::string_value:

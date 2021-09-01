@@ -85,6 +85,9 @@ public:
     input_.append(data);
     parser_.append(data);
   }
+  [[nodiscard]] bool input_accept_minus() const {
+    return parser_.accept_minus();
+  }
 
   /**
    * Removes the last character of the @ref input_.

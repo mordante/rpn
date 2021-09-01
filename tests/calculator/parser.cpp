@@ -27,12 +27,16 @@ TEST(parser, no_value) {
 TEST(parser, multiple_values) {
   tparser parser;
 
-  parser.append("1 10 abc 100a");
-  EXPECT_EQ(parser.process(), (std::vector<tparsed_string>{
-                                  {tparsed_string::ttype::unsigned_value, "1"},
-                                  {tparsed_string::ttype::unsigned_value, "10"},
-                                  {tparsed_string::ttype::string_value, "abc"},
-                                  {tparsed_string::ttype::invalid_value, ""}}));
+  parser.append("1 10 abc 1. 1e1 1.e1 100a");
+  EXPECT_EQ(parser.process(),
+            (std::vector<tparsed_string>{
+                {tparsed_string::ttype::unsigned_value, "1"},
+                {tparsed_string::ttype::unsigned_value, "10"},
+                {tparsed_string::ttype::string_value, "abc"},
+                {tparsed_string::ttype::floating_point_value, "1."},
+                {tparsed_string::ttype::floating_point_value, "1e1"},
+                {tparsed_string::ttype::floating_point_value, "1.e1"},
+                {tparsed_string::ttype::invalid_value, ""}}));
 }
 
 TEST(parser, reset) {
@@ -58,4 +62,19 @@ TEST(parser, valid_string_value) {
                 {tparsed_string::ttype::string_value, "abc"}}));
 }
 
+TEST(parser, do_not_accept_minus) {
+  tparser parser;
+
+  EXPECT_FALSE(parser.accept_minus());
+
+  parser.append('1');
+  EXPECT_FALSE(parser.accept_minus());
+
+  parser.append('a');
+  EXPECT_FALSE(parser.accept_minus());
+
+  parser.reset();
+  parser.append('a');
+  EXPECT_FALSE(parser.accept_minus());
+}
 } // namespace calculator

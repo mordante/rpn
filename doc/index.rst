@@ -81,6 +81,9 @@ The following value types can be entered:
 ``Unsigned integral``
   A positive value in the selected base.
 
+``Floating point``
+  An positive floating point value. The exponent can have a negative value.
+
 Operations
 ----------
 

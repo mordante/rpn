@@ -17,6 +17,7 @@ Focusses on improving the input parsing and adding more operations.
     after every entry.
   * An underscore or comma can be used as a numeric separator in the input,
     allowing to easier write numbers with many digits.
+  * Floating-point values can now be entered.
 
 Version 0.2.0
 =============

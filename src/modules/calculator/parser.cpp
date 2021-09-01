@@ -41,6 +41,12 @@ export struct tparsed_string {
      */
     unsigned_value,
     /**
+     * The @ref string contains a floating point value.
+     *
+     * The value may fail to parse when it's larger than the storage type.
+     */
+    floating_point_value,
+    /**
      * The @ref string contains a string value.
      *
      * @note That at the moment strings are handle the same as @ref
@@ -72,6 +78,15 @@ public:
    * Otherwise it returns a @c nullptr.
    */
   virtual std::unique_ptr<tparser_> parse(char c) = 0;
+
+  /**
+   * Does the parser in its current state accept the minus sign?
+   *
+   * Depending on the state of parsing a minus sign should be parsed instead of
+   * execute the binary minus operation. For example @em 12e will accept a
+   * minus sign in its current state.
+   */
+  virtual bool accept_minus() const noexcept = 0;
 
   /**a Is the parsing complete? */
   virtual bool complete() const noexcept = 0;
@@ -112,6 +127,8 @@ public:
     complete_ |= (c == ' ');
     return nullptr;
   }
+
+  bool accept_minus() const noexcept override { return false; }
   bool complete() const noexcept override { return complete_; }
 
 private:
@@ -122,6 +139,154 @@ private:
 
   void finish_impl() override { complete_ = true; }
 };
+
+/** The parser for @ref ttype::floating_point_value. */
+class tparser_floating_point final : public tparser_ {
+public:
+  std::unique_ptr<tparser_> parse(char c) override {
+    switch (state_) {
+    case tstate::initial:
+      return initial(c);
+    case tstate::required_number_or_dot_or_e:
+      return required_number_or_dot_or_e(c);
+    case tstate::required_number_or_e:
+      state_ = tstate::optional_number_or_e;
+      [[fallthrough]];
+    case tstate::optional_number_or_e:
+      return optional_number_or_e(c);
+    case tstate::required_minus_or_number:
+      return required_minus_or_number(c);
+    case tstate::required_number:
+    case tstate::optional_number:
+      return number(c);
+    case tstate::complete:
+      throw std::logic_error("Can't parse a complete value");
+    }
+  }
+
+  bool accept_minus() const noexcept override {
+    return state_ == tstate::required_minus_or_number;
+  }
+  bool complete() const noexcept override { return state_ == tstate::complete; }
+
+private:
+  enum class tstate {
+    initial,
+    required_number_or_dot_or_e,
+    required_number_or_e,
+    optional_number_or_e,
+    required_minus_or_number,
+    required_number,
+    optional_number,
+    complete
+  };
+  tstate state_{tstate::initial};
+  std::string buffer_{};
+  tparsed_string result_{};
+
+  void set_complete(bool valid) {
+    state_ = tstate::complete;
+    if (valid)
+      result_ =
+          tparsed_string{tparsed_string::ttype::floating_point_value, buffer_};
+    else
+      result_ =
+          tparsed_string{tparsed_string::ttype::invalid_value, std::string{}};
+  }
+
+  std::unique_ptr<tparser_> initial(char c) {
+    if (c != '.' && (c < '0' || c > '9'))
+      throw std::logic_error(
+          "The caller should have validated input is a digit or .");
+
+    buffer_ += c;
+    state_ = c == '.' ? tstate::required_number_or_e
+                      : tstate::required_number_or_dot_or_e;
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> required_number_or_dot_or_e(char c) {
+    if (c != '.')
+      return optional_number_or_e(c);
+
+    buffer_ += c;
+    state_ = tstate::optional_number_or_e;
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> optional_number_or_e(char c) {
+    if (c == ' ') {
+      set_complete(true);
+      return nullptr;
+    }
+
+    buffer_ += c;
+    if (c == 'e') {
+      state_ = tstate::required_minus_or_number;
+      return nullptr;
+    }
+
+    if (c < '0' || c > '9')
+      return std::make_unique<tparser_invalid_value>();
+
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> required_minus_or_number(char c) {
+    buffer_ += c;
+    if (c == '-') {
+      state_ = tstate::required_number;
+      return nullptr;
+    }
+
+    if (c < '0' || c > '9')
+      return std::make_unique<tparser_invalid_value>();
+
+    state_ = tstate::optional_number;
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> number(char c) {
+    if (state_ == tstate::required_number)
+      state_ = tstate::optional_number;
+    else if (c == '_' || c == ',')
+      return nullptr;
+
+    if (c == ' ') {
+      set_complete(true);
+      return nullptr;
+    }
+
+    if (c < '0' || c > '9')
+      return std::make_unique<tparser_invalid_value>();
+
+    buffer_ += c;
+    return nullptr;
+  }
+
+  tparsed_string result_impl() override { return result_; }
+
+  bool in_terminal_state() const noexcept {
+    return state_ == tstate::optional_number_or_e ||
+           state_ == tstate::optional_number;
+  }
+
+  void finish_impl() override { set_complete(in_terminal_state()); }
+};
+
+static std::unique_ptr<tparser_> parse_floating_point(const std::string &data) {
+  auto result = std::make_unique<tparser_floating_point>();
+  for (char c : data) {
+    if (result->parse(c))
+      throw std::logic_error(
+          "This shouldn't happen, did the caller have a base != 10?");
+
+    if (result->complete())
+      throw std::logic_error(
+          "A valid unsigned value shouldn't complete a floating point value");
+  }
+  return result;
+}
 
 /** The parser for @ref ttype::unsigned_value. */
 class tparser_unsigned final : public tparser_ {
@@ -142,6 +307,7 @@ public:
     }
   }
 
+  bool accept_minus() const noexcept override { return false; }
   bool complete() const noexcept override { return state_ == tstate::complete; }
 
 private:
@@ -181,6 +347,9 @@ private:
       return nullptr;
 
     buffer_ += c;
+    if (c == '.' || c == 'e')
+      return parse_floating_point(buffer_);
+
     state_ = tstate::optional_number;
     switch (c) {
     case 'b':
@@ -213,12 +382,8 @@ private:
       set_complete(true);
       return nullptr;
     }
+
     buffer_ += c;
-
-    // Expects ASCII
-    if (c < '0')
-      return std::make_unique<tparser_invalid_value>();
-
     switch (base_) {
     case tbase::binary:
       if (c > '1')
@@ -230,6 +395,9 @@ private:
         return std::make_unique<tparser_invalid_value>();
       break;
     case tbase::decimal:
+      // Non-decimal bases aren't allowed in floating-point values.
+      if (c == '.' || c == 'e')
+        return parse_floating_point(buffer_);
       if (c > '9')
         return std::make_unique<tparser_invalid_value>();
       break;
@@ -239,6 +407,11 @@ private:
         return std::make_unique<tparser_invalid_value>();
       break;
     }
+
+    // Expects ASCII
+    if (c < '0')
+      return std::make_unique<tparser_invalid_value>();
+
     return nullptr;
   }
   tparsed_string result_impl() override { return result_; }
@@ -264,6 +437,7 @@ public:
     return nullptr;
   }
 
+  bool accept_minus() const noexcept override { return false; }
   bool complete() const noexcept override { return complete_; }
 
 private:
@@ -286,6 +460,10 @@ public:
   void append(char data) { parse(data); }
   void append(std::string_view data) {
     std::for_each(data.begin(), data.end(), [this](char c) { parse(c); });
+  }
+
+  bool accept_minus() const {
+    return parser_ ? parser_->accept_minus() : false;
   }
 
   void reset() {
@@ -311,10 +489,17 @@ private:
 
   void parse(char c) {
     if (!parser_) [[unlikely]] {
-      if (c >= '0' && c <= '9')
-        parser_ = std::make_unique<tparser_unsigned>();
-      else
-        parser_ = std::make_unique<tparser_string>();
+      switch (c) {
+      case '.':
+        parser_ = std::make_unique<tparser_floating_point>();
+        break;
+      default:
+        if (c >= '0' && c <= '9')
+          parser_ = std::make_unique<tparser_unsigned>();
+        else
+          parser_ = std::make_unique<tparser_string>();
+        break;
+      }
     }
     std::unique_ptr<tparser_> replacement = parser_->parse(c);
     if (replacement) {

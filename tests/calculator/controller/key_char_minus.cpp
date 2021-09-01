@@ -87,4 +87,16 @@ TEST(controller, key_char_minus_input_invalid) {
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "abc");
 }
+
+TEST(controller, key_char_minus_float_exponent) {
+  tmodel model;
+  tcontroller controller{model};
+  model.diagnostics_set("Unchanged");
+  model.input_append("1e");
+
+  controller.handle_keyboard_input(tmodifiers::none, '-');
+  EXPECT_EQ(model.diagnostics_get(), "Unchanged");
+  EXPECT_TRUE(model.stack().strings().empty());
+  EXPECT_EQ(model.input_get(), "1e-");
+}
 } // namespace calculator
