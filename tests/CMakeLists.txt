@@ -22,6 +22,7 @@ add_executable(tests
 	calculator/parser.cpp
 	calculator/parser/unsigned_value.cpp
 	calculator/parser/floating_point_value.cpp
+	calculator/parser/signed_value.cpp
 	calculator/stack.cpp
 	calculator/transaction.cpp
 	calculator/undo_handler.cpp

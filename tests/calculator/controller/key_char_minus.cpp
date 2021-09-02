@@ -99,4 +99,16 @@ TEST(controller, key_char_minus_float_exponent) {
   EXPECT_TRUE(model.stack().strings().empty());
   EXPECT_EQ(model.input_get(), "1e-");
 }
+
+TEST(controller, key_char_minus_signed_integral) {
+  tmodel model;
+  tcontroller controller{model};
+  model.diagnostics_set("Unchanged");
+  model.input_append("i");
+
+  controller.handle_keyboard_input(tmodifiers::none, '-');
+  EXPECT_EQ(model.diagnostics_get(), "Unchanged");
+  EXPECT_TRUE(model.stack().strings().empty());
+  EXPECT_EQ(model.input_get(), "i-");
+}
 } // namespace calculator

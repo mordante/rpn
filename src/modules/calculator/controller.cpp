@@ -261,6 +261,18 @@ static int determine_base(std::string_view &input) {
   }
 }
 
+static void parse_signed(ttransaction &transaction, std::string_view input) {
+  int64_t value;
+  std::from_chars_result result =
+      std::from_chars(input.begin(), input.end(), value);
+
+  validate(result.ec);
+  if (result.ptr != input.end())
+    throw std::domain_error("Invalid numeric value");
+
+  transaction.push(tvalue{value});
+}
+
 static void parse(ttransaction &transaction, std::string_view input) {
   int base = determine_base(input);
   uint64_t value;
@@ -346,6 +358,10 @@ static void parse(ttransaction &transaction, const tparsed_string &input) {
 
   case tparsed_string::ttype::invalid_value:
     throw std::domain_error("Invalid numeric value");
+
+  case tparsed_string::ttype::signed_value:
+    parse_signed(transaction, input.string);
+    break;
 
   case tparsed_string::ttype::unsigned_value:
     push(transaction, input.string);

@@ -81,6 +81,11 @@ The following value types can be entered:
 ``Unsigned integral``
   A positive value in the selected base.
 
+``Signed integral``
+  A positive or negative value in base 10. This value needs to be prefixed with
+  an ``i`` in the input. Its main use-case is to allow the two's complement of
+  signed integers.
+
 ``Floating point``
   An positive floating point value. The exponent can have a negative value.
 

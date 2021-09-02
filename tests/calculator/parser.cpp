@@ -27,7 +27,7 @@ TEST(parser, no_value) {
 TEST(parser, multiple_values) {
   tparser parser;
 
-  parser.append("1 10 abc 1. 1e1 1.e1 100a");
+  parser.append("1 10 abc 1. 1e1 1.e1 i42 i-42 100a");
   EXPECT_EQ(parser.process(),
             (std::vector<tparsed_string>{
                 {tparsed_string::ttype::unsigned_value, "1"},
@@ -36,6 +36,8 @@ TEST(parser, multiple_values) {
                 {tparsed_string::ttype::floating_point_value, "1."},
                 {tparsed_string::ttype::floating_point_value, "1e1"},
                 {tparsed_string::ttype::floating_point_value, "1.e1"},
+                {tparsed_string::ttype::signed_value, "42"},
+                {tparsed_string::ttype::signed_value, "-42"},
                 {tparsed_string::ttype::invalid_value, ""}}));
 }
 

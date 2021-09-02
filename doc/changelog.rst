@@ -18,6 +18,8 @@ Focusses on improving the input parsing and adding more operations.
   * An underscore or comma can be used as a numeric separator in the input,
     allowing to easier write numbers with many digits.
   * Floating-point values can now be entered.
+  * A signed integer values can now be entered, with a special syntax.
+
 
 Version 0.2.0
 =============

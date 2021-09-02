@@ -35,6 +35,12 @@ export struct tparsed_string {
      */
     invalid_value,
     /**
+     * The @ref string contains an signed intgeral value.
+     *
+     * The value may fail to parse when it's larger than the storage type.
+     */
+    signed_value,
+    /**
      * The @ref string contains an unsigned intgeral value.
      *
      * The value may fail to parse when it's larger than the storage type.
@@ -455,6 +461,118 @@ private:
   void finish_impl() override { set_complete(); }
 };
 
+static std::unique_ptr<tparser_> parse_string(const std::string &data) {
+  auto result = std::make_unique<tparser_string>();
+  for (char c : data) {
+    if (result->parse(c))
+      throw std::logic_error("This shouldn't happen");
+
+    if (result->complete())
+      throw std::logic_error(
+          "A valid signed value shouldn't complete a string value");
+  }
+  return result;
+}
+
+/**
+ * The parser for @ref ttype::signed_value.
+ *
+ * @note Due to the narrow use-case of this value there's no support for
+ * different bases.
+ */
+class tparser_signed final : public tparser_ {
+public:
+  std::unique_ptr<tparser_> parse(char c) override {
+    switch (state_) {
+    case tstate::initial:
+      return initial(c);
+    case tstate::required_minus_or_number:
+      return required_minus_or_number(c);
+    case tstate::required_number:
+    case tstate::optional_number:
+      return number(c);
+    case tstate::complete:
+      throw std::logic_error("Can't parse a complete value");
+    }
+  }
+
+  bool accept_minus() const noexcept override {
+    return state_ == tstate::required_minus_or_number;
+  }
+  bool complete() const noexcept override { return state_ == tstate::complete; }
+
+private:
+  enum class tstate {
+    initial,
+    required_minus_or_number,
+    required_number,
+    optional_number,
+    complete
+  };
+  tstate state_{tstate::initial};
+  std::string buffer_{};
+  tparsed_string result_{};
+
+  void set_complete(bool valid) {
+    state_ = tstate::complete;
+    if (valid)
+      result_ = tparsed_string{tparsed_string::ttype::signed_value, buffer_};
+    else {
+      result_ =
+          tparsed_string{tparsed_string::ttype::string_value, "i" + buffer_};
+    }
+  }
+
+  std::unique_ptr<tparser_> initial(char c) {
+    if (c != 'i')
+      throw std::logic_error(
+          "The caller should have validated input is an 'i'");
+
+    state_ = tstate::required_minus_or_number;
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> required_minus_or_number(char c) {
+    buffer_ += c;
+    if (c == '-') {
+      state_ = tstate::required_number;
+      return nullptr;
+    }
+
+    if (c < '0' || c > '9')
+      return parse_string("i" + buffer_);
+
+    state_ = tstate::optional_number;
+    return nullptr;
+  }
+
+  std::unique_ptr<tparser_> number(char c) {
+    if (state_ == tstate::required_number)
+      state_ = tstate::optional_number;
+    else if (c == '_' || c == ',')
+      return nullptr;
+
+    if (c == ' ') {
+      set_complete(true);
+      return nullptr;
+    }
+
+    buffer_ += c;
+    if (c < '0' || c > '9')
+      return parse_string("i" + buffer_);
+
+    return nullptr;
+  }
+
+  tparsed_string result_impl() override { return result_; }
+
+  bool in_terminal_state() const noexcept {
+    return state_ == tstate::optional_number;
+  }
+
+  void finish_impl() override { set_complete(in_terminal_state()); }
+};
+
 export struct tparser {
 public:
   void append(char data) { parse(data); }
@@ -492,6 +610,9 @@ private:
       switch (c) {
       case '.':
         parser_ = std::make_unique<tparser_floating_point>();
+        break;
+      case 'i':
+        parser_ = std::make_unique<tparser_signed>();
         break;
       default:
         if (c >= '0' && c <= '9')
