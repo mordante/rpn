@@ -273,7 +273,7 @@ static void parse_signed(ttransaction &transaction, std::string_view input) {
   transaction.push(tvalue{value});
 }
 
-static void parse(ttransaction &transaction, std::string_view input) {
+static void parse_unsigned(ttransaction &transaction, std::string_view input) {
   int base = determine_base(input);
   uint64_t value;
   std::from_chars_result result =
@@ -284,15 +284,6 @@ static void parse(ttransaction &transaction, std::string_view input) {
     throw std::domain_error("Invalid numeric value");
 
   transaction.push(tvalue{value});
-}
-
-// TODO This function can be removed since it now only forwards the arguments.
-static void push(ttransaction &transaction, std::string_view input) {
-  if (input.empty())
-    throw std::logic_error(
-        "The parser should only be called with a non-empty string");
-
-  parse(transaction, input);
 }
 
 static void parse_float(ttransaction &transaction, std::string_view input) {
@@ -364,7 +355,7 @@ static void parse(ttransaction &transaction, const tparsed_string &input) {
     break;
 
   case tparsed_string::ttype::unsigned_value:
-    push(transaction, input.string);
+    parse_unsigned(transaction, input.string);
     break;
 
   case tparsed_string::ttype::floating_point_value:

@@ -63,19 +63,41 @@ TEST(parser, valid_unsigned_value_invalid_prefix_0z) {
 }
 
 TEST(parser, valid_unsigned_value_invalid_prefix_0b_only) {
-  tparser parser;
+  {
+    tparser parser;
 
-  parser.append("0b");
-  EXPECT_EQ(parser.process(), (std::vector<tparsed_string>{
-                                  {tparsed_string::ttype::invalid_value, ""}}));
+    parser.append("0b");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("0b ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
 }
 
 TEST(parser, valid_unsigned_value_invalid_prefix_0x_only) {
-  tparser parser;
+  {
+    tparser parser;
 
-  parser.append("0x");
-  EXPECT_EQ(parser.process(), (std::vector<tparsed_string>{
-                                  {tparsed_string::ttype::invalid_value, ""}}));
+    parser.append("0x");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("0x ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
 }
 
 TEST(parser, valid_unsigned_value_base_2) {
@@ -88,11 +110,22 @@ TEST(parser, valid_unsigned_value_base_2) {
 }
 
 TEST(parser, invalid_unsigned_value_base_2) {
-  tparser parser;
+  {
+    tparser parser;
 
-  parser.append("0b1002");
-  EXPECT_EQ(parser.process(), (std::vector<tparsed_string>{
-                                  {tparsed_string::ttype::invalid_value, ""}}));
+    parser.append("0b1002");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("0b1002 ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
 }
 
 TEST(parser, valid_unsigned_value_grouping_base_2) {
@@ -127,6 +160,22 @@ TEST(parser, invalid_unsigned_value_base_8) {
     tparser parser;
 
     parser.append("018");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("08 ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("018 ");
     EXPECT_EQ(parser.process(),
               (std::vector<tparsed_string>{
                   {tparsed_string::ttype::invalid_value, ""}}));
@@ -169,6 +218,22 @@ TEST(parser, invalid_unsigned_value_base_10) {
               (std::vector<tparsed_string>{
                   {tparsed_string::ttype::invalid_value, ""}}));
   }
+  {
+    tparser parser;
+
+    parser.append("1a ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("10a ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
 }
 
 TEST(parser, valid_unsigned_value_grouping_base_10) {
@@ -203,6 +268,22 @@ TEST(parser, invalid_unsigned_value_base_16) {
     tparser parser;
 
     parser.append("0xg");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("0x1g ");
+    EXPECT_EQ(parser.process(),
+              (std::vector<tparsed_string>{
+                  {tparsed_string::ttype::invalid_value, ""}}));
+  }
+  {
+    tparser parser;
+
+    parser.append("0xg ");
     EXPECT_EQ(parser.process(),
               (std::vector<tparsed_string>{
                   {tparsed_string::ttype::invalid_value, ""}}));

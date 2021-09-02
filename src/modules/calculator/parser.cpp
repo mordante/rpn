@@ -22,6 +22,12 @@ import<vector>;
 
 namespace calculator {
 
+/** Determines whether the character @p c is one of the grouping characters. */
+static bool is_grouping(char c) { return c == '_' || c == ','; }
+
+/** Determines whether the character @p c is an input seprarator. */
+static bool is_input_separator(char c) { return c == ' '; }
+
 /** The struct containing the results of the parsing. */
 export struct tparsed_string {
   enum class ttype {
@@ -94,8 +100,8 @@ public:
    */
   virtual bool accept_minus() const noexcept = 0;
 
-  /**a Is the parsing complete? */
-  virtual bool complete() const noexcept = 0;
+  /** Is the parsing complete? */
+  virtual bool is_complete() const noexcept = 0;
 
   /**
    * Completes the parsing.
@@ -105,45 +111,59 @@ public:
    * example @em 0b is an invalid value, but @em 0b1010 is a valid value.
    */
   void finish() {
-    if (!complete())
-      finish_impl();
+    if (!is_complete())
+      result_ = make_complete();
   }
 
   /**
    * Returns the result of the parsing.
    *
-   * @pre complete() == @c true
+   * @pre @ref is_complete() == @c true
+   * @pre @c result_.type != @c tparsed_string::ttype::internal_error
    */
   tparsed_string result() {
-    if (!complete())
-      throw std::logic_error("Can't get the result of an incomlete parser");
+    if (!is_complete())
+      throw std::logic_error("Can't get the result of an incomplete parser");
 
-    return result_impl();
+    if (result_.type == tparsed_string::ttype::internal_error)
+      throw std::logic_error("The result isn't properly set");
+
+    return result_;
+  }
+
+protected:
+  /** Handles the input separator. */
+  bool handle_input_separator(char c) {
+    if (!is_input_separator(c))
+      return false;
+
+    result_ = make_complete();
+    return true;
   }
 
 private:
-  virtual tparsed_string result_impl() = 0;
-  virtual void finish_impl() = 0;
+  /** The result of the parsing. */
+  tparsed_string result_{};
+
+  /** Complete the current object. */
+  virtual tparsed_string make_complete() = 0;
 };
 
 /** The parser for @ref ttype::invalid_value. */
 class tparser_invalid_value final : public tparser_ {
 public:
-  std::unique_ptr<tparser_> parse(char c) override {
-    complete_ |= (c == ' ');
-    return nullptr;
-  }
+  std::unique_ptr<tparser_> parse(char) override { return nullptr; }
 
   bool accept_minus() const noexcept override { return false; }
-  bool complete() const noexcept override { return complete_; }
+  bool is_complete() const noexcept override { return complete_; }
 
 private:
   bool complete_{false};
-  tparsed_string result_impl() override {
+
+  tparsed_string make_complete() override {
+    complete_ = true;
     return tparsed_string{tparsed_string::ttype::invalid_value, std::string{}};
   }
-
-  void finish_impl() override { complete_ = true; }
 };
 
 /** The parser for @ref ttype::floating_point_value. */
@@ -173,7 +193,9 @@ public:
   bool accept_minus() const noexcept override {
     return state_ == tstate::required_minus_or_number;
   }
-  bool complete() const noexcept override { return state_ == tstate::complete; }
+  bool is_complete() const noexcept override {
+    return state_ == tstate::complete;
+  }
 
 private:
   enum class tstate {
@@ -188,20 +210,20 @@ private:
   };
   tstate state_{tstate::initial};
   std::string buffer_{};
-  tparsed_string result_{};
 
-  void set_complete(bool valid) {
+  tparsed_string make_complete() override {
+    tparsed_string result =
+        in_terminal_state()
+            ? tparsed_string{tparsed_string::ttype::floating_point_value,
+                             buffer_}
+            : tparsed_string{tparsed_string::ttype::invalid_value,
+                             std::string{}};
     state_ = tstate::complete;
-    if (valid)
-      result_ =
-          tparsed_string{tparsed_string::ttype::floating_point_value, buffer_};
-    else
-      result_ =
-          tparsed_string{tparsed_string::ttype::invalid_value, std::string{}};
+    return result;
   }
 
   std::unique_ptr<tparser_> initial(char c) {
-    if (c != '.' && (c < '0' || c > '9'))
+    if (!isdigit(c) && c != '.')
       throw std::logic_error(
           "The caller should have validated input is a digit or .");
 
@@ -221,10 +243,8 @@ private:
   }
 
   std::unique_ptr<tparser_> optional_number_or_e(char c) {
-    if (c == ' ') {
-      set_complete(true);
+    if (handle_input_separator(c))
       return nullptr;
-    }
 
     buffer_ += c;
     if (c == 'e') {
@@ -232,7 +252,7 @@ private:
       return nullptr;
     }
 
-    if (c < '0' || c > '9')
+    if (!isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     return nullptr;
@@ -245,7 +265,7 @@ private:
       return nullptr;
     }
 
-    if (c < '0' || c > '9')
+    if (!isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     state_ = tstate::optional_number;
@@ -255,44 +275,25 @@ private:
   std::unique_ptr<tparser_> number(char c) {
     if (state_ == tstate::required_number)
       state_ = tstate::optional_number;
-    else if (c == '_' || c == ',')
+    else if (is_grouping(c))
       return nullptr;
 
-    if (c == ' ') {
-      set_complete(true);
+    if (handle_input_separator(c))
       return nullptr;
-    }
 
-    if (c < '0' || c > '9')
+    if (!isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     buffer_ += c;
     return nullptr;
   }
 
-  tparsed_string result_impl() override { return result_; }
-
+  /** Is the parser in a state it's valid to be completed? */
   bool in_terminal_state() const noexcept {
     return state_ == tstate::optional_number_or_e ||
            state_ == tstate::optional_number;
   }
-
-  void finish_impl() override { set_complete(in_terminal_state()); }
 };
-
-static std::unique_ptr<tparser_> parse_floating_point(const std::string &data) {
-  auto result = std::make_unique<tparser_floating_point>();
-  for (char c : data) {
-    if (result->parse(c))
-      throw std::logic_error(
-          "This shouldn't happen, did the caller have a base != 10?");
-
-    if (result->complete())
-      throw std::logic_error(
-          "A valid unsigned value shouldn't complete a floating point value");
-  }
-  return result;
-}
 
 /** The parser for @ref ttype::unsigned_value. */
 class tparser_unsigned final : public tparser_ {
@@ -304,8 +305,6 @@ public:
     case tstate::optional_prefix:
       return optional_prefix(c);
     case tstate::required_number:
-      state_ = tstate::optional_number;
-      [[fallthrough]];
     case tstate::optional_number:
       return number(c);
     case tstate::complete:
@@ -314,7 +313,9 @@ public:
   }
 
   bool accept_minus() const noexcept override { return false; }
-  bool complete() const noexcept override { return state_ == tstate::complete; }
+  bool is_complete() const noexcept override {
+    return state_ == tstate::complete;
+  }
 
 private:
   enum class tstate {
@@ -327,19 +328,19 @@ private:
   tstate state_{tstate::initial};
   tbase base_{tbase::decimal};
   std::string buffer_{};
-  tparsed_string result_{};
 
-  void set_complete(bool valid) {
+  tparsed_string make_complete() override {
+    tparsed_string result =
+        in_terminal_state()
+            ? tparsed_string{tparsed_string::ttype::unsigned_value, buffer_}
+            : tparsed_string{tparsed_string::ttype::invalid_value,
+                             std::string{}};
     state_ = tstate::complete;
-    if (valid)
-      result_ = tparsed_string{tparsed_string::ttype::unsigned_value, buffer_};
-    else
-      result_ =
-          tparsed_string{tparsed_string::ttype::invalid_value, std::string{}};
+    return result;
   }
 
   std::unique_ptr<tparser_> initial(char c) {
-    if (c < '0' || c > '9')
+    if (!isdigit(c))
       throw std::logic_error(
           "The caller should have validated input is a digit");
 
@@ -349,14 +350,13 @@ private:
   }
 
   std::unique_ptr<tparser_> optional_prefix(char c) {
-    if (c == '_' || c == ',')
+    if (is_grouping(c))
       return nullptr;
 
     buffer_ += c;
     if (c == '.' || c == 'e')
-      return parse_floating_point(buffer_);
+      return create_parser_floating_point();
 
-    state_ = tstate::optional_number;
     switch (c) {
     case 'b':
       base_ = tbase::binary;
@@ -374,6 +374,7 @@ private:
         return std::make_unique<tparser_invalid_value>();
 
       base_ = tbase::octal;
+      state_ = tstate::optional_number;
       break;
     }
 
@@ -381,13 +382,14 @@ private:
   }
 
   std::unique_ptr<tparser_> number(char c) {
-    if (c == '_' || c == ',')
+    if (is_grouping(c))
       return nullptr;
 
-    if (c == ' ') {
-      set_complete(true);
+    if (handle_input_separator(c))
       return nullptr;
-    }
+
+    if (state_ == tstate::required_number)
+      state_ = tstate::optional_number;
 
     buffer_ += c;
     switch (base_) {
@@ -403,13 +405,12 @@ private:
     case tbase::decimal:
       // Non-decimal bases aren't allowed in floating-point values.
       if (c == '.' || c == 'e')
-        return parse_floating_point(buffer_);
+        return create_parser_floating_point();
       if (c > '9')
         return std::make_unique<tparser_invalid_value>();
       break;
     case tbase::hexadecimal:
-      if (c > '9' && c != 'a' && c != 'b' && c != 'c' && c != 'd' && c != 'e' &&
-          c != 'f')
+      if (c > '9' && c > 'a' && c > 'f')
         return std::make_unique<tparser_invalid_value>();
       break;
     }
@@ -420,11 +421,25 @@ private:
 
     return nullptr;
   }
-  tparsed_string result_impl() override { return result_; }
 
-  void finish_impl() override {
-    set_complete(state_ == tstate::optional_prefix ||
-                 state_ == tstate::optional_number);
+  /** Is the parser in a state it's valid to be completed? */
+  bool in_terminal_state() const noexcept {
+    return state_ == tstate::optional_prefix ||
+           state_ == tstate::optional_number;
+  }
+
+  std::unique_ptr<tparser_> create_parser_floating_point() {
+    auto result = std::make_unique<tparser_floating_point>();
+    for (char c : buffer_) {
+      if (result->parse(c))
+        throw std::logic_error(
+            "This shouldn't happen, did the caller have a base != 10?");
+
+      if (result->is_complete())
+        throw std::logic_error(
+            "A valid unsigned value shouldn't complete a floating point value");
+    }
+    return result;
   }
 };
 
@@ -435,50 +450,33 @@ public:
     if (complete_)
       throw std::logic_error("Can't parse a complete value");
 
-    if (c == ' ')
-      set_complete();
-    else
+    if (!handle_input_separator(c))
       buffer_ += c;
 
     return nullptr;
   }
 
   bool accept_minus() const noexcept override { return false; }
-  bool complete() const noexcept override { return complete_; }
+  bool is_complete() const noexcept override { return complete_; }
 
 private:
   bool complete_{false};
   std::string buffer_{};
-  tparsed_string result_{};
 
-  void set_complete() {
+  tparsed_string make_complete() override {
     complete_ = true;
-    result_ = tparsed_string{tparsed_string::ttype::string_value, buffer_};
+    return tparsed_string{tparsed_string::ttype::string_value, buffer_};
   }
-
-  tparsed_string result_impl() override { return result_; }
-
-  void finish_impl() override { set_complete(); }
 };
-
-static std::unique_ptr<tparser_> parse_string(const std::string &data) {
-  auto result = std::make_unique<tparser_string>();
-  for (char c : data) {
-    if (result->parse(c))
-      throw std::logic_error("This shouldn't happen");
-
-    if (result->complete())
-      throw std::logic_error(
-          "A valid signed value shouldn't complete a string value");
-  }
-  return result;
-}
 
 /**
  * The parser for @ref ttype::signed_value.
  *
  * @note Due to the narrow use-case of this value there's no support for
  * different bases.
+ *
+ * @todo After accepting a minus undoing this is hard and leads to a somewhat
+ * funcy state. Need to think about another way to undo things.
  */
 class tparser_signed final : public tparser_ {
 public:
@@ -499,7 +497,9 @@ public:
   bool accept_minus() const noexcept override {
     return state_ == tstate::required_minus_or_number;
   }
-  bool complete() const noexcept override { return state_ == tstate::complete; }
+  bool is_complete() const noexcept override {
+    return state_ == tstate::complete;
+  }
 
 private:
   enum class tstate {
@@ -510,17 +510,19 @@ private:
     complete
   };
   tstate state_{tstate::initial};
+  bool has_minus_{false};
   std::string buffer_{};
-  tparsed_string result_{};
 
-  void set_complete(bool valid) {
+  tparsed_string make_complete() override {
+    tparsed_string result =
+        in_terminal_state()
+            ? tparsed_string{tparsed_string::ttype::signed_value, buffer_}
+        : has_minus_ ? tparsed_string{tparsed_string::ttype::invalid_value,
+                                      std::string{}}
+                     : tparsed_string{tparsed_string::ttype::string_value,
+                                      "i" + buffer_};
     state_ = tstate::complete;
-    if (valid)
-      result_ = tparsed_string{tparsed_string::ttype::signed_value, buffer_};
-    else {
-      result_ =
-          tparsed_string{tparsed_string::ttype::string_value, "i" + buffer_};
-    }
+    return result;
   }
 
   std::unique_ptr<tparser_> initial(char c) {
@@ -533,44 +535,59 @@ private:
   }
 
   std::unique_ptr<tparser_> required_minus_or_number(char c) {
+    if (handle_input_separator(c))
+      return nullptr;
+
     buffer_ += c;
     if (c == '-') {
+      has_minus_ = true;
       state_ = tstate::required_number;
       return nullptr;
     }
 
-    if (c < '0' || c > '9')
-      return parse_string("i" + buffer_);
+    if (!isdigit(c))
+      return create_parser_string();
 
     state_ = tstate::optional_number;
     return nullptr;
   }
 
   std::unique_ptr<tparser_> number(char c) {
+    if (handle_input_separator(c))
+      return nullptr;
+
     if (state_ == tstate::required_number)
       state_ = tstate::optional_number;
-    else if (c == '_' || c == ',')
+    else if (is_grouping(c))
       return nullptr;
-
-    if (c == ' ') {
-      set_complete(true);
-      return nullptr;
-    }
 
     buffer_ += c;
-    if (c < '0' || c > '9')
-      return parse_string("i" + buffer_);
+    if (!isdigit(c)) {
+      if (has_minus_)
+        return std::make_unique<tparser_invalid_value>();
+      return create_parser_string();
+    }
 
     return nullptr;
   }
 
-  tparsed_string result_impl() override { return result_; }
-
+  /** Is the parser in a state it's valid to be completed? */
   bool in_terminal_state() const noexcept {
     return state_ == tstate::optional_number;
   }
 
-  void finish_impl() override { set_complete(in_terminal_state()); }
+  std::unique_ptr<tparser_> create_parser_string() {
+    auto result = std::make_unique<tparser_string>();
+    for (char c : "i" + buffer_) {
+      if (result->parse(c))
+        throw std::logic_error("This shouldn't happen");
+
+      if (result->is_complete())
+        throw std::logic_error(
+            "A valid signed value shouldn't complete a string value");
+    }
+    return result;
+  }
 };
 
 export struct tparser {
@@ -615,7 +632,7 @@ private:
         parser_ = std::make_unique<tparser_signed>();
         break;
       default:
-        if (c >= '0' && c <= '9')
+        if (isdigit(c))
           parser_ = std::make_unique<tparser_unsigned>();
         else
           parser_ = std::make_unique<tparser_string>();
@@ -623,10 +640,10 @@ private:
       }
     }
     std::unique_ptr<tparser_> replacement = parser_->parse(c);
-    if (replacement) {
-      parser_ = std::move(replacement);
-    }
-    if (parser_->complete())
+    if (replacement)
+      parser_.reset(replacement.release());
+
+    if (parser_->is_complete())
       add_result();
   }
 
