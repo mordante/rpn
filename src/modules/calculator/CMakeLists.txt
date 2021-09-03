@@ -40,13 +40,17 @@ add_dependencies(calculator.math.bitwise.pcm
 add_dependencies(calculator.value.pcm
 	calculator.math.arithmetic.pcm
 	calculator.math.bitwise.pcm
+	calculator.math.core.pcm
 )
 add_dependencies(calculator.stack.pcm
 	calculator.value.pcm
 )
-add_dependencies(calculator.model.pcm
+add_dependencies(calculator.parser.pcm
 	calculator.stack.pcm
-	calculator.parser.pcm # TODO Here or the controller?
+)
+add_dependencies(calculator.model.pcm
+	calculator.parser.pcm
+	calculator.stack.pcm
 )
 add_dependencies(calculator.transaction.pcm
 	calculator.model.pcm
@@ -56,13 +60,13 @@ add_dependencies(calculator.undo_handler.pcm
 )
 add_dependencies(calculator.controller.pcm
 	calculator.model.pcm
+	calculator.transaction.pcm
 	calculator.undo_handler.pcm
-	calculator.parser.pcm # TODO Here or the controller?
 )
 add_dependencies(calculator.pcm
-	calculator.value.pcm
-	calculator.model.pcm
 	calculator.controller.pcm
+	calculator.model.pcm
+	calculator.value.pcm
 )
 add_dependencies(calculator
 	calculator.pcm
