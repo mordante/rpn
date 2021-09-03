@@ -24,9 +24,10 @@ set(module_compile_options
 set(diagnostic_compile_options
 	-Werror
 	-Weverything
-	-Wno-padded             # Don't care about the padding.
-	-Wno-missing-prototypes # False postives with export.
-	-Wno-switch-enum        # False positives with default.
+	-Wno-exit-time-destructors # Don't care about exit time destructors.
+	-Wno-padded                # Don't care about the padding.
+	-Wno-missing-prototypes    # False postives with export.
+	-Wno-switch-enum           # False positives with default.
 	# GoogleTest generated errors. TODO make GoogleTest a system header
 	-Wno-global-constructors
 	# Needs more investigation; anchoring them gives issues with a modular build.

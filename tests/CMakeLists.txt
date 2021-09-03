@@ -1,5 +1,6 @@
 add_executable(tests
 	calculator/controller.cpp
+	calculator/controller/constants.cpp
 	calculator/controller/key_char_ampersand.cpp
 	calculator/controller/key_char_circumflex.cpp
 	calculator/controller/key_char_default.cpp

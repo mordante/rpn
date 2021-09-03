@@ -19,7 +19,7 @@ Focusses on improving the input parsing and adding more operations.
     allowing to easier write numbers with many digits.
   * Floating-point values can now be entered.
   * A signed integer values can now be entered, with a special syntax.
-
+  * Added textual constants to put a numeric value on the stack.
 
 Version 0.2.0
 =============

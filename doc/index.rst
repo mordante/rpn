@@ -180,6 +180,51 @@ This is a short summary of the operations, but behind the scenes the
     * reaching the final undo action,
     * doing a regular operation.
 
+Constants
+---------
+
+Certain special textual values will store a numeric value on the stack:
+
+* Signed integral minima:
+
+  * ``int8_min`` pushes the minimum value of ``int8_t`` on the stack.
+  * ``int16_min`` pushes the minimum value of ``int16_t`` on the stack.
+  * ``int32_min`` pushes the minimum value of ``int32_t`` on the stack.
+  * ``int64_min`` pushes the minimum value of ``int64_t`` on the stack.
+
+* Signed integral maxima:
+
+  * ``int8_max`` pushes the maximum value of ``int8_t`` on the stack.
+  * ``int16_max`` pushes the maximum value of ``int16_t`` on the stack.
+  * ``int32_max`` pushes the maximum value of ``int32_t`` on the stack.
+  * ``int64_max`` pushes the maximum value of ``int64_t`` on the stack.
+
+* Unsigned integral maxima [#f1]_:
+
+  * ``uint8_max`` pushes the maximum value of ``uint8_t`` on the stack.
+  * ``uint16_max`` pushes the maximum value of ``uint16_t`` on the stack.
+  * ``uint32_max`` pushes the maximum value of ``uint32_t`` on the stack.
+  * ``uint64_max`` pushes the maximum value of ``uint64_t`` on the stack.
+
+* Floating point minima:
+
+  * ``float_min`` pushes the smallest positive ``float`` on the stack.
+  * ``double_min`` pushes the smallest positive ``double`` on the stack.
+
+* Floating point maxima:
+
+  * ``float_max`` pushes the largest positive ``float`` on the stack.
+  * ``double_max`` pushes the largest positive ``double`` on the stack.
+
+* Special constants:
+
+  * ``e`` pushes the value of ``e`` as ``double`` on the stack.
+  * ``pi`` pushes the value of ``pi`` as ``double`` on the stack.
+
+
+.. [#f1] The minimum value of all unsigned integrals is ``0`` so they are not
+  available as a constant.
+
 Known limitations
 =================
 
