@@ -91,7 +91,8 @@ TEST(controller, key_enter_invalid_input) {
 
   model.input_append("a");
   controller.handle_keyboard_input(tkey::enter);
-  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Invalid numeric value or command"));
   EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "a");
 }
