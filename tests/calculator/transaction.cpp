@@ -32,7 +32,7 @@ TEST(transaction, no_exception_thrown) {
 
   {
     ttransaction transaction{model};
-    (void)transaction.input_steal();
+    transaction.input_reset();
     (void)transaction.pop();
   }
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
@@ -52,7 +52,7 @@ TEST(transaction, exception_thrown) {
     model.diagnostics_set("Unchanged");
     model.base_set(tbase::binary);
 
-    (void)transaction.input_steal();
+    transaction.input_reset();
     (void)transaction.pop();
 
     throw 42;
@@ -72,7 +72,7 @@ TEST(transaction, exception_thrown_after_release) {
 
   try {
     ttransaction transaction{model};
-    (void)transaction.input_steal();
+    transaction.input_reset();
     (void)transaction.pop();
     (void)std::move(transaction).release();
 
@@ -93,7 +93,7 @@ TEST(action, input_steal) {
   model.input_append("abc");
 
   ttransaction transaction{model};
-  (void)transaction.input_steal();
+  transaction.input_reset();
   taction action = std::move(transaction).release();
 
   model.input_append("zzz"); // Make sure the current content is replaced.

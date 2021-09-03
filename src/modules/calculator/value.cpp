@@ -38,6 +38,7 @@ namespace calculator {
  */
 export class tvalue final {
 public:
+  explicit constexpr tvalue(int64_t value) noexcept : value_(value) {}
   explicit constexpr tvalue(uint64_t value) noexcept : value_(value) {}
   explicit constexpr tvalue(double value) noexcept : value_(value) {}
 

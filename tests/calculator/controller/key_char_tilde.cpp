@@ -86,4 +86,26 @@ TEST(controller, key_char_tilde_input_invalid) {
   EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abc");
 }
+
+TEST(controller, key_char_tilde_positive_signed_integral) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("i42");
+
+  controller.handle_keyboard_input(tmodifiers::none, '~');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"-43"});
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_char_tilde_negative_signed_integral) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("i-42");
+
+  controller.handle_keyboard_input(tmodifiers::none, '~');
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"41"});
+  EXPECT_TRUE(model.input_get().empty());
+}
 } // namespace calculator

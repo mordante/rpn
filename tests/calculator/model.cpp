@@ -128,18 +128,4 @@ TEST(model, input_append_string) {
   EXPECT_EQ(model.stack().size(), 0);
   EXPECT_EQ(model.input_get(), "abcdef");
 }
-
-TEST(model, input_steal) {
-  tmodel model;
-  model.input_append("abc");
-
-  const std::string input = model.input_steal();
-  EXPECT_EQ(input, "abc");
-
-  EXPECT_TRUE(model.diagnostics_get().empty());
-  EXPECT_TRUE(model.stack().empty());
-  EXPECT_EQ(model.stack().size(), 0);
-  EXPECT_TRUE(model.input_get().empty());
-}
-
 } // namespace calculator

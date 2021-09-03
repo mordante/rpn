@@ -195,4 +195,26 @@ TEST(controller, key_enter_base_16_invalid_value) {
   EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "0xg");
 }
+
+TEST(controller, key_enter_float_valid) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("123.e-12");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_TRUE(model.diagnostics_get().empty());
+  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"1.23e-10"});
+  EXPECT_TRUE(model.input_get().empty());
+}
+
+TEST(controller, key_enter_float_too_large) {
+  tmodel model;
+  tcontroller controller{model};
+  model.input_append("123.e-1234");
+
+  controller.handle_keyboard_input(tkey::enter);
+  EXPECT_EQ(model.diagnostics_get(), format_error("Invalid numeric value"));
+  EXPECT_TRUE(model.stack().empty());
+  EXPECT_EQ(model.input_get(), "123.e-1234");
+}
 } // namespace calculator

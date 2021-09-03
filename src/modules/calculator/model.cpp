@@ -15,6 +15,7 @@
 export module calculator.model;
 
 export import calculator.stack;
+export import calculator.parser;
 
 import<string>;
 import<string_view>;
@@ -60,21 +61,33 @@ public:
   [[nodiscard]] tstack &stack() noexcept { return stack_; }
 
   // *** Input ***
+  /** Resets the input buffer after it's contents have been processed. */
+  void input_reset() {
+    input_.clear();
+    parser_.reset();
+  }
 
-  /** Returns the clears the input and returns the original value. */
-  [[nodiscard]] std::string input_steal() {
-    std::string result;
-    std::swap(input_, result);
-    return result;
+  const std::vector<tparsed_string> &input_process() {
+    return parser_.process();
   }
 
   /**
-   * Appends the @p data to the @ref input_. @note Since the expected usage
-   * pattern is that the user only append (and maybe later removes) input
-   * there's no setter required.
+   * Appends the @p data to the @ref input_.
+   *
+   * @note Since the expected usage pattern is that the user only append (and
+   * maybe later removes) input there's no setter required.
    */
-  void input_append(char data) { input_.push_back(data); }
-  void input_append(std::string_view data) { input_.append(data); }
+  void input_append(char data) {
+    input_.push_back(data);
+    parser_.append(data);
+  }
+  void input_append(std::string_view data) {
+    input_.append(data);
+    parser_.append(data);
+  }
+  [[nodiscard]] bool input_accept_minus() const {
+    return parser_.accept_minus();
+  }
 
   /**
    * Removes the last character of the @ref input_.
@@ -85,6 +98,8 @@ public:
     if (input_.empty())
       return false;
     input_.pop_back();
+    parser_.reset();
+    parser_.append(input_);
     return true;
   }
 
@@ -108,6 +123,8 @@ private:
 
   /** The input buffer used to store the current editting session. */
   std::string input_{};
+
+  tparser parser_;
 };
 
 } // namespace calculator

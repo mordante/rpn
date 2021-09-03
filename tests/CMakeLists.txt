@@ -19,6 +19,10 @@ add_executable(tests
 	calculator/model.cpp
 	calculator/model/change_base.cpp
 	calculator/model/input.cpp
+	calculator/parser.cpp
+	calculator/parser/unsigned_value.cpp
+	calculator/parser/floating_point_value.cpp
+	calculator/parser/signed_value.cpp
 	calculator/stack.cpp
 	calculator/transaction.cpp
 	calculator/undo_handler.cpp

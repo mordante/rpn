@@ -181,7 +181,10 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
     break;
 
   case '-':
-    math_binary_operation(&tvalue::sub);
+    if (model_.input_accept_minus())
+      model_.input_append(key);
+    else
+      math_binary_operation(&tvalue::sub);
     break;
 
   case '*':
@@ -258,7 +261,19 @@ static int determine_base(std::string_view &input) {
   }
 }
 
-static void parse(ttransaction &transaction, std::string_view input) {
+static void parse_signed(ttransaction &transaction, std::string_view input) {
+  int64_t value;
+  std::from_chars_result result =
+      std::from_chars(input.begin(), input.end(), value);
+
+  validate(result.ec);
+  if (result.ptr != input.end())
+    throw std::domain_error("Invalid numeric value");
+
+  transaction.push(tvalue{value});
+}
+
+static void parse_unsigned(ttransaction &transaction, std::string_view input) {
   int base = determine_base(input);
   uint64_t value;
   std::from_chars_result result =
@@ -271,11 +286,17 @@ static void parse(ttransaction &transaction, std::string_view input) {
   transaction.push(tvalue{value});
 }
 
-static void push(ttransaction &transaction, std::string_view input) {
-  if (input.empty())
-    transaction.duplicate();
-  else
-    parse(transaction, input);
+static void parse_float(ttransaction &transaction, std::string_view input) {
+  // TODO Use std::from_chars once it becomes available.
+  std::string str{input};
+  const char *s = str.c_str();
+  char *ptr = nullptr;
+  double value = strtod(s, &ptr);
+
+  if (!ptr || *ptr != '\0' || errno == ERANGE)
+    throw std::domain_error("Invalid numeric value");
+
+  transaction.push(tvalue{value});
 }
 
 void tcontroller::handle_keyboard_input_control(char key) {
@@ -321,10 +342,42 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
+static void parse(ttransaction &transaction, const tparsed_string &input) {
+  switch (input.type) {
+  case tparsed_string::ttype::internal_error:
+    throw std::logic_error("Invalid parsed string");
+
+  case tparsed_string::ttype::invalid_value:
+    throw std::domain_error("Invalid numeric value");
+
+  case tparsed_string::ttype::signed_value:
+    parse_signed(transaction, input.string);
+    break;
+
+  case tparsed_string::ttype::unsigned_value:
+    parse_unsigned(transaction, input.string);
+    break;
+
+  case tparsed_string::ttype::floating_point_value:
+    parse_float(transaction, input.string);
+    break;
+
+  case tparsed_string::ttype::string_value:
+    throw std::domain_error("Invalid numeric value");
+  }
+}
+
+static void parse(ttransaction &transaction,
+                  const std::vector<tparsed_string> &input) {
+  std::for_each(
+      input.begin(), input.end(),
+      [&transaction](const tparsed_string &i) { parse(transaction, i); });
+}
+
 void tcontroller::math_binary_operation(tbinary_operation operation) {
   ttransaction transaction(model_);
-  if (const std::string input = transaction.input_steal(); !input.empty())
-    calculator::push(transaction, input);
+  parse(transaction, model_.input_process());
+  transaction.input_reset();
 
   if (model_.stack().size() < 2)
     throw std::out_of_range("Stack doesn't contain two elements");
@@ -339,8 +392,8 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
 
 void tcontroller::math_unary_operation(tunary_operation operation) {
   ttransaction transaction(model_);
-  if (const std::string input = transaction.input_steal(); !input.empty())
-    calculator::push(transaction, input);
+  parse(transaction, model_.input_process());
+  transaction.input_reset();
 
   if (model_.stack().empty()) {
     throw std::out_of_range("Stack doesn't contain an element");
@@ -363,7 +416,13 @@ void tcontroller::diagnostics_set(const std::exception &e) {
 
 void tcontroller::push() {
   ttransaction transaction(model_);
-  calculator::push(transaction, transaction.input_steal());
+  if (model_.input_get().empty())
+    transaction.duplicate();
+  else {
+    parse(transaction, model_.input_process());
+    transaction.input_reset();
+  }
+
   model_.diagnostics_clear();
   undo_handler_.add(std::move(transaction).release());
 }
