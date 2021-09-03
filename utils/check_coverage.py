@@ -44,17 +44,53 @@ not_covered = {
             'branches' : 0,
             'regions': 1,
         },
-    path + '/src/modules/calculator/parser.cpp' :
-        {
-            'lines' : 25,
-            'branches' : 19,
-            'regions': 14,
-        },
     path + '/src/modules/calculator/stack.cpp' :
         {
             'lines' : 0,
             'branches' : 1,
             'regions': 0,
+        },
+    path + '/src/modules/parser/detail/base.cpp' :
+        {
+            'lines' : 2,
+            'branches' : 3,
+            'regions': 2,
+        },
+    path + '/src/modules/parser/detail/base.cpp' :
+        {
+            'lines' : 2,
+            'branches' : 3,
+            'regions': 2,
+        },
+    path + '/src/modules/parser/detail/floating_point.cpp' :
+        {
+            'lines' : 4,
+            'branches' : 3,
+            'regions': 2,
+        },
+    path + '/src/modules/parser/detail/signed.cpp' :
+        {
+            'lines' : 7,
+            'branches' : 5,
+            'regions': 4,
+        },
+    path + '/src/modules/parser/detail/string.cpp' :
+        {
+            'lines' : 1,
+            'branches' : 1,
+            'regions': 1,
+        },
+    path + '/src/modules/parser/detail/unsigned.cpp' :
+        {
+            'lines' : 10,
+            'branches' : 7,
+            'regions': 4,
+        },
+    path + '/src/modules/parser/token.cpp' :
+        {
+            'lines' : 1,
+            'branches' : 0,
+            'regions': 1,
         },
 }
 

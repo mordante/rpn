@@ -12,16 +12,16 @@
  * See the COPYING file for more details.
  */
 
-import calculator.parser;
+import parser;
 
 #include <gtest/gtest.h>
 
-namespace calculator {
+namespace parser {
 
 TEST(parser, no_value) {
   tparser parser;
 
-  EXPECT_EQ(parser.process(), std::vector<tparsed_string>{});
+  EXPECT_EQ(parser.process(), std::vector<ttoken>{});
 }
 
 TEST(parser, multiple_values) {
@@ -29,30 +29,28 @@ TEST(parser, multiple_values) {
 
   parser.append("1 10 abc 1. 1e1 1.e1 i42 i-42 100a");
   EXPECT_EQ(parser.process(),
-            (std::vector<tparsed_string>{
-                {tparsed_string::ttype::unsigned_value, "1"},
-                {tparsed_string::ttype::unsigned_value, "10"},
-                {tparsed_string::ttype::string_value, "abc"},
-                {tparsed_string::ttype::floating_point_value, "1."},
-                {tparsed_string::ttype::floating_point_value, "1e1"},
-                {tparsed_string::ttype::floating_point_value, "1.e1"},
-                {tparsed_string::ttype::signed_value, "42"},
-                {tparsed_string::ttype::signed_value, "-42"},
-                {tparsed_string::ttype::invalid_value, ""}}));
+            (std::vector<ttoken>{{ttoken::ttype::unsigned_value, "1"},
+                                 {ttoken::ttype::unsigned_value, "10"},
+                                 {ttoken::ttype::string_value, "abc"},
+                                 {ttoken::ttype::floating_point_value, "1."},
+                                 {ttoken::ttype::floating_point_value, "1e1"},
+                                 {ttoken::ttype::floating_point_value, "1.e1"},
+                                 {ttoken::ttype::signed_value, "42"},
+                                 {ttoken::ttype::signed_value, "-42"},
+                                 {ttoken::ttype::invalid_value, ""}}));
 }
 
 TEST(parser, reset) {
   tparser parser;
 
   parser.append("0x");
-  EXPECT_EQ(parser.process(), (std::vector<tparsed_string>{
-                                  {tparsed_string::ttype::invalid_value, ""}}));
+  EXPECT_EQ(parser.process(),
+            (std::vector<ttoken>{{ttoken::ttype::invalid_value, ""}}));
 
   parser.reset();
   parser.append("42");
   EXPECT_EQ(parser.process(),
-            (std::vector<tparsed_string>{
-                {tparsed_string::ttype::unsigned_value, "42"}}));
+            (std::vector<ttoken>{{ttoken::ttype::unsigned_value, "42"}}));
 }
 
 TEST(parser, valid_string_value) {
@@ -60,8 +58,7 @@ TEST(parser, valid_string_value) {
 
   parser.append("abc");
   EXPECT_EQ(parser.process(),
-            (std::vector<tparsed_string>{
-                {tparsed_string::ttype::string_value, "abc"}}));
+            (std::vector<ttoken>{{ttoken::ttype::string_value, "abc"}}));
 }
 
 TEST(parser, do_not_accept_minus) {
@@ -79,4 +76,4 @@ TEST(parser, do_not_accept_minus) {
   parser.append('a');
   EXPECT_FALSE(parser.accept_minus());
 }
-} // namespace calculator
+} // namespace parser

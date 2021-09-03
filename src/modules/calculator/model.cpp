@@ -15,7 +15,7 @@
 export module calculator.model;
 
 export import calculator.stack;
-export import calculator.parser;
+export import parser;
 
 import<string>;
 import<string_view>;
@@ -67,7 +67,7 @@ public:
     parser_.reset();
   }
 
-  const std::vector<tparsed_string> &input_process() {
+  const std::vector<parser::ttoken> &input_process() {
     return parser_.process();
   }
 
@@ -124,7 +124,7 @@ private:
   /** The input buffer used to store the current editting session. */
   std::string input_{};
 
-  tparser parser_;
+  parser::tparser parser_;
 };
 
 } // namespace calculator
