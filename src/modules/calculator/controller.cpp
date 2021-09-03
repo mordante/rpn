@@ -342,36 +342,36 @@ void tcontroller::append(std::string_view data) noexcept {
   }
 }
 
-static void parse(ttransaction &transaction, const tparsed_string &input) {
+static void parse(ttransaction &transaction, const parser::ttoken &input) {
   switch (input.type) {
-  case tparsed_string::ttype::internal_error:
+  case parser::ttoken::ttype::internal_error:
     throw std::logic_error("Invalid parsed string");
 
-  case tparsed_string::ttype::invalid_value:
+  case parser::ttoken::ttype::invalid_value:
     throw std::domain_error("Invalid numeric value");
 
-  case tparsed_string::ttype::signed_value:
+  case parser::ttoken::ttype::signed_value:
     parse_signed(transaction, input.string);
     break;
 
-  case tparsed_string::ttype::unsigned_value:
+  case parser::ttoken::ttype::unsigned_value:
     parse_unsigned(transaction, input.string);
     break;
 
-  case tparsed_string::ttype::floating_point_value:
+  case parser::ttoken::ttype::floating_point_value:
     parse_float(transaction, input.string);
     break;
 
-  case tparsed_string::ttype::string_value:
+  case parser::ttoken::ttype::string_value:
     throw std::domain_error("Invalid numeric value");
   }
 }
 
 static void parse(ttransaction &transaction,
-                  const std::vector<tparsed_string> &input) {
+                  const std::vector<parser::ttoken> &input) {
   std::for_each(
       input.begin(), input.end(),
-      [&transaction](const tparsed_string &i) { parse(transaction, i); });
+      [&transaction](const parser::ttoken &i) { parse(transaction, i); });
 }
 
 void tcontroller::math_binary_operation(tbinary_operation operation) {

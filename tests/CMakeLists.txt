@@ -19,10 +19,6 @@ add_executable(tests
 	calculator/model.cpp
 	calculator/model/change_base.cpp
 	calculator/model/input.cpp
-	calculator/parser.cpp
-	calculator/parser/unsigned_value.cpp
-	calculator/parser/floating_point_value.cpp
-	calculator/parser/signed_value.cpp
 	calculator/stack.cpp
 	calculator/transaction.cpp
 	calculator/undo_handler.cpp
@@ -41,6 +37,10 @@ add_executable(tests
 	calculator/value/math/core.cpp
 	format_error.cpp
 	handle_input.cpp
+	parser/parser.cpp
+	parser/unsigned_value.cpp
+	parser/floating_point_value.cpp
+	parser/signed_value.cpp
 )
 target_compile_options(tests
 	PRIVATE
@@ -54,6 +54,7 @@ set_target_properties(tests
 target_link_libraries(tests
 	PRIVATE
 		calculator
+		parser
 		gtest_main
 		c++
 )
