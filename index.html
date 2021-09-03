@@ -33,20 +33,21 @@
 <h1>RPN Calculator<a class="headerlink" href="#rpn-calculator" title="Permalink to this headline">¶</a></h1>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#building" id="id4">Building</a></li>
-<li><a class="reference internal" href="#usage" id="id5">Usage</a><ul>
-<li><a class="reference internal" href="#gui" id="id6">GUI</a></li>
-<li><a class="reference internal" href="#input-values" id="id7">Input values</a></li>
-<li><a class="reference internal" href="#operations" id="id8">Operations</a></li>
+<li><a class="reference internal" href="#building" id="id5">Building</a></li>
+<li><a class="reference internal" href="#usage" id="id6">Usage</a><ul>
+<li><a class="reference internal" href="#gui" id="id7">GUI</a></li>
+<li><a class="reference internal" href="#input-values" id="id8">Input values</a></li>
+<li><a class="reference internal" href="#operations" id="id9">Operations</a></li>
+<li><a class="reference internal" href="#constants" id="id10">Constants</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#known-limitations" id="id9">Known limitations</a><ul>
-<li><a class="reference internal" href="#building-requires-a-git-build-of-clang-and-libc" id="id10">Building requires a git build of Clang and libc++</a></li>
-<li><a class="reference internal" href="#the-gui-isn-t-great" id="id11">The GUI isn’t great</a></li>
-<li><a class="reference internal" href="#the-gui-is-inefficient" id="id12">The GUI is inefficient</a></li>
+<li><a class="reference internal" href="#known-limitations" id="id11">Known limitations</a><ul>
+<li><a class="reference internal" href="#building-requires-a-git-build-of-clang-and-libc" id="id12">Building requires a git build of Clang and libc++</a></li>
+<li><a class="reference internal" href="#the-gui-isn-t-great" id="id13">The GUI isn’t great</a></li>
+<li><a class="reference internal" href="#the-gui-is-inefficient" id="id14">The GUI is inefficient</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#links" id="id13">Links</a></li>
+<li><a class="reference internal" href="#links" id="id15">Links</a></li>
 </ul>
 </div>
 <p>This is yet another
@@ -58,12 +59,12 @@ for different bases and make it easy to use bitwise operations.</p>
 <div><ul class="simple">
 <li>The latest C++ features available in <a class="reference external" href="clang.llvm.org/">Clang</a> and
 <a class="reference external" href="libcxx.llvm.org/">libc++</a>.</li>
-<li>The possible CI <a class="footnote-reference" href="#note-cd" id="id1">[1]</a> features of GitHub actions.</li>
+<li>The possible CI <a class="footnote-reference" href="#note-cd" id="id1">[2]</a> features of GitHub actions.</li>
 </ul>
 </div></blockquote>
 <p>The sources of the project are at <a class="reference external" href="https://github.com/mordante/rpn">GitHub</a>.</p>
 <div class="section" id="building">
-<h2><a class="toc-backref" href="#id4">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>In order to build the application the following dependencies are required:</p>
 <ul class="simple">
 <li><a class="reference external" href="https://cmake.org/">CMake</a> 3.13.0 or later. Once CMake adds proper module
@@ -85,9 +86,9 @@ installed together with Clang.</li>
 <p>The build itself is a normal CMake build. It has the following options:</p>
 </div>
 <div class="section" id="usage">
-<h2><a class="toc-backref" href="#id5">Usage</a><a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Usage</a><a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gui">
-<h3><a class="toc-backref" href="#id6">GUI</a><a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">GUI</a><a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h3>
 <p>The application has a simple GUI with the following elements:</p>
 <dl class="docutils">
 <dt>Diagnostics</dt>
@@ -102,7 +103,7 @@ regarding the last operation.</dd>
 controlled. All keyboard input is automatically processed by the input buffer.</p>
 </div>
 <div class="section" id="input-values">
-<h3><a class="toc-backref" href="#id7">Input values</a><a class="headerlink" href="#input-values" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id8">Input values</a><a class="headerlink" href="#input-values" title="Permalink to this headline">¶</a></h3>
 <p>Numbers can be entered in the input buffer and put on the stack. A number will
 be put on the stack directly when pressing enter. Most operations that work on
 stack entries will first put the value of the input buffer on the stack before
@@ -124,7 +125,7 @@ signed integers.</dd>
 </dl>
 </div>
 <div class="section" id="operations">
-<h3><a class="toc-backref" href="#id8">Operations</a><a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">Operations</a><a class="headerlink" href="#operations" title="Permalink to this headline">¶</a></h3>
 <p>Most operations will require one or two stack elements. The basic operation is:</p>
 <ul class="simple">
 <li>take an element from the stack <code class="docutils literal notranslate"><span class="pre">arg</span> <span class="pre">1</span></code>,</li>
@@ -233,24 +234,73 @@ application.</p>
 </li>
 </ul>
 </div>
+<div class="section" id="constants">
+<h3><a class="toc-backref" href="#id10">Constants</a><a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
+<p>Certain special textual values will store a numeric value on the stack:</p>
+<ul class="simple">
+<li>Signed integral minima:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">int8_min</span></code> pushes the minimum value of <code class="docutils literal notranslate"><span class="pre">int8_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int16_min</span></code> pushes the minimum value of <code class="docutils literal notranslate"><span class="pre">int16_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int32_min</span></code> pushes the minimum value of <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int64_min</span></code> pushes the minimum value of <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> on the stack.</li>
+</ul>
+</li>
+<li>Signed integral maxima:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">int8_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">int8_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int16_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">int16_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int32_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">int32_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">int64_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> on the stack.</li>
+</ul>
+</li>
+<li>Unsigned integral maxima <a class="footnote-reference" href="#f1" id="id4">[1]</a>:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">uint8_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">uint16_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">uint32_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">uint32_t</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">uint64_max</span></code> pushes the maximum value of <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> on the stack.</li>
+</ul>
+</li>
+<li>Floating point minima:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">float_min</span></code> pushes the smallest positive <code class="docutils literal notranslate"><span class="pre">float</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">double_min</span></code> pushes the smallest positive <code class="docutils literal notranslate"><span class="pre">double</span></code> on the stack.</li>
+</ul>
+</li>
+<li>Floating point maxima:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">float_max</span></code> pushes the largest positive <code class="docutils literal notranslate"><span class="pre">float</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">double_max</span></code> pushes the largest positive <code class="docutils literal notranslate"><span class="pre">double</span></code> on the stack.</li>
+</ul>
+</li>
+<li>Special constants:<ul>
+<li><code class="docutils literal notranslate"><span class="pre">e</span></code> pushes the value of <code class="docutils literal notranslate"><span class="pre">e</span></code> as <code class="docutils literal notranslate"><span class="pre">double</span></code> on the stack.</li>
+<li><code class="docutils literal notranslate"><span class="pre">pi</span></code> pushes the value of <code class="docutils literal notranslate"><span class="pre">pi</span></code> as <code class="docutils literal notranslate"><span class="pre">double</span></code> on the stack.</li>
+</ul>
+</li>
+</ul>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[1]</a></td><td>The minimum value of all unsigned integrals is <code class="docutils literal notranslate"><span class="pre">0</span></code> so they are not
+available as a constant.</td></tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section" id="known-limitations">
-<h2><a class="toc-backref" href="#id9">Known limitations</a><a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id11">Known limitations</a><a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="building-requires-a-git-build-of-clang-and-libc">
-<h3><a class="toc-backref" href="#id10">Building requires a git build of Clang and libc++</a><a class="headerlink" href="#building-requires-a-git-build-of-clang-and-libc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id12">Building requires a git build of Clang and libc++</a><a class="headerlink" href="#building-requires-a-git-build-of-clang-and-libc" title="Permalink to this headline">¶</a></h3>
 <p>The goal of the application was to experiment with modules. Since module support
 in various compilers is in various stages of development I want to focus on one
 toolchain. Once modules becomes production quality in both compilers and CMake
 other compiler might be supported.</p>
 </div>
 <div class="section" id="the-gui-isn-t-great">
-<h3><a class="toc-backref" href="#id11">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
 <p>Basically the GUI is only used for output nothing else at the moment. The user
 interaction is low on the priority list. The initial goal is to get something
 usable for me.</p>
 </div>
 <div class="section" id="the-gui-is-inefficient">
-<h3><a class="toc-backref" href="#id12">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
 <p>The application is quite happy to redraw too many elements. An attempt has been
 made to improve this. An observer was created, however it seems that Clang
 modules and vtables don’t play along nicely with the linker. These linker errors
@@ -259,7 +309,7 @@ improvement has dropped low on the priority list.</p>
 </div>
 </div>
 <div class="section" id="links">
-<h2><a class="toc-backref" href="#id13">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="calculation.html">Calculations</a></li>
@@ -274,7 +324,7 @@ improvement has dropped low on the priority list.</p>
 <table class="last docutils footnote" frame="void" id="note-cd" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>There’s a CD part too, but since the application isn’t in a
+<tr><td class="label"><a class="fn-backref" href="#id1">[2]</a></td><td>There’s a CD part too, but since the application isn’t in a
 deployable state there’s no need to have a real CD part. Still this page is
 deployed by Github actions.</td></tr>
 </tbody>
