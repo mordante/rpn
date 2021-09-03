@@ -11,6 +11,16 @@ Version 0.3.0
 
 Focusses on improving the input parsing and adding more operations.
 
+* Improved the input handling:
+
+  * A space can now be used as separator instead of needing to press return
+    after every entry.
+  * An underscore or comma can be used as a numeric separator in the input,
+    allowing to easier write numbers with many digits.
+  * Floating-point values can now be entered.
+  * A signed integer values can now be entered, with a special syntax.
+
+
 Version 0.2.0
 =============
 

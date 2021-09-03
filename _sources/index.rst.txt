@@ -62,6 +62,33 @@ Input
 At the moment the GUI has no real interaction with the user and can't be
 controlled. All keyboard input is automatically processed by the input buffer.
 
+Input values
+------------
+
+Numbers can be entered in the input buffer and put on the stack. A number will
+be put on the stack directly when pressing enter. Most operations that work on
+stack entries will first put the value of the input buffer on the stack before
+applying their operations.
+
+A numeric value may use a digit group separator to improve readability. The
+allowed separators are ``_`` and ``,```.
+
+For example: ``1_2 1`` and pressing ``return`` will put the values ``12`` and
+one on the stack.
+
+The following value types can be entered:
+
+``Unsigned integral``
+  A positive value in the selected base.
+
+``Signed integral``
+  A positive or negative value in base 10. This value needs to be prefixed with
+  an ``i`` in the input. Its main use-case is to allow the two's complement of
+  signed integers.
+
+``Floating point``
+  An positive floating point value. The exponent can have a negative value.
+
 Operations
 ----------
 
@@ -72,18 +99,11 @@ Most operations will require one or two stack elements. The basic operation is:
 * execute the requested postfix operation,
 * push the result of the operation on the stack.
 
-To do a simple addition like ``1 + 2`` would be:
+To do a simple addition like ``1 + 2`` would be one of the following options:
 
-#. type ``1``
-#. press ``return``, the input is empty and ``1`` is stored on the stack
-#. type ``2``
-#. press ``return``, the input is empty and ``1`` and ``2`` are stored on the
-   stack  
-#. press ``+``, the input is empty and the ``3`` is stored on the stack
-
-In these operations step 4 is optional. When the operation is performed with a
-non-empty input this input will be pushed on the stack before the
-operation [#note-stack]_.
+* Type ``1 2+``
+* Type ``1`` press ``return`` type ``2`` type ``+``.
+* Type ``1`` press ``return`` type ``2`` press ``return`` type ``+``.
 
 This is a short summary of the operations, but behind the scenes the
 `calculations <calculation.html>`_ have more complexity.
@@ -203,8 +223,3 @@ Links
   .. [#note-CD] There's a CD part too, but since the application isn't in a
      deployable state there's no need to have a real CD part. Still this page is
      deployed by Github actions.
-
-  .. [#note-stack] The current implementation really pushes the element on the
-     stack. However future implementations might optimize this by using an
-     register. But that's an implementation detail which doesn't affect the
-     observed behaviour for the user.
