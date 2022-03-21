@@ -14,6 +14,8 @@
 
 import calculator.math.bitwise;
 
+import<bit>;
+
 #include <gtest/gtest.h>
 
 namespace calculator {
@@ -47,17 +49,17 @@ TEST(bitwise, complement_double) {
   ASSERT_TRUE(
       std::holds_alternative<uint64_t>(complement(tstorage{double(1)})));
 
-  EXPECT_EQ(std::get<uint64_t>(complement(
-                tstorage{bit_cast<uint64_t>(bit_cast<double>(uint64_t(0)))})),
+  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{
+                std::bit_cast<uint64_t>(std::bit_cast<double>(uint64_t(0)))})),
             0xffff'ffff'ffff'ffffu);
-  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{bit_cast<uint64_t>(
-                bit_cast<double>(uint64_t(0xffff'ffff'ffff'ffffu)))})),
+  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{std::bit_cast<uint64_t>(
+                std::bit_cast<double>(uint64_t(0xffff'ffff'ffff'ffffu)))})),
             0);
-  EXPECT_EQ(std::get<uint64_t>(complement(
-                tstorage{bit_cast<uint64_t>(bit_cast<double>(uint64_t(1)))})),
+  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{
+                std::bit_cast<uint64_t>(std::bit_cast<double>(uint64_t(1)))})),
             0xffff'ffff'ffff'fffeu);
-  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{bit_cast<uint64_t>(
-                bit_cast<double>(uint64_t(0xffff'ffff'ffff'fffeu)))})),
+  EXPECT_EQ(std::get<uint64_t>(complement(tstorage{std::bit_cast<uint64_t>(
+                std::bit_cast<double>(uint64_t(0xffff'ffff'ffff'fffeu)))})),
             1);
 }
 

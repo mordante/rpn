@@ -19,12 +19,12 @@ jobs:
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo sh -c 'echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list'
           sudo apt update
-          sudo apt-get install -y clang-14 libc++-14-dev libc++abi-14-dev libunwind-14-dev python3-sphinx
+          sudo apt-get install -y clang-15 libc++-15-dev libc++abi-15-dev libunwind-15-dev python3-sphinx
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_CXX_COMPILER=clang++-14 -DLLVM_COV_PATH=/usr/bin/llvm-cov-14 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-14 -DCODE_COVERAGE=ON ..
+          cmake -DCMAKE_CXX_COMPILER=clang++-15 -DLLVM_COV_PATH=/usr/bin/llvm-cov-15 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-15 -DCODE_COVERAGE=ON ..
           make VERBOSE=1
           make ccov-export-tests
           ../utils/check_coverage.py

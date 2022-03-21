@@ -14,6 +14,8 @@
 
 import calculator.math.bitwise;
 
+import<bit>;
+
 #include <gtest/gtest.h>
 
 namespace calculator {
@@ -22,9 +24,9 @@ namespace math {
 // We can't directly use the zero, two, and four value for doubles to create
 // helpers.  The test shr_double_double validates these are the proper values.
 // TODO make constexpr.
-const double zero = bit_cast<double>(uint64_t(0));
-const double two = bit_cast<double>(uint64_t(2));
-const double four = bit_cast<double>(uint64_t(4));
+const double zero = std::bit_cast<double>(uint64_t(0));
+const double two = std::bit_cast<double>(uint64_t(2));
+const double four = std::bit_cast<double>(uint64_t(4));
 
 TEST(bitwise, shr_int64_t_int64_t) {
   ASSERT_TRUE(std::holds_alternative<int64_t>(
