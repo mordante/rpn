@@ -15,6 +15,7 @@
 export module parser;
 
 export import parser.token;
+export import<algorithm>;
 export import<vector>;
 
 import parser.detail.base;

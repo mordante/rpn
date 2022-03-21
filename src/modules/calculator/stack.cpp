@@ -16,6 +16,7 @@ export module calculator.stack;
 
 export import calculator.value;
 
+import<algorithm>;
 import<charconv>;
 import<format>;
 import<string>;
