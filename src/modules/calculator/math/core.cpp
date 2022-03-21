@@ -18,9 +18,6 @@ import<bit>;
 import<cmath>;
 import<concepts>;
 export import<stdexcept>;
-#ifndef __cpp_lib_bit_cast
-import<cstring>;
-#endif
 export import<variant>;
 
 namespace calculator {
@@ -32,23 +29,15 @@ export template <class T>
 concept is_storage = std::same_as<T, int64_t> || std::same_as<T, uint64_t> ||
     std::same_as<T, double>;
 
-#ifdef __cpp_lib_bit_cast
-export using std::bit_cast;
-#else
-export template <class To, class From> To bit_cast(const From &from) noexcept {
-  To to;
-  std::memcpy(&to, &from, sizeof(To));
-  return to;
-}
-#endif
-
 static uint64_t bitwise_cast(int64_t value) {
   return static_cast<uint64_t>(value);
 }
 
 static uint64_t bitwise_cast(uint64_t value) { return value; }
 
-static uint64_t bitwise_cast(double value) { return bit_cast<uint64_t>(value); }
+static uint64_t bitwise_cast(double value) {
+  return std::bit_cast<uint64_t>(value);
+}
 
 /** Catches changes of @ref tstorage. */
 template <class T> static uint64_t bitwise_cast(T) = delete;

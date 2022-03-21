@@ -14,6 +14,7 @@
 
 import calculator.math.core;
 
+import<bit>;
 import<cmath>;
 import<limits>;
 
@@ -43,21 +44,24 @@ TEST(core, bitwise_cast_uint64_t) {
 }
 
 TEST(core, bitwise_cast_double) {
-  EXPECT_EQ(bitwise_cast(tstorage{DBL_MIN}), bit_cast<uint64_t>(DBL_MIN));
-  EXPECT_EQ(bitwise_cast(tstorage{double(-1)}), bit_cast<uint64_t>(double(-1)));
-  EXPECT_EQ(bitwise_cast(tstorage{double(0)}), bit_cast<uint64_t>(double(0)));
-  EXPECT_EQ(bitwise_cast(tstorage{double(1)}), bit_cast<uint64_t>(double(1)));
-  EXPECT_EQ(bitwise_cast(tstorage{DBL_MAX}), bit_cast<uint64_t>(DBL_MAX));
+  EXPECT_EQ(bitwise_cast(tstorage{DBL_MIN}), std::bit_cast<uint64_t>(DBL_MIN));
+  EXPECT_EQ(bitwise_cast(tstorage{double(-1)}),
+            std::bit_cast<uint64_t>(double(-1)));
+  EXPECT_EQ(bitwise_cast(tstorage{double(0)}),
+            std::bit_cast<uint64_t>(double(0)));
+  EXPECT_EQ(bitwise_cast(tstorage{double(1)}),
+            std::bit_cast<uint64_t>(double(1)));
+  EXPECT_EQ(bitwise_cast(tstorage{DBL_MAX}), std::bit_cast<uint64_t>(DBL_MAX));
 
   using limit = std::numeric_limits<double>;
   EXPECT_EQ(bitwise_cast(tstorage{-limit::infinity()}),
-            bit_cast<uint64_t>(-limit::infinity()));
+            std::bit_cast<uint64_t>(-limit::infinity()));
   EXPECT_EQ(bitwise_cast(tstorage{limit::infinity()}),
-            bit_cast<uint64_t>(limit::infinity()));
+            std::bit_cast<uint64_t>(limit::infinity()));
   EXPECT_EQ(bitwise_cast(tstorage{limit::quiet_NaN()}),
-            bit_cast<uint64_t>(limit::quiet_NaN()));
+            std::bit_cast<uint64_t>(limit::quiet_NaN()));
   EXPECT_EQ(bitwise_cast(tstorage{limit::signaling_NaN()}),
-            bit_cast<uint64_t>(limit::signaling_NaN()));
+            std::bit_cast<uint64_t>(limit::signaling_NaN()));
 }
 
 TEST(core, positive_integral_cast_int64_t) {

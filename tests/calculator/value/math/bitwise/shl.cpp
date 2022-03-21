@@ -14,6 +14,8 @@
 
 import calculator.math.bitwise;
 
+import<bit>;
+
 #include <gtest/gtest.h>
 
 namespace calculator {
@@ -22,8 +24,8 @@ namespace math {
 // We can't directly use the zero and one value for doubles to create helpers.
 // The test shl_double_double validates these are the proper values.
 // TODO make constexpr.
-const double zero = bit_cast<double>(uint64_t(0));
-const double one = bit_cast<double>(uint64_t(1));
+const double zero = std::bit_cast<double>(uint64_t(0));
+const double one = std::bit_cast<double>(uint64_t(1));
 
 TEST(bitwise, shl_int64_t_int64_t) {
   ASSERT_TRUE(std::holds_alternative<int64_t>(
