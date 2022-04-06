@@ -27,6 +27,12 @@ import<string_view>;
 
 namespace calculator {
 
+/** Functor for an unary math operation. */
+using tunary_operation = void (tvalue::*)();
+
+/** Functor for a binary math operation. */
+using tbinary_operation = void (tvalue::*)(const tvalue &);
+
 /**
  * The pressed keyboard modifiers.
  *
@@ -90,9 +96,6 @@ public:
   void append(std::string_view data) noexcept;
 
 private:
-  using tunary_operation = void (tvalue::*)();
-  using tbinary_operation = void (tvalue::*)(const tvalue &);
-
   /**
    * Calculates the unary operation on a value.
    *
@@ -301,7 +304,7 @@ static void parse_float(ttransaction &transaction, std::string_view input) {
   transaction.push(tvalue{value});
 }
 
-static tvalue get_constant(std::string_view input) {
+static std::optional<tvalue> get_constant(std::string_view input) {
   static const std::map<std::string_view, tvalue> constants{
       /*** Signed int minimum ***/
       {"int8_min", tvalue{int64_t(std::numeric_limits<int8_t>::min())}},
@@ -331,11 +334,41 @@ static tvalue get_constant(std::string_view input) {
   if (auto iter = constants.find(input); iter != constants.end())
     return iter->second;
 
+  return {};
+}
+
+static void exectute_operation(ttransaction &transaction,
+                               tunary_operation operation) {
+  if (transaction.stack_size() < 1)
+    throw std::out_of_range("Stack doesn't contain an element");
+
+  tvalue value = transaction.pop();
+  (value.*operation)();
+  transaction.push(value);
+}
+
+static void execute_command(ttransaction &transaction, std::string_view input) {
+  static const std::map<std::string_view, tunary_operation> unary_commands{
+      /*** Rounding ***/
+      {"round", &tvalue::round},
+      {"floor", &tvalue::floor},
+      {"ceil", &tvalue::ceil},
+      {"trunc", &tvalue::trunc}};
+
+  if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
+    exectute_operation(transaction, iter->second);
+    return;
+  }
+
   throw std::domain_error("Invalid numeric value or command");
 }
 
 static void parse_string(ttransaction &transaction, std::string_view input) {
-  transaction.push(get_constant(input));
+  const std::optional<tvalue> constant = get_constant(input);
+  if (constant)
+    transaction.push(*constant);
+  else
+    execute_command(transaction, input);
 }
 
 void tcontroller::handle_keyboard_input_control(char key) {
@@ -403,7 +436,7 @@ static void parse(ttransaction &transaction, const parser::ttoken &input) {
 
   case parser::ttoken::ttype::string_value:
     parse_string(transaction, input.string);
-	break;
+    break;
   }
 }
 
@@ -435,13 +468,8 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
   parse(transaction, model_.input_process());
   transaction.input_reset();
 
-  if (model_.stack().empty()) {
-    throw std::out_of_range("Stack doesn't contain an element");
-  }
+  exectute_operation(transaction, operation);
 
-  tvalue value = transaction.pop();
-  (value.*operation)();
-  transaction.push(value);
   model_.diagnostics_clear();
   undo_handler_.add(std::move(transaction).release());
 }

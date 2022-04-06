@@ -177,6 +177,14 @@ public:
       undo();
   }
 
+  /**
+   * Returns the stack size.
+   *
+   * @note This is not strictly a transactional operation. But being able to
+   * query this during a transaction improves diagnostics.
+   */
+  [[nodiscard]] size_t stack_size() { return model_.stack().size(); }
+
   /** Handles the stealing of @p input from the model's input. */
   void input_reset() {
     std::string result = model_.input_get();

@@ -17,6 +17,7 @@ export module calculator.value;
 import calculator.math.arithmetic;
 import calculator.math.bitwise;
 import calculator.math.core;
+import calculator.math.round;
 
 import<cinttypes>;
 import<concepts>;
@@ -91,6 +92,12 @@ public:
 
   /** Bitwise shifts the current value @p rhs positions to the right. */
   void shr(const tvalue &rhs) { value_ = math::shr(value_, rhs.value_); }
+
+  /*** Rounding ***/
+  void round() { value_ = math::round(value_); }
+  void floor() { value_ = math::floor(value_); }
+  void ceil() { value_ = math::ceil(value_); }
+  void trunc() { value_ = math::trunc(value_); }
 
 private:
   math::tstorage value_{0};

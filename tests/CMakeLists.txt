@@ -1,6 +1,10 @@
 add_executable(tests
 	calculator/controller.cpp
 	calculator/controller/constants.cpp
+	calculator/controller/function_ceil.cpp
+	calculator/controller/function_floor.cpp
+	calculator/controller/function_round.cpp
+	calculator/controller/function_trunc.cpp
 	calculator/controller/key_char_ampersand.cpp
 	calculator/controller/key_char_circumflex.cpp
 	calculator/controller/key_char_default.cpp
@@ -36,6 +40,10 @@ add_executable(tests
 	calculator/value/math/bitwise/shr.cpp
 	calculator/value/math/bitwise/xor.cpp
 	calculator/value/math/core.cpp
+	calculator/value/math/round/ceil.cpp
+	calculator/value/math/round/floor.cpp
+	calculator/value/math/round/round.cpp
+	calculator/value/math/round/trunc.cpp
 	format_error.cpp
 	handle_input.cpp
 	parser/parser.cpp
