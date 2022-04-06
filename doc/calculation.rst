@@ -321,3 +321,16 @@ original value.
   * is a ``double``
 
 * Returns: a ``double``.
+
+Ceil
+----
+
+Returns the value with an integral representation greater than or equal to the
+original value.
+
+
+* ``value``:
+
+  * is a ``double``
+
+* Returns: a ``double``.

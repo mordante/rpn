@@ -37,5 +37,13 @@ export tstorage floor(tstorage value) {
   throw std::domain_error("Not a floating-point");
 }
 
+/** @see https://mordante.github.io/rpn/calculation.html#ceil */
+export tstorage ceil(tstorage value) {
+  if (std::holds_alternative<double>(value))
+    return std::ceil(get<double>(value));
+
+  throw std::domain_error("Not a floating-point");
+}
+
 } // namespace math
 } // namespace calculator

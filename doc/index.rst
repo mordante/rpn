@@ -235,6 +235,8 @@ Other special textual values will execute an operation. These commands are
   * ``round`` rounds a ``double`` to its nearest integral representation.
   * ``floor`` returns a ``double`` with an integral representation less than or
     equal to the original value.
+  * ``ceil`` returns a ``double`` with an integral representation greater than
+    or equal to the original value.
 
 Known limitations
 =================

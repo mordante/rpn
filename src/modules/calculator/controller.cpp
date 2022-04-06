@@ -351,7 +351,8 @@ static void execute_command(ttransaction &transaction, std::string_view input) {
   static const std::map<std::string_view, tunary_operation> unary_commands{
       /*** Rounding ***/
       {"round", &tvalue::round},
-      {"floor", &tvalue::floor}};
+      {"floor", &tvalue::floor},
+      {"ceil", &tvalue::ceil}};
 
   if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
     exectute_operation(transaction, iter->second);

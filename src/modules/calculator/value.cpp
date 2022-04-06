@@ -96,6 +96,7 @@ public:
   /*** Rounding ***/
   void round() { value_ = math::round(value_); }
   void floor() { value_ = math::floor(value_); }
+  void ceil() { value_ = math::ceil(value_); }
 
 private:
   math::tstorage value_{0};
