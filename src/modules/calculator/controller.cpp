@@ -304,7 +304,7 @@ static void parse_float(ttransaction &transaction, std::string_view input) {
   transaction.push(tvalue{value});
 }
 
-static tvalue get_constant(std::string_view input) {
+static std::optional<tvalue> get_constant(std::string_view input) {
   static const std::map<std::string_view, tvalue> constants{
       /*** Signed int minimum ***/
       {"int8_min", tvalue{int64_t(std::numeric_limits<int8_t>::min())}},
@@ -334,7 +334,7 @@ static tvalue get_constant(std::string_view input) {
   if (auto iter = constants.find(input); iter != constants.end())
     return iter->second;
 
-  throw std::domain_error("Invalid numeric value or command");
+  return {};
 }
 
 static void exectute_operation(ttransaction &transaction,
@@ -347,8 +347,25 @@ static void exectute_operation(ttransaction &transaction,
   transaction.push(value);
 }
 
+static void execute_command(ttransaction &transaction, std::string_view input) {
+  static const std::map<std::string_view, tunary_operation> unary_commands{
+      /*** Rounding ***/
+      {"round", &tvalue::round}};
+
+  if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
+    exectute_operation(transaction, iter->second);
+    return;
+  }
+
+  throw std::domain_error("Invalid numeric value or command");
+}
+
 static void parse_string(ttransaction &transaction, std::string_view input) {
-  transaction.push(get_constant(input));
+  const std::optional<tvalue> constant = get_constant(input);
+  if (constant)
+    transaction.push(*constant);
+  else
+    execute_command(transaction, input);
 }
 
 void tcontroller::handle_keyboard_input_control(char key) {

@@ -292,3 +292,19 @@ The bitwise shift left and shift right have the same conversion behaviour.
   * Requires: ``rhs <= 64``.
 
 * ``result`` the type used for ``lhs``.
+
+
+Rounding functions
+==================
+
+Round
+-----
+
+Rounds the value to the nearest integer value. Rounding halfway rounds away
+from zero.
+
+* ``value``:
+
+  * is a ``double``
+
+* Returns: a ``double``.

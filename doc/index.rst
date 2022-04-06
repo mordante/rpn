@@ -225,6 +225,15 @@ Certain special textual values will store a numeric value on the stack:
 .. [#f1] The minimum value of all unsigned integrals is ``0`` so they are not
   available as a constant.
 
+Functions
+---------
+
+Other special textual values will execute an operation. These commands are
+
+* Rounding functions
+
+  * ``round`` rounds a ``double`` to its nearest integral representation.
+
 Known limitations
 =================
 
