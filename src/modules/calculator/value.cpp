@@ -97,6 +97,7 @@ public:
   void round() { value_ = math::round(value_); }
   void floor() { value_ = math::floor(value_); }
   void ceil() { value_ = math::ceil(value_); }
+  void trunc() { value_ = math::trunc(value_); }
 
 private:
   math::tstorage value_{0};

@@ -237,6 +237,8 @@ Other special textual values will execute an operation. These commands are
     equal to the original value.
   * ``ceil`` returns a ``double`` with an integral representation greater than
     or equal to the original value.
+  * ``trunc`` returns a ``double`` with an integral representation where the
+    fractional part is truncated.
 
 Known limitations
 =================

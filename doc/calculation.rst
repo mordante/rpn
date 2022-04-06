@@ -334,3 +334,16 @@ original value.
   * is a ``double``
 
 * Returns: a ``double``.
+
+Trunc
+----
+
+Returns the value with an integral representation greater where the fractional
+part is truncated.
+
+
+* ``value``:
+
+  * is a ``double``
+
+* Returns: a ``double``.

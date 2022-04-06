@@ -45,5 +45,13 @@ export tstorage ceil(tstorage value) {
   throw std::domain_error("Not a floating-point");
 }
 
+/** @see https://mordante.github.io/rpn/calculation.html#trunc */
+export tstorage trunc(tstorage value) {
+  if (std::holds_alternative<double>(value))
+    return std::trunc(get<double>(value));
+
+  throw std::domain_error("Not a floating-point");
+}
+
 } // namespace math
 } // namespace calculator

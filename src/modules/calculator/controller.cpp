@@ -352,7 +352,8 @@ static void execute_command(ttransaction &transaction, std::string_view input) {
       /*** Rounding ***/
       {"round", &tvalue::round},
       {"floor", &tvalue::floor},
-      {"ceil", &tvalue::ceil}};
+      {"ceil", &tvalue::ceil},
+      {"trunc", &tvalue::trunc}};
 
   if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
     exectute_operation(transaction, iter->second);
