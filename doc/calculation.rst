@@ -308,3 +308,16 @@ from zero.
   * is a ``double``
 
 * Returns: a ``double``.
+
+Floor
+-----
+
+Returns the value with an integral representation less than or equal to the
+original value.
+
+
+* ``value``:
+
+  * is a ``double``
+
+* Returns: a ``double``.

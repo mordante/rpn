@@ -29,5 +29,13 @@ export tstorage round(tstorage value) {
   throw std::domain_error("Not a floating-point");
 }
 
+/** @see https://mordante.github.io/rpn/calculation.html#floor */
+export tstorage floor(tstorage value) {
+  if (std::holds_alternative<double>(value))
+    return std::floor(get<double>(value));
+
+  throw std::domain_error("Not a floating-point");
+}
+
 } // namespace math
 } // namespace calculator

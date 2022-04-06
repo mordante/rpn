@@ -350,7 +350,8 @@ static void exectute_operation(ttransaction &transaction,
 static void execute_command(ttransaction &transaction, std::string_view input) {
   static const std::map<std::string_view, tunary_operation> unary_commands{
       /*** Rounding ***/
-      {"round", &tvalue::round}};
+      {"round", &tvalue::round},
+      {"floor", &tvalue::floor}};
 
   if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
     exectute_operation(transaction, iter->second);
@@ -433,7 +434,7 @@ static void parse(ttransaction &transaction, const parser::ttoken &input) {
 
   case parser::ttoken::ttype::string_value:
     parse_string(transaction, input.string);
-	break;
+    break;
   }
 }
 
