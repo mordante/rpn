@@ -39,15 +39,16 @@
 <li><a class="reference internal" href="#input-values" id="id8">Input values</a></li>
 <li><a class="reference internal" href="#operations" id="id9">Operations</a></li>
 <li><a class="reference internal" href="#constants" id="id10">Constants</a></li>
+<li><a class="reference internal" href="#functions" id="id11">Functions</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#known-limitations" id="id11">Known limitations</a><ul>
-<li><a class="reference internal" href="#building-requires-a-git-build-of-clang-and-libc" id="id12">Building requires a git build of Clang and libc++</a></li>
-<li><a class="reference internal" href="#the-gui-isn-t-great" id="id13">The GUI isn’t great</a></li>
-<li><a class="reference internal" href="#the-gui-is-inefficient" id="id14">The GUI is inefficient</a></li>
+<li><a class="reference internal" href="#known-limitations" id="id12">Known limitations</a><ul>
+<li><a class="reference internal" href="#building-requires-a-git-build-of-clang-and-libc" id="id13">Building requires a git build of Clang and libc++</a></li>
+<li><a class="reference internal" href="#the-gui-isn-t-great" id="id14">The GUI isn’t great</a></li>
+<li><a class="reference internal" href="#the-gui-is-inefficient" id="id15">The GUI is inefficient</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#links" id="id15">Links</a></li>
+<li><a class="reference internal" href="#links" id="id16">Links</a></li>
 </ul>
 </div>
 <p>This is yet another
@@ -283,24 +284,40 @@ available as a constant.</td></tr>
 </tbody>
 </table>
 </div>
+<div class="section" id="functions">
+<h3><a class="toc-backref" href="#id11">Functions</a><a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<p>Other special textual values will execute an operation. These commands are</p>
+<ul class="simple">
+<li>Rounding functions<ul>
+<li><code class="docutils literal notranslate"><span class="pre">round</span></code> rounds a <code class="docutils literal notranslate"><span class="pre">double</span></code> to its nearest integral representation.</li>
+<li><code class="docutils literal notranslate"><span class="pre">floor</span></code> returns a <code class="docutils literal notranslate"><span class="pre">double</span></code> with an integral representation less than or
+equal to the original value.</li>
+<li><code class="docutils literal notranslate"><span class="pre">ceil</span></code> returns a <code class="docutils literal notranslate"><span class="pre">double</span></code> with an integral representation greater than
+or equal to the original value.</li>
+<li><code class="docutils literal notranslate"><span class="pre">trunc</span></code> returns a <code class="docutils literal notranslate"><span class="pre">double</span></code> with an integral representation where the
+fractional part is truncated.</li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div class="section" id="known-limitations">
-<h2><a class="toc-backref" href="#id11">Known limitations</a><a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id12">Known limitations</a><a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="building-requires-a-git-build-of-clang-and-libc">
-<h3><a class="toc-backref" href="#id12">Building requires a git build of Clang and libc++</a><a class="headerlink" href="#building-requires-a-git-build-of-clang-and-libc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id13">Building requires a git build of Clang and libc++</a><a class="headerlink" href="#building-requires-a-git-build-of-clang-and-libc" title="Permalink to this headline">¶</a></h3>
 <p>The goal of the application was to experiment with modules. Since module support
 in various compilers is in various stages of development I want to focus on one
 toolchain. Once modules becomes production quality in both compilers and CMake
 other compiler might be supported.</p>
 </div>
 <div class="section" id="the-gui-isn-t-great">
-<h3><a class="toc-backref" href="#id13">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id14">The GUI isn’t great</a><a class="headerlink" href="#the-gui-isn-t-great" title="Permalink to this headline">¶</a></h3>
 <p>Basically the GUI is only used for output nothing else at the moment. The user
 interaction is low on the priority list. The initial goal is to get something
 usable for me.</p>
 </div>
 <div class="section" id="the-gui-is-inefficient">
-<h3><a class="toc-backref" href="#id14">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id15">The GUI is inefficient</a><a class="headerlink" href="#the-gui-is-inefficient" title="Permalink to this headline">¶</a></h3>
 <p>The application is quite happy to redraw too many elements. An attempt has been
 made to improve this. An observer was created, however it seems that Clang
 modules and vtables don’t play along nicely with the linker. These linker errors
@@ -309,7 +326,7 @@ improvement has dropped low on the priority list.</p>
 </div>
 </div>
 <div class="section" id="links">
-<h2><a class="toc-backref" href="#id15">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">Links</a><a class="headerlink" href="#links" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="calculation.html">Calculations</a></li>

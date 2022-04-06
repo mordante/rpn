@@ -21,6 +21,9 @@ Focusses on improving the input parsing and adding more operations.
   * A signed integer values can now be entered, with a special syntax.
   * Added textual constants to put a numeric value on the stack.
 
+* Additional operations:
+  * Rounding: round, floor, ceil, trunc.
+
 Version 0.2.0
 =============
 
