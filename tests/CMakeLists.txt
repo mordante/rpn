@@ -46,10 +46,13 @@ add_executable(tests
 	calculator/value/math/round/trunc.cpp
 	format_error.cpp
 	handle_input.cpp
+	lib/binary_find.cpp
+	lib/dictionary.cpp
 	parser/parser.cpp
 	parser/unsigned_value.cpp
 	parser/floating_point_value.cpp
 	parser/signed_value.cpp
+	test_constexpr.cpp
 )
 target_compile_options(tests
 	PRIVATE
@@ -63,14 +66,17 @@ set_target_properties(tests
 target_link_libraries(tests
 	PRIVATE
 		calculator
+		lib
 		parser
 		gtest_main
 		c++
 )
 add_module(tests.format_error format_error.cpp)
 add_module(tests.handle_input handle_input.cpp)
+add_module(tests.test_constexpr test_constexpr.cpp)
 add_dependencies(tests
 	tests.format_error.pcm
 	tests.handle_input.pcm
+	tests.test_constexpr.pcm
 )
 target_code_coverage(tests)

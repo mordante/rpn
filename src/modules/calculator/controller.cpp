@@ -17,10 +17,11 @@ export module calculator.controller;
 import calculator.model;
 import calculator.transaction;
 import calculator.undo_handler;
+import lib.dictionary;
 
+import <algorithm>;
 import<charconv>;
-import<format>;
-import<map>;
+import <format>;
 import<numbers>;
 import<string>;
 import<string_view>;
@@ -305,33 +306,33 @@ static void parse_float(ttransaction &transaction, std::string_view input) {
 }
 
 static std::optional<tvalue> get_constant(std::string_view input) {
-  static const std::map<std::string_view, tvalue> constants{
+  static constexpr std::array constants = lib::make_dictionary(
       /*** Signed int minimum ***/
-      {"int8_min", tvalue{int64_t(std::numeric_limits<int8_t>::min())}},
-      {"int16_min", tvalue{int64_t(std::numeric_limits<int16_t>::min())}},
-      {"int32_min", tvalue{int64_t(std::numeric_limits<int32_t>::min())}},
-      {"int64_min", tvalue{int64_t(std::numeric_limits<int64_t>::min())}},
+      "int8_min", tvalue{int64_t(std::numeric_limits<int8_t>::min())},   //
+      "int16_min", tvalue{int64_t(std::numeric_limits<int16_t>::min())}, //
+      "int32_min", tvalue{int64_t(std::numeric_limits<int32_t>::min())}, //
+      "int64_min", tvalue{int64_t(std::numeric_limits<int64_t>::min())}, //
       /*** Signed int maximum ***/
-      {"int8_max", tvalue{int64_t(std::numeric_limits<int8_t>::max())}},
-      {"int16_max", tvalue{int64_t(std::numeric_limits<int16_t>::max())}},
-      {"int32_max", tvalue{int64_t(std::numeric_limits<int32_t>::max())}},
-      {"int64_max", tvalue{int64_t(std::numeric_limits<int64_t>::max())}},
+      "int8_max", tvalue{int64_t(std::numeric_limits<int8_t>::max())},   //
+      "int16_max", tvalue{int64_t(std::numeric_limits<int16_t>::max())}, //
+      "int32_max", tvalue{int64_t(std::numeric_limits<int32_t>::max())}, //
+      "int64_max", tvalue{int64_t(std::numeric_limits<int64_t>::max())}, //
       /*** Unsigned int maximum ***/
-      {"uint8_max", tvalue{uint64_t(std::numeric_limits<uint8_t>::max())}},
-      {"uint16_max", tvalue{uint64_t(std::numeric_limits<uint16_t>::max())}},
-      {"uint32_max", tvalue{uint64_t(std::numeric_limits<uint32_t>::max())}},
-      {"uint64_max", tvalue{uint64_t(std::numeric_limits<uint64_t>::max())}},
+      "uint8_max", tvalue{uint64_t(std::numeric_limits<uint8_t>::max())},   //
+      "uint16_max", tvalue{uint64_t(std::numeric_limits<uint16_t>::max())}, //
+      "uint32_max", tvalue{uint64_t(std::numeric_limits<uint32_t>::max())}, //
+      "uint64_max", tvalue{uint64_t(std::numeric_limits<uint64_t>::max())}, //
       /*** Floating point minimum ***/
-      {"float_min", tvalue{double(std::numeric_limits<float>::min())}},
-      {"double_min", tvalue{double(std::numeric_limits<double>::min())}},
+      "float_min", tvalue{double(std::numeric_limits<float>::min())},   //
+      "double_min", tvalue{double(std::numeric_limits<double>::min())}, //
       /*** Floating point maximum ***/
-      {"float_max", tvalue{double(std::numeric_limits<float>::max())}},
-      {"double_max", tvalue{double(std::numeric_limits<double>::max())}},
+      "float_max", tvalue{double(std::numeric_limits<float>::max())},   //
+      "double_max", tvalue{double(std::numeric_limits<double>::max())}, //
       /** Double constants ***/
-      {"pi", tvalue{std::numbers::pi}},
-      {"e", tvalue{std::numbers::e}}};
-
-  if (auto iter = constants.find(input); iter != constants.end())
+      "pi", tvalue{std::numbers::pi}, //
+      "e", tvalue{std::numbers::e}    //
+  );
+  if (auto iter = lib::find(constants, input); iter != constants.end())
     return iter->second;
 
   return {};
@@ -348,17 +349,16 @@ static void exectute_operation(ttransaction &transaction,
 }
 
 static void execute_command(ttransaction &transaction, std::string_view input) {
-  static const std::map<std::string_view, tunary_operation> unary_commands{
+  static constexpr std::array unary_commands = lib::make_dictionary(
       /*** Rounding ***/
-      {"round", &tvalue::round},
-      {"floor", &tvalue::floor},
-      {"ceil", &tvalue::ceil},
-      {"trunc", &tvalue::trunc}};
+      "round", &tvalue::round, //
+      "floor", &tvalue::floor, //
+      "ceil", &tvalue::ceil,   //
+      "trunc", &tvalue::trunc);
 
-  if (auto iter = unary_commands.find(input); iter != unary_commands.end()) {
-    exectute_operation(transaction, iter->second);
-    return;
-  }
+  if (auto iter = lib::find(unary_commands, input);
+      iter != unary_commands.end())
+    return exectute_operation(transaction, iter->second);
 
   throw std::domain_error("Invalid numeric value or command");
 }

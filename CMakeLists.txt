@@ -39,6 +39,7 @@ set(diagnostic_compile_options
 	-Wno-c++11-compat
 	-Wno-c++14-compat
 	-Wno-c++17-compat
+	-Wno-c++20-compat
 )
 
 set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")

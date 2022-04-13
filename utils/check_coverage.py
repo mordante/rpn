@@ -50,6 +50,19 @@ not_covered = {
             'branches' : 1,
             'regions': 0,
         },
+    # Note consteval can't be covered
+    path + '/src/modules/lib/dictionary.cpp' :
+        {
+            'lines' : 16,
+            'branches' : 0,
+            'regions': 2,
+        },
+    path + '/src/modules/lib/binary_find.cpp' :
+        {
+            'lines' : 0,
+            'branches' : 0,
+            'regions': 1,
+        },
     path + '/src/modules/parser/detail/base.cpp' :
         {
             'lines' : 2,
@@ -89,6 +102,13 @@ not_covered = {
     path + '/src/modules/parser/token.cpp' :
         {
             'lines' : 1,
+            'branches' : 0,
+            'regions': 1,
+        },
+    # Is this a false positive?
+    path + '/tests/lib/binary_find.cpp' :
+        {
+            'lines' : 26,
             'branches' : 0,
             'regions': 1,
         },
