@@ -23,6 +23,7 @@ set_target_properties(calculator
 )
 target_link_libraries(calculator
 	PRIVATE
+		lib
 		parser
 )
 add_module(calculator calculator.cpp)
@@ -68,6 +69,7 @@ add_dependencies(calculator.controller.pcm
 	calculator.model.pcm
 	calculator.transaction.pcm
 	calculator.undo_handler.pcm
+	lib.dictionary.pcm
 )
 add_dependencies(calculator.pcm
 	calculator.controller.pcm
