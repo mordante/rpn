@@ -340,10 +340,7 @@ static std::optional<tvalue> get_constant(std::string_view input) {
 
 static void exectute_operation(ttransaction &transaction,
                                tunary_operation operation) {
-  if (transaction.stack_size() < 1)
-    throw std::out_of_range("The stack doesn't contain an element");
-
-  tvalue value = transaction.pop();
+  auto [value] = transaction.pop();
   (value.*operation)();
   transaction.push(value);
 }
@@ -452,11 +449,7 @@ void tcontroller::math_binary_operation(tbinary_operation operation) {
   parse(transaction, model_.input_process());
   transaction.input_reset();
 
-  if (model_.stack().size() < 2)
-    throw std::out_of_range("The stack doesn't contain two elements");
-
-  const tvalue rhs = transaction.pop();
-  tvalue lhs = transaction.pop();
+  auto [rhs, lhs] = transaction.pop<2>();
   (lhs.*operation)(rhs);
   transaction.push(lhs);
   model_.diagnostics_clear();
