@@ -33,7 +33,8 @@ TEST(controller, key_enter_duplicate_empty_stack) {
   tcontroller controller{model};
 
   controller.handle_keyboard_input(tkey::enter);
-  EXPECT_EQ(model.diagnostics_get(), format_error("Stack is empty"));
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("The stack doesn't contain an element"));
   EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }

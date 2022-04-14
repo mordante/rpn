@@ -109,7 +109,7 @@ private:
 
 void tstack::duplicate() {
   if (values_.empty())
-    throw std::out_of_range("Stack is empty");
+    throw std::out_of_range("The stack doesn't contain an element");
 
   values_.push_back(values_.back());
   strings_.push_back(strings_.back());
@@ -117,7 +117,7 @@ void tstack::duplicate() {
 
 tvalue tstack::pop() {
   if (values_.empty())
-    throw std::out_of_range("Stack is empty");
+    throw std::out_of_range("The stack doesn't contain an element");
 
   tvalue result = values_.back();
   values_.pop_back();
@@ -127,7 +127,7 @@ tvalue tstack::pop() {
 
 void tstack::drop() {
   if (values_.empty())
-    throw std::out_of_range("Stack is empty");
+    throw std::out_of_range("The stack doesn't contain an element");
 
   values_.pop_back();
   strings_.pop_back();
