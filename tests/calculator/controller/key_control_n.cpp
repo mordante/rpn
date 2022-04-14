@@ -28,7 +28,7 @@ TEST(controller, key_char_control_n_too_few_elements) {
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
   EXPECT_EQ(model.diagnostics_get(),
-            format_error("Stack doesn't contain an element"));
+            format_error("The stack doesn't contain an element"));
   EXPECT_TRUE(model.stack().empty());
   EXPECT_TRUE(model.input_get().empty());
 }

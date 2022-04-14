@@ -16,6 +16,7 @@ export module calculator.transaction;
 
 import calculator.model;
 
+import <array>;
 import<algorithm>;
 import<string>;
 import<vector>;
@@ -177,14 +178,6 @@ public:
       undo();
   }
 
-  /**
-   * Returns the stack size.
-   *
-   * @note This is not strictly a transactional operation. But being able to
-   * query this during a transaction improves diagnostics.
-   */
-  [[nodiscard]] size_t stack_size() { return model_.stack().size(); }
-
   /** Handles the stealing of @p input from the model's input. */
   void input_reset() {
     std::string result = model_.input_get();
@@ -192,11 +185,32 @@ public:
     steps_.push_back(std::make_unique<tinput>(result));
   }
 
-  /** Handles the popping of @p value from the model's stack. */
-  [[nodiscard]] tvalue pop() {
-    tvalue result = model_.stack().pop();
-    steps_.push_back(std::make_unique<tpop>(result));
-    return result;
+  /**
+   * Handles the popping of N @p values from the model's stack.
+   *
+   * The values are returned in an array, the first poped element is at
+   * offset 0, the second at offset 1, etc.
+   */
+  template <size_t N = 1>
+    requires(N >= 1 && N <= 2)
+  [[nodiscard]] auto pop() {
+    if (model_.stack().size() < N) {
+      static constexpr std::array messages{
+          "The stack doesn't contain an element",
+          "The stack doesn't contain two elements"};
+      static_assert(N <= messages.size());
+      throw std::out_of_range(messages[N - 1]);
+    }
+
+    return [this]<size_t... I>(std::index_sequence<I...>) {
+      return std::array{[this] {
+        (void)I; // Needed to execute the this lambda N times.
+        tvalue value = model_.stack().pop();
+        steps_.push_back(std::make_unique<tpop>(value));
+        return value;
+      }()...};
+    }
+    (std::make_index_sequence<N>{});
   }
 
   /** Handles the dropping of @p value from the model's stack. */
