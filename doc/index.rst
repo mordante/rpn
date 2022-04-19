@@ -164,6 +164,12 @@ This is a short summary of the operations, but behind the scenes the
 
     ``Ctrl`` Toggles the usage of digit grouping in the output of integrals.
 
+* Powers:
+
+  ``Ctrl <x>``
+  If ``x`` is in the range ``[2, 9]``, raises the value on the stack to the
+  power of ``x``.
+
 * Miscellaneous:
 
   ``Backspace``

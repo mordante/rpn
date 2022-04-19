@@ -347,7 +347,14 @@ static void exectute_operation(ttransaction &transaction,
   transaction.push(value);
 }
 
+static void exectute_operation(ttransaction &transaction,
+                               binary_operation auto operation) {
+  auto [rhs, lhs] = transaction.pop<2>();
+  transaction.push(std::invoke(operation, lhs, rhs));
+}
+
 static void execute_command(ttransaction &transaction, std::string_view input) {
+  /*** Unary ***/
   static constexpr std::array unary_commands = lib::make_dictionary(
       /*** Rounding ***/
       "round", &math::round, //
@@ -359,6 +366,18 @@ static void execute_command(ttransaction &transaction, std::string_view input) {
       iter != unary_commands.end())
     return exectute_operation(transaction, iter->second);
 
+  /*** Binary ***/
+  static constexpr std::array binary_commands = lib::make_dictionary(
+      /*** Powers ***/
+      "pow", static_cast<math::tstorage (*)(math::tstorage, math::tstorage)>(
+                 math::pow) // cast needed to specify non-templated function.
+  );
+
+  if (auto iter = lib::find(binary_commands, input);
+      iter != binary_commands.end())
+    return exectute_operation(transaction, iter->second);
+
+  /*** Error ***/
   throw std::domain_error("Invalid numeric value or command");
 }
 
@@ -405,6 +424,24 @@ void tcontroller::handle_keyboard_input_control(char key) {
 
   case 'n':
     return math_unary_operation(&math::negate);
+
+    /*** Powers ***/
+  case '2':
+    return math_unary_operation(&math::pow<2>);
+  case '3':
+    return math_unary_operation(&math::pow<3>);
+  case '4':
+    return math_unary_operation(&math::pow<4>);
+  case '5':
+    return math_unary_operation(&math::pow<5>);
+  case '6':
+    return math_unary_operation(&math::pow<6>);
+  case '7':
+    return math_unary_operation(&math::pow<7>);
+  case '8':
+    return math_unary_operation(&math::pow<8>);
+  case '9':
+    return math_unary_operation(&math::pow<9>);
   }
 }
 
