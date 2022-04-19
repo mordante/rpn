@@ -14,6 +14,10 @@
 
 export module calculator.controller;
 
+import calculator.math.arithmetic;
+import calculator.math.bitwise;
+import calculator.math.core;
+import calculator.math.round;
 import calculator.model;
 import calculator.transaction;
 import calculator.undo_handler;
@@ -21,19 +25,25 @@ import lib.dictionary;
 
 import <algorithm>;
 import <array>;
-import<charconv>;
+import <concepts>;
+import <charconv>;
 import <format>;
-import<numbers>;
-import<string>;
-import<string_view>;
+import <numbers>;
+import <string>;
+import <string_view>;
 
 namespace calculator {
 
 /** Functor for an unary math operation. */
-using tunary_operation = void (tvalue::*)();
+template <class F>
+concept unary_operation =
+    (std::same_as<std::invoke_result_t<F, math::tstorage>, math::tstorage>);
 
 /** Functor for a binary math operation. */
-using tbinary_operation = void (tvalue::*)(const tvalue &);
+template <class F>
+concept binary_operation =
+    (std::same_as<std::invoke_result_t<F, math::tstorage, math::tstorage>,
+                  math::tstorage>);
 
 /**
  * The pressed keyboard modifiers.
@@ -107,7 +117,7 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_unary_operation(tunary_operation operation);
+  void math_unary_operation(unary_operation auto operation);
 
   /**
    * Calculates the binary operation on two values.
@@ -118,7 +128,7 @@ private:
    * Upon success the diagnostics are cleared, else passes the exception thrown
    * to its parent.
    */
-  void math_binary_operation(tbinary_operation operation);
+  void math_binary_operation(binary_operation auto operation);
 
   void diagnostics_set(const std::exception &e);
 
@@ -184,49 +194,40 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   switch (key) {
     /*** Basic arithmetic operations ***/
   case '+':
-    math_binary_operation(&tvalue::add);
-    break;
+    return math_binary_operation(&math::add);
 
   case '-':
     if (model_.input_accept_minus())
       model_.input_append(key);
     else
-      math_binary_operation(&tvalue::sub);
+      math_binary_operation(&math::sub);
     break;
 
   case '*':
-    math_binary_operation(&tvalue::mul);
-    break;
+    return math_binary_operation(&math::mul);
 
   case '/':
-    math_binary_operation(&tvalue::div);
-    break;
+    return math_binary_operation(&math::div);
 
     /*** Bitwise operations ***/
   case '&':
-    math_binary_operation(&tvalue::bit_and);
-    break;
+    return math_binary_operation(&math::bit_and);
 
   case '|':
-    math_binary_operation(&tvalue::bit_or);
-    break;
+    return math_binary_operation(&math::bit_or);
 
   case '^':
-    math_binary_operation(&tvalue::bit_xor);
-    break;
+    return math_binary_operation(&math::bit_xor);
 
   case '~':
-    math_unary_operation(&tvalue::complement);
-    break;
+    return math_unary_operation(&math::complement);
 
     /*** Bitwise shifts ***/
   case '<':
-    math_binary_operation(&tvalue::shl);
-    break;
+    return math_binary_operation(&math::shl);
 
   case '>':
-    math_binary_operation(&tvalue::shr);
-    break;
+    return math_binary_operation(&math::shr);
 
     /*** Others ***/
   default:
@@ -340,19 +341,19 @@ static std::optional<tvalue> get_constant(std::string_view input) {
 }
 
 static void exectute_operation(ttransaction &transaction,
-                               tunary_operation operation) {
+                               unary_operation auto operation) {
   auto [value] = transaction.pop();
-  (value.*operation)();
+  value = std::invoke(operation, value);
   transaction.push(value);
 }
 
 static void execute_command(ttransaction &transaction, std::string_view input) {
   static constexpr std::array unary_commands = lib::make_dictionary(
       /*** Rounding ***/
-      "round", &tvalue::round, //
-      "floor", &tvalue::floor, //
-      "ceil", &tvalue::ceil,   //
-      "trunc", &tvalue::trunc);
+      "round", &math::round, //
+      "floor", &math::floor, //
+      "ceil", &math::ceil,   //
+      "trunc", &math::trunc);
 
   if (auto iter = lib::find(unary_commands, input);
       iter != unary_commands.end())
@@ -403,8 +404,7 @@ void tcontroller::handle_keyboard_input_control(char key) {
     break;
 
   case 'n':
-    math_unary_operation(&tvalue::negate);
-    break;
+    return math_unary_operation(&math::negate);
   }
 }
 
@@ -449,24 +449,24 @@ static void parse(ttransaction &transaction,
   });
 }
 
-void tcontroller::math_binary_operation(tbinary_operation operation) {
-  ttransaction transaction(model_);
-  parse(transaction, model_.input_process());
-  transaction.input_reset();
-
-  auto [rhs, lhs] = transaction.pop<2>();
-  (lhs.*operation)(rhs);
-  transaction.push(lhs);
-  model_.diagnostics_clear();
-  undo_handler_.add(std::move(transaction).release());
-}
-
-void tcontroller::math_unary_operation(tunary_operation operation) {
+void tcontroller::math_unary_operation(unary_operation auto operation) {
   ttransaction transaction(model_);
   parse(transaction, model_.input_process());
   transaction.input_reset();
 
   exectute_operation(transaction, operation);
+
+  model_.diagnostics_clear();
+  undo_handler_.add(std::move(transaction).release());
+}
+
+void tcontroller::math_binary_operation(binary_operation auto operation) {
+  ttransaction transaction(model_);
+  parse(transaction, model_.input_process());
+  transaction.input_reset();
+
+  auto [rhs, lhs] = transaction.pop<2>();
+  transaction.push(std::invoke(operation, lhs, rhs));
 
   model_.diagnostics_clear();
   undo_handler_.add(std::move(transaction).release());
