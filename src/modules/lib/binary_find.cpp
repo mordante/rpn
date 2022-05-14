@@ -14,7 +14,7 @@
 
 export module lib.binary_find;
 
-import <functional>;
+export import <functional>;
 import <ranges>;
 
 namespace lib {
