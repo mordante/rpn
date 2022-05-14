@@ -23,9 +23,15 @@ import <iostream>;
 
 class twindow final : public Fl_Window {
 public:
-  twindow() : Fl_Window(310, 265, "RPN") {
+  twindow() : Fl_Window(600, 315, "RPN") {
+
     diagnostics_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     diagnostics_.box(FL_DOWN_BOX);
+    diagnostics_.labelsize(16);
+    diagnostics_.labelfont(FL_COURIER);
+
+    stack_.textsize(26);
+    stack_.textfont(FL_COURIER);
 
     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     input_.box(FL_DOWN_BOX);
@@ -51,9 +57,9 @@ private:
 
   // *** Widgets ***
 
-  Fl_Box diagnostics_{5, 5, 300, 20};
-  Fl_Browser stack_{5, 30, 300, 200};
-  Fl_Box input_{5, 235, 300, 20};
+  Fl_Box diagnostics_{5, 5, 590, 25};
+  Fl_Browser stack_{5, 30, 590, 230};
+  Fl_Box input_{5, 260, 590, 50};
 
   // *** Model & controller ***
 
