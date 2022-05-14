@@ -18,7 +18,7 @@ export module tests.test_constexpr;
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
-#include <cassert>
+#include <assert.h>
 
 export void test_constexpr(auto f) {
   static_assert(f());
