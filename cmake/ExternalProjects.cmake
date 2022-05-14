@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
   fltk
   GIT_REPOSITORY https://github.com/fltk/fltk
-  GIT_TAG        release-1.3.7
+  GIT_TAG        release-1.3.8
 )
 FetchContent_GetProperties(fltk)
 if(NOT fltk_POPULATED)
