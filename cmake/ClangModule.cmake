@@ -9,7 +9,7 @@ function(add_module name)
     add_custom_target(${name}.pcm
             COMMAND
                 ${CMAKE_CXX_COMPILER}
-                -std=c++20
+                -std=c++2b
                 -stdlib=libc++
                 -fmodules
 				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
