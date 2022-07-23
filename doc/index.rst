@@ -23,9 +23,9 @@ Building
 
 In order to build the application the following dependencies are required:
 
-* `CMake <https://cmake.org/>`_ 3.13.0 or later. Once CMake adds proper module
+* `CMake <https://cmake.org/>`_ 3.20.0 or later. Once CMake adds proper module
   support the requirement will be incremented to that version.
-* A recent `Clang <clang.llvm.org/>`_ main build. Clang 13.0.0 is expected to
+* A recent `Clang <clang.llvm.org/>`_ main build. Clang 15.0.0 is expected to
   work, but when module support improves on Clang a more recent build will be
   required.
 * A recent `libc++ <libcxx.llvm.org/>`_ main build. In libc++ both ``<ranges>``
