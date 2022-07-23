@@ -31,7 +31,7 @@ export struct tparser {
 public:
   void append(char data) { parse(data); }
   void append(std::string_view data) {
-    std::for_each(data.begin(), data.end(), [this](char c) { parse(c); });
+    std::ranges::for_each(data, [this](char c) { parse(c); });
   }
 
   bool accept_minus() const {

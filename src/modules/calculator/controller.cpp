@@ -439,9 +439,9 @@ static void parse(ttransaction &transaction, const parser::ttoken &input) {
 
 static void parse(ttransaction &transaction,
                   const std::vector<parser::ttoken> &input) {
-  std::for_each(
-      input.begin(), input.end(),
-      [&transaction](const parser::ttoken &i) { parse(transaction, i); });
+  std::ranges::for_each(input, [&transaction](const parser::ttoken &i) {
+    parse(transaction, i);
+  });
 }
 
 void tcontroller::math_binary_operation(tbinary_operation operation) {

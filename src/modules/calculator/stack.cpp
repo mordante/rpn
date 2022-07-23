@@ -65,8 +65,8 @@ public:
   void base_set(tbase base) {
     base_ = base;
     // clear the cached strings.
-    std::for_each(strings_.begin(), strings_.end(),
-                  [](std::string &string) { string.clear(); });
+    std::ranges::for_each(strings_,
+                          [](std::string &string) { string.clear(); });
     dirty_ = true;
   }
 

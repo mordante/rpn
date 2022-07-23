@@ -18,6 +18,7 @@ import calculator.model;
 
 import <array>;
 import<algorithm>;
+import<ranges>;
 import<string>;
 import<vector>;
 
@@ -131,8 +132,8 @@ public:
    * after every concecutive call to @ref redo.
    */
   void undo() {
-    std::for_each(steps_.rbegin(), steps_.rend(),
-                  [this](auto &step) { step->undo(model_); });
+    std::ranges::for_each(std::ranges::reverse_view(steps_),
+                          [this](auto &step) { step->undo(model_); });
   }
   /**
    * Redo the action.
@@ -140,8 +141,8 @@ public:
    * @pre The function can only be called once after @ref undo is called.
    */
   void redo() {
-    std::for_each(steps_.begin(), steps_.end(),
-                  [this](auto &step) { step->redo(model_); });
+    std::ranges::for_each(std::ranges::reverse_view(steps_),
+                          [this](auto &step) { step->redo(model_); });
   }
 
 protected:
