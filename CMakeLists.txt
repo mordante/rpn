@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20.0 FATAL_ERROR)
 project(rpn
 	LANGUAGES CXX
 )
@@ -9,8 +9,7 @@ include(CodeCoverage)
 include(ExternalProjects)
 include(GoogleTest)
 
-# TODO Require CMake 3.20 to allow C++23.
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
 add_compile_options(-stdlib=libc++)
