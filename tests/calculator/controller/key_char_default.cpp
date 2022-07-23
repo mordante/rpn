@@ -17,10 +17,6 @@ import calculator.controller;
 import calculator.model;
 import tests.format_error;
 
-#if __cplusplus <= 202002L
-import<algorithm>;
-#endif
-
 #include <gtest/gtest.h>
 
 constexpr std::string_view all_characters =
@@ -47,13 +43,7 @@ TEST(controller, key_char_default_special_characters_no_modifier) {
 
 TEST(controller, key_char_default_non_special_characters) {
   for (char c : all_characters) {
-#if __cplusplus > 202002L
     if (special_characters_no_modifier.contains(c))
-#else
-    if (std::any_of(special_characters_no_modifier.begin(),
-                    special_characters_no_modifier.end(),
-                    [c](char special) { return c == special; }))
-#endif
       continue;
 
     tmodel model;
@@ -68,14 +58,9 @@ TEST(controller, key_char_default_non_special_characters) {
 
 TEST(controller, key_char_default_control) {
   for (char c : all_characters) {
-#if __cplusplus > 202002L
     if (special_characters_control.contains(c))
-#else
-    if (std::any_of(special_characters_control.begin(),
-                    special_characters_control.end(),
-                    [c](char special) { return c == special; }))
-#endif
       continue;
+
     tmodel model;
     tcontroller controller{model};
 
