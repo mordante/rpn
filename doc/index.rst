@@ -33,7 +33,7 @@ In order to build the application the following dependencies are required:
   branch the application will use some of these features.
 * A working Internet connection. The application depends on
   `GoogleTest <http://google.github.io/googletest/>`_ and
-  `FLTK <https://cmake.org/>`_. The proper dependencies are downloaded during
+  `FLTK <https://fltk.org/>`_. The proper dependencies are downloaded during
   the build process.
 * Optional when enabling coverage ``llvm-cov`` and ``llvm-profdata`` are
   required. This should be the same version as Clang, but normally they are
