@@ -46,9 +46,9 @@ not_covered = {
         },
     path + '/src/modules/calculator/stack.cpp' :
         {
-            'lines' : 0,
+            'lines' : 1,
             'branches' : 1,
-            'regions': 0,
+            'regions': 1,
         },
     # Note consteval can't be covered
     path + '/src/modules/lib/dictionary.cpp' :

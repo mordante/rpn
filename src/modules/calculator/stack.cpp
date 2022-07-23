@@ -17,7 +17,6 @@ export module calculator.stack;
 export import calculator.value;
 
 import<algorithm>;
-import<charconv>;
 import<format>;
 import<string>;
 export import<vector>;
@@ -144,59 +143,21 @@ void tstack::synchronise_display() const {
   dirty_ = false;
 }
 
-#if !defined(__cpp_lib_format)
-static std::string format_binary(uint64_t v) {
-  std::string result;
-  result += "0b";
-  char buffer[64];
-  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 2).ptr;
-  result.append(std::begin(buffer), ptr);
-  return result;
-}
-
-static std::string format_octal(uint64_t v) {
-  std::string result;
-  if (v != 0)
-    result += "0";
-  char buffer[22];
-  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 8).ptr;
-  result.append(std::begin(buffer), ptr);
-  return result;
-}
-
-static std::string format_decimal(uint64_t v) { return std::to_string(v); }
-
-static std::string format_hexadecimal(uint64_t v) {
-  std::string result;
-  result += "0x";
-  char buffer[8];
-  char *ptr = std::to_chars(std::begin(buffer), std::end(buffer), v, 16).ptr;
-  result.append(std::begin(buffer), ptr);
-  return result;
-}
-
-static std::string format(tbase base, uint64_t value) {
+/** The integral types used in the value class. */
+template <class T>
+  requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
+static std::string format(tbase base, T value) {
   switch (base) {
   case tbase::binary:
-    return format_binary(value);
+    return std::format("{:#b}", value);
   case tbase::octal:
-    return format_octal(value);
+    return std::format("{:#o}", value);
   case tbase::decimal:
-    return format_decimal(value);
+    return std::format("{}", value);
   case tbase::hexadecimal:
-    return format_hexadecimal(value);
+    return std::format("{:#x}", value);
   }
-}
-
-static std::string format(tbase base, int64_t value) {
-  std::string result;
-  if (value < 0) {
-    result += '-';
-    // Note -value may not work properly. However std::format doesn't have
-    // this issue.
-    value = -value;
-  }
-  return result + format(base, static_cast<uint64_t>(value));
+  __builtin_unreachable();
 }
 
 static std::string format(tbase, double value) {
@@ -211,25 +172,9 @@ template <class T> static uint64_t format(tbase, T) = delete;
 static std::string format(tbase base, const tvalue &value) {
   return value.visit([base](auto v) { return format(base, v); });
 }
-#endif
 
 [[nodiscard]] std::string tstack::format(const tvalue &value) const {
-#if defined(__cpp_lib_format)
-  // TODO Adjust for visitor.
-  switch (base_) {
-  case tbase::binary:
-    return std::format("{:#b}", value.get());
-  case tbase::octal:
-    return std::format("{:#o}", value.get());
-  case tbase::decimal:
-    return std::format("{}", value.get());
-  case tbase::hexadecimal:
-    return std::format("{:#x}", value.get());
-  }
-  __builtin_unreachable();
-#else
   return calculator::format(base_, value);
-#endif
 }
 
 } // namespace calculator
