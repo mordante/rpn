@@ -19,6 +19,7 @@ export import calculator.value;
 import<algorithm>;
 import<format>;
 import<string>;
+import <utility>;
 export import<vector>;
 
 namespace calculator {
@@ -157,7 +158,7 @@ static std::string format(tbase base, T value) {
   case tbase::hexadecimal:
     return std::format("{:#x}", value);
   }
-  __builtin_unreachable();
+  std::unreachable();
 }
 
 static std::string format(tbase, double value) {

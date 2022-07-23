@@ -46,7 +46,7 @@ not_covered = {
         },
     path + '/src/modules/calculator/stack.cpp' :
         {
-            'lines' : 1,
+            'lines' : 2,
             'branches' : 1,
             'regions': 1,
         },
