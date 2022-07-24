@@ -57,6 +57,7 @@ TEST(controller, key_char_control_n_stack) {
 
 TEST(controller, key_char_control_n_round_trip) {
   tmodel model;
+  model.grouping_toggle();
   tcontroller controller{model};
   // -std::numerical_limits<int64_t>::min() is the largest integral round-trip.
   handle_input(controller, model, "9223372036854775808");

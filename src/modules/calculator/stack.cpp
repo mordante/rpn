@@ -18,6 +18,7 @@ export import calculator.value;
 
 import<algorithm>;
 import<format>;
+import <locale>;
 import<string>;
 import <utility>;
 export import<vector>;
@@ -64,13 +65,21 @@ public:
 
   void base_set(tbase base) {
     base_ = base;
-    // clear the cached strings.
+    invalidate_cache();
+  }
+
+  void grouping_toggle() {
+    grouping_ = !grouping_;
+    invalidate_cache();
+  }
+
+private:
+  void invalidate_cache() {
     std::ranges::for_each(strings_,
                           [](std::string &string) { string.clear(); });
     dirty_ = true;
   }
 
-private:
   /**
    * The stack with all values of the applications.
    *
@@ -105,6 +114,9 @@ private:
    * @note The input is always base 10, unless the user enters a base prefix.
    */
   tbase base_{tbase::decimal};
+
+  /** Whether or not the grouping symbols are shown in the output. */
+  bool grouping_{true};
 };
 
 void tstack::duplicate() {
@@ -144,10 +156,7 @@ void tstack::synchronise_display() const {
   dirty_ = false;
 }
 
-/** The integral types used in the value class. */
-template <class T>
-  requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
-static std::string format(tbase base, T value) {
+static std::string format_integral(tbase base, auto value) {
   switch (base) {
   case tbase::binary:
     return std::format("{:#b}", value);
@@ -161,21 +170,69 @@ static std::string format(tbase base, T value) {
   std::unreachable();
 }
 
-static std::string format(tbase, double value) {
+static std::string format_integral_grouped(tbase base, auto value) {
+  // The hard-code grouping used in the bases.
+  // Note this might becom more generic in the future.
+  struct grouping_3 : std::numpunct<char> {
+    explicit grouping_3(char separator) : separator_(separator) {}
+
+    std::string do_grouping() const override { return "\3"; }
+    char do_thousands_sep() const override { return separator_; }
+
+    char separator_;
+  };
+  // Use separator of the locale
+  static std::locale locale_3{
+      std::locale(),
+      new grouping_3(
+          std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep())};
+
+  struct grouping_4 : std::numpunct<char> {
+    std::string do_grouping() const override { return "\4"; }
+    char do_thousands_sep() const override { return '\''; }
+  };
+
+  static std::locale locale_4{std::locale(), new grouping_4()};
+
+  switch (base) {
+  case tbase::binary:
+    return std::format(locale_4, "{:#Lb}", value);
+  case tbase::octal:
+    return std::format(locale_3, "{:#Lo}", value);
+  case tbase::decimal:
+    return std::format(locale_3, "{:L}", value);
+  case tbase::hexadecimal:
+    return std::format(locale_4, "{:#Lx}", value);
+  }
+  std::unreachable();
+}
+
+/** The integral types used in the value class. */
+template <class T>
+  requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
+static std::string format(tbase base, bool grouping, T value) {
+  if (grouping)
+    return format_integral_grouped(base, value);
+
+  return format_integral(base, value);
+}
+
+static std::string format(tbase, bool, double value) {
   char buf[128];
   std::sprintf(buf, "%g", value);
   return std::string{buf};
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static uint64_t format(tbase, T) = delete;
+template <class T> static uint64_t format(tbase, bool, T) = delete;
 
-static std::string format(tbase base, const tvalue &value) {
-  return value.visit([base](auto v) { return format(base, v); });
+static std::string format(tbase base, bool grouping, const tvalue &value) {
+  return value.visit(
+      [base, grouping](auto v) { return format(base, grouping, v); });
 }
 
 [[nodiscard]] std::string tstack::format(const tvalue &value) const {
-  return calculator::format(base_, value);
+  return calculator::format(base_, grouping_, value);
 }
 
 } // namespace calculator

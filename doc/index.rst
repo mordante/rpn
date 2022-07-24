@@ -162,6 +162,8 @@ This is a short summary of the operations, but behind the scenes the
     * Decimal (base 10), use ``Ctrl + d``.
     * Hexadecimal (base 16), use ``Ctrl + h``.
 
+    ``Ctrl`` Toggles the usage of digit grouping in the output of integrals.
+
 * Miscellaneous:
 
   ``Backspace``

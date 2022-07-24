@@ -397,6 +397,10 @@ void tcontroller::handle_keyboard_input_control(char key) {
     break;
 
     /*** Miscellaneous ***/
+  case 'g':
+    model_.grouping_toggle();
+    break;
+
   case 'n':
     math_unary_operation(&tvalue::negate);
     break;

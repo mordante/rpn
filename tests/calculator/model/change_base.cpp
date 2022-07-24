@@ -22,6 +22,7 @@ namespace calculator {
 
 TEST(model, base_set) {
   tmodel model;
+  model.grouping_toggle();
   model.stack().push(tvalue{uint64_t(0)});
   model.stack().push(tvalue{uint64_t(42)});
   model.stack().push(tvalue{uint64_t(100)});
