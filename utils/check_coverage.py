@@ -53,9 +53,9 @@ not_covered = {
     # Note consteval can't be covered
     path + '/src/modules/lib/dictionary.cpp' :
         {
-            'lines' : 16,
+            'lines' : 13,
             'branches' : 0,
-            'regions': 2,
+            'regions': 1,
         },
     path + '/src/modules/lib/binary_find.cpp' :
         {

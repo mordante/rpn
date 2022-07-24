@@ -58,9 +58,7 @@ consteval auto make_dictionary(Args... args) {
   }
   (std::make_index_sequence<sizeof...(Args) / 2>());
 
-  std::sort(result.begin(), result.end(), [](const auto &lhs, const auto &rhs) {
-    return lhs.first < rhs.first;
-  });
+  std::ranges::sort(result, {}, &decltype(result)::value_type::first);
 
   return result;
 }
