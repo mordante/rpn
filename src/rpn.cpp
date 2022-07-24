@@ -35,6 +35,8 @@ public:
 
     input_.align(FL_ALIGN_INSIDE | FL_ALIGN_RIGHT);
     input_.box(FL_DOWN_BOX);
+    input_.labelsize(36);
+    input_.labelfont(FL_COURIER);
   }
 
 private:

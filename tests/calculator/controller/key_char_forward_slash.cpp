@@ -84,7 +84,8 @@ TEST(controller, key_char_forward_slash_input_invalid) {
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
-  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value or command");
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Invalid numeric value or command"));
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "abc");
 }
@@ -97,7 +98,7 @@ TEST(controller, key_char_forward_slash_by_zero) {
   model.input_append("0");
 
   controller.handle_keyboard_input(tmodifiers::none, '/');
-  EXPECT_EQ(model.diagnostics_get(), "Division by zero");
+  EXPECT_EQ(model.diagnostics_get(), format_error("Division by zero"));
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "0");
 }

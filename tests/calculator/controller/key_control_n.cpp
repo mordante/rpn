@@ -57,6 +57,7 @@ TEST(controller, key_char_control_n_stack) {
 
 TEST(controller, key_char_control_n_round_trip) {
   tmodel model;
+  model.grouping_toggle();
   tcontroller controller{model};
   // -std::numerical_limits<int64_t>::min() is the largest integral round-trip.
   handle_input(controller, model, "9223372036854775808");
@@ -92,7 +93,8 @@ TEST(controller, key_char_control_n_input_invalid) {
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::control, 'n');
-  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value or command");
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Invalid numeric value or command"));
   EXPECT_TRUE(model.stack().empty());
   EXPECT_EQ(model.input_get(), "abc");
 }

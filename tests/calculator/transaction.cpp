@@ -41,6 +41,7 @@ TEST(transaction, no_exception_thrown) {
 
 TEST(transaction, exception_thrown) {
   tmodel model;
+  model.grouping_toggle();
   model.stack().push(tvalue(uint64_t(42)));
   model.stack().push(tvalue(uint64_t(42)));
   model.input_append("abc");

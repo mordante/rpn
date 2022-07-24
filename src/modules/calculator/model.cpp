@@ -114,6 +114,9 @@ public:
    */
   void base_set(tbase base) { stack_.base_set(base); }
 
+  /** Toggles the display of grouping symbols in the output. */
+  void grouping_toggle() { stack_.grouping_toggle(); }
+
 private:
   /** The execution issues to report to the user. */
   std::string diagnotics_{};

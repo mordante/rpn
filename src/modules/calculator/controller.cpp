@@ -397,6 +397,10 @@ void tcontroller::handle_keyboard_input_control(char key) {
     break;
 
     /*** Miscellaneous ***/
+  case 'g':
+    model_.grouping_toggle();
+    break;
+
   case 'n':
     math_unary_operation(&tvalue::negate);
     break;
@@ -468,11 +472,7 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
 }
 
 void tcontroller::diagnostics_set(const std::exception &e) {
-#if defined(__cpp_lib_format)
-  model_.diagnostics_set(std::format("[ERR]{:>80.79}", e.what()));
-#else
-  model_.diagnostics_set(e.what());
-#endif
+  model_.diagnostics_set(std::format("{:7} {:>50.50}", "[ERR]", e.what()));
 }
 
 void tcontroller::push() {

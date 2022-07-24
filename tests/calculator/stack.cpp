@@ -70,6 +70,7 @@ TEST(stack, base_default) {
 
 TEST(stack, base_2) {
   tstack stack;
+  stack.grouping_toggle();
   stack.base_set(tbase::binary);
   stack.push(tvalue{uint64_t(42)});
   EXPECT_EQ(stack.strings(), std::vector<std::string>{"0b101010"});

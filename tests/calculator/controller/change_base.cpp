@@ -23,6 +23,7 @@ namespace calculator {
 
 TEST(controller, key_char_control_base) {
   tmodel model;
+  model.grouping_toggle();
   tcontroller controller{model};
   handle_input(controller, model, "42");
   EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{{"42"}}));

@@ -25,6 +25,7 @@ static void validate(std::string_view input, std::string expected) {
   {
     tmodel model;
     tcontroller controller{model};
+    model.grouping_toggle();
     model.diagnostics_set("Cleared");
     model.input_append(input);
     controller.handle_keyboard_input(tkey::enter);
@@ -36,6 +37,7 @@ static void validate(std::string_view input, std::string expected) {
   {
     tmodel model;
     tcontroller controller{model};
+    model.grouping_toggle();
     model.diagnostics_set("Cleared");
     model.input_append(input);
     model.input_append(" 0");

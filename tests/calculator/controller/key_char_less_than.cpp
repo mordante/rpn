@@ -42,6 +42,7 @@ TEST(controller, key_char_less_than_too_few_elements) {
 
 TEST(controller, key_char_less_than_stack_input) {
   tmodel model;
+  model.grouping_toggle();
   model.base_set(tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b101010");
@@ -55,6 +56,7 @@ TEST(controller, key_char_less_than_stack_input) {
 
 TEST(controller, key_char_less_than_stack_stack) {
   tmodel model;
+  model.grouping_toggle();
   model.base_set(tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b101010");
@@ -68,6 +70,7 @@ TEST(controller, key_char_less_than_stack_stack) {
 
 TEST(controller, key_char_less_than_diagnostics_cleared) {
   tmodel model;
+  model.grouping_toggle();
   model.base_set(tbase::binary);
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
@@ -82,12 +85,14 @@ TEST(controller, key_char_less_than_diagnostics_cleared) {
 
 TEST(controller, key_char_less_than_input_invalid) {
   tmodel model;
+  model.grouping_toggle();
   tcontroller controller{model};
   handle_input(controller, model, "0b101010");
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
-  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value or command");
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Invalid numeric value or command"));
   EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
   EXPECT_EQ(model.input_get(), "abc");
 }
@@ -100,7 +105,7 @@ TEST(controller, key_char_less_than_shift_too_small) {
   controller.handle_keyboard_input(tmodifiers::control, 'n');
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
-  EXPECT_EQ(model.diagnostics_get(), "Not a positive value");
+  EXPECT_EQ(model.diagnostics_get(), format_error("Not a positive value"));
   EXPECT_EQ(model.stack().strings(),
             (std::vector<std::string>{{"42"}, {"-1"}}));
   EXPECT_TRUE(model.input_get().empty());
@@ -113,7 +118,7 @@ TEST(controller, key_char_less_than_shift_too_large) {
   handle_input(controller, model, "65");
 
   controller.handle_keyboard_input(tmodifiers::none, '<');
-  EXPECT_EQ(model.diagnostics_get(), "Shift too large");
+  EXPECT_EQ(model.diagnostics_get(), format_error("Shift too large"));
   EXPECT_EQ(model.stack().strings(),
             (std::vector<std::string>{{"42"}, {"65"}}));
   EXPECT_TRUE(model.input_get().empty());

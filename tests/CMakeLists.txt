@@ -19,6 +19,7 @@ add_executable(tests
 	calculator/controller/key_backspace.cpp
 	calculator/controller/key_enter.cpp
 	calculator/controller/change_base.cpp
+	calculator/controller/key_control_g.cpp
 	calculator/controller/key_control_n.cpp
 	calculator/controller/key_control_z.cpp
 	calculator/model.cpp

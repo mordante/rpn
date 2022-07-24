@@ -64,6 +64,7 @@ TEST(controller, key_enter_value_0) {
 
 TEST(controller, key_enter_value_max) {
   tmodel model;
+  model.grouping_toggle();
   tcontroller controller{model};
 
   model.input_append("18446744073709551615");

@@ -23,6 +23,7 @@ Focusses on improving the input parsing and adding more operations.
 
 * Additional operations:
   * Rounding: round, floor, ceil, trunc.
+  * Using of grouping in the display's output.
 
 Version 0.2.0
 =============
