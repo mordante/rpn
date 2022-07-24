@@ -468,11 +468,7 @@ void tcontroller::math_unary_operation(tunary_operation operation) {
 }
 
 void tcontroller::diagnostics_set(const std::exception &e) {
-#if defined(__cpp_lib_format)
-  model_.diagnostics_set(std::format("[ERR]{:>80.79}", e.what()));
-#else
-  model_.diagnostics_set(e.what());
-#endif
+  model_.diagnostics_set(std::format("{:7} {:>50.50}", "[ERR]", e.what()));
 }
 
 void tcontroller::push() {

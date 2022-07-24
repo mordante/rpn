@@ -18,9 +18,5 @@ import<string>;
 import<format>;
 
 export std::string format_error(const char *message) {
-#if defined(__cpp_lib_format)
-  return std::format("[ERR]{:>80.79}", message);
-#else
-  return message;
-#endif
+  return std::format("{:7} {:>50.50}", "[ERR]", message);
 }

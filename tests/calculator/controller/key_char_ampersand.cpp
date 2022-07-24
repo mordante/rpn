@@ -84,7 +84,8 @@ TEST(controller, key_char_ampersand_input_invalid) {
   model.input_append("abc");
 
   controller.handle_keyboard_input(tmodifiers::none, '&');
-  EXPECT_EQ(model.diagnostics_get(), "Invalid numeric value or command");
+  EXPECT_EQ(model.diagnostics_get(),
+            format_error("Invalid numeric value or command"));
   EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{{"42"}}));
   EXPECT_EQ(model.input_get(), "abc");
 }
