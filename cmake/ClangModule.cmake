@@ -9,14 +9,31 @@ function(add_module name)
     add_custom_target(${name}.pcm
             COMMAND
                 ${CMAKE_CXX_COMPILER}
-                -std=c++2b
+                -std=c++20
                 -stdlib=libc++
-                -fmodules
+				#-fmodules
 				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
                 -c
                 ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN}
-                -Xclang -emit-module-interface
+				#-Xclang -emit-module-interface
+				--precompile
                 -o ${PREBUILT_MODULE_PATH}/${name}.pcm
+
+            )
+endfunction()
+
+
+function(compile_module name)
+    file(MAKE_DIRECTORY ${PREBUILT_MODULE_PATH})
+    add_custom_target(${name}.o
+            COMMAND
+                ${CMAKE_CXX_COMPILER}
+                -std=c++20
+                -stdlib=libc++
+				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
+				${name}.pcm
+                -c
+                -o ${name}.o
 
             )
 endfunction()

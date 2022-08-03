@@ -16,7 +16,7 @@ export module parser.detail.base;
 
 export import parser.token;
 
-export import<memory>;
+import<memory>;
 
 namespace parser {
 

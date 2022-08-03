@@ -15,7 +15,7 @@
 export module calculator.math.bitwise;
 
 export import calculator.math.core;
-export import<stdexcept>;
+import<stdexcept>;
 
 namespace calculator {
 namespace math {

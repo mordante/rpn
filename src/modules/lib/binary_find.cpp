@@ -14,7 +14,7 @@
 
 export module lib.binary_find;
 
-export import <functional>;
+import <functional>;
 import <algorithm>;
 import <ranges>;
 

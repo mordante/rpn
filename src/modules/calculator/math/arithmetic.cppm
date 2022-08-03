@@ -16,7 +16,7 @@ export module calculator.math.arithmetic;
 
 export import calculator.math.core;
 
-export import<variant>;
+import<variant>;
 
 namespace calculator {
 namespace math {

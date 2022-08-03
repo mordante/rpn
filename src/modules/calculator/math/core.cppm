@@ -14,11 +14,27 @@
 
 export module calculator.math.core;
 
+#if 0
 import<bit>;
 import<cmath>;
 import<concepts>;
-export import<stdexcept>;
-export import<variant>;
+
+
+import<stdexcept>;
+import<variant>;
+#else
+/*
+#include<bit>
+#include<cmath>
+#include<concepts>
+
+
+#include<stdexcept>
+#include<variant>
+*/
+import std;
+
+#endif
 
 namespace calculator {
 namespace math {
