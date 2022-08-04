@@ -17,14 +17,14 @@ jobs:
       - name: Install latest Clang and libc++
         run: |
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo sh -c 'echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main" >> /etc/apt/sources.list'
+          sudo sh -c 'echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list'
           sudo apt update
-          sudo apt-get install -y clang-15 libc++-15-dev libc++abi-15-dev libunwind-15-dev python3-sphinx
+          sudo apt-get install -y clang-16 libc++-16-dev libc++abi-16-dev libunwind-16-dev python3-sphinx
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_CXX_COMPILER=clang++-15 -DLLVM_COV_PATH=/usr/bin/llvm-cov-15 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-15 -DCODE_COVERAGE=ON ..
+          cmake -DCMAKE_CXX_COMPILER=clang++-16 -DLLVM_COV_PATH=/usr/bin/llvm-cov-16 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-16 -DCODE_COVERAGE=ON ..
           make VERBOSE=1
           make ccov-export-tests
           ../utils/check_coverage.py
