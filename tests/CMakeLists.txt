@@ -70,6 +70,7 @@ target_link_libraries(tests
 		lib
 		parser
 		gtest_main
+		c++experimental
 		c++
 )
 add_module(tests.format_error format_error.cpp)
