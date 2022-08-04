@@ -50,6 +50,12 @@ not_covered = {
             'branches' : 2,
             'regions': 2,
         },
+    path + '/src/modules/calculator/value.cpp' :
+        {
+            'lines' : 1,
+            'branches' : 0,
+            'regions': 1,
+        },
     # Note consteval can't be covered
     path + '/src/modules/lib/dictionary.cpp' :
         {
@@ -95,7 +101,7 @@ not_covered = {
         },
     path + '/src/modules/parser/detail/unsigned.cpp' :
         {
-            'lines' : 10,
+            'lines' : 8,
             'branches' : 7,
             'regions': 4,
         },

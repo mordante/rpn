@@ -11,6 +11,7 @@ function(add_module name)
                 ${CMAKE_CXX_COMPILER}
                 -std=c++2b
                 -stdlib=libc++
+				-fexperimental-library
                 -fmodules
 				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
                 -c

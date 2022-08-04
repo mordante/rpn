@@ -4,6 +4,7 @@ add_executable(rpn
 )
 target_compile_options(rpn
 	PRIVATE
+		-fexperimental-library
 		${module_compile_options}
 		${diagnostic_compile_options}
 )
@@ -21,5 +22,6 @@ target_link_libraries(rpn
 	PRIVATE
 		calculator
 		fltk
+		c++experimental
 		c++
 )
