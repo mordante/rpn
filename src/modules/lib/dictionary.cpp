@@ -17,6 +17,8 @@ export module lib.dictionary;
 import lib.binary_find;
 
 import <algorithm>;
+import <array>;
+import <concepts>;
 import <string_view>;
 import <tuple>;
 
