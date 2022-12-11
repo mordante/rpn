@@ -18,6 +18,7 @@ import calculator.model;
 
 import <array>;
 import<algorithm>;
+import <memory>;
 import<ranges>;
 import<string>;
 import<vector>;

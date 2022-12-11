@@ -20,6 +20,7 @@ import calculator.undo_handler;
 import lib.dictionary;
 
 import <algorithm>;
+import <array>;
 import<charconv>;
 import <format>;
 import<numbers>;
