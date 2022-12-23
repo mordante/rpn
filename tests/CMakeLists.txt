@@ -3,6 +3,7 @@ add_executable(tests
 	calculator/controller/constants.cpp
 	calculator/controller/function_ceil.cpp
 	calculator/controller/function_floor.cpp
+	calculator/controller/function_pow.cpp
 	calculator/controller/function_round.cpp
 	calculator/controller/function_trunc.cpp
 	calculator/controller/key_char_ampersand.cpp
@@ -21,6 +22,7 @@ add_executable(tests
 	calculator/controller/change_base.cpp
 	calculator/controller/key_control_g.cpp
 	calculator/controller/key_control_n.cpp
+	calculator/controller/key_control_pow.cpp
 	calculator/controller/key_control_z.cpp
 	calculator/model.cpp
 	calculator/model/change_base.cpp
@@ -33,6 +35,7 @@ add_executable(tests
 	calculator/value/math/arithmetic/division.cpp
 	calculator/value/math/arithmetic/multiply.cpp
 	calculator/value/math/arithmetic/negate.cpp
+	calculator/value/math/arithmetic/power.cpp
 	calculator/value/math/arithmetic/subtract.cpp
 	calculator/value/math/bitwise/and.cpp
 	calculator/value/math/bitwise/complement.cpp

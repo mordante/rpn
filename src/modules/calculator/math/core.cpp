@@ -17,7 +17,7 @@ export module calculator.math.core;
 import<bit>;
 import<cmath>;
 import<concepts>;
-export import<stdexcept>;
+export import <stdexcept>; // TODO is the export really required?
 export import<variant>;
 
 namespace calculator {

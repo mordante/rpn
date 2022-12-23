@@ -347,3 +347,20 @@ part is truncated.
   * is a ``double``
 
 * Returns: a ``double``.
+
+Power functions
+===============
+
+Pow
+---
+
+Raises a value to a certain power.
+
+
+* If either ``lhs`` or ``rhs`` is an integral:
+
+  * ``lhs`` is :ref:`double converted<conversion-double>`.
+  * ``rhs`` is :ref:`double converted<conversion-double>`.
+  * Returns: a ``double``.
+
+.. note: This in the future the return type may change.

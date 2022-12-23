@@ -16,7 +16,8 @@ export module calculator.math.arithmetic;
 
 export import calculator.math.core;
 
-export import<variant>;
+export import <variant>;
+import <cmath>;
 
 namespace calculator {
 namespace math {
@@ -186,6 +187,55 @@ export tstorage negate(tstorage value) {
     return negate(get<uint64_t>(value));
 
   return negate(get<double>(value));
+}
+
+// TODO static can't be used, since caller is a template.
+/*static*/ tstorage pow(double value, int exp) { return std::pow(value, exp); }
+
+// TODO static can't be used, since caller is a template.
+/*static*/ tstorage pow(int64_t value, int exp) {
+
+  // TODO use a smarter algorithm.
+  __int128_t result = value;
+  for (int i = 1; i < exp; ++i) {
+    if (result > std::numeric_limits<int64_t>::max() ||
+        result < std::numeric_limits<int64_t>::min())
+      return pow(static_cast<double>(value), exp);
+    result *= value;
+  }
+
+  return to_storage<int64_t>(result);
+}
+
+// TODO static can't be used, since caller is a template.
+/*static*/ tstorage pow(uint64_t value, int exp) {
+
+  // TODO use a smarter algorithm.
+  __uint128_t result = value;
+  for (int i = 1; i < exp; ++i) {
+    if (result > std::numeric_limits<uint64_t>::max())
+      return pow(static_cast<double>(value), exp);
+    result *= value;
+  }
+
+  return to_storage(result);
+}
+
+export tstorage pow(tstorage value, tstorage exp) {
+  // TODO Improve algorithm selection and return type.
+  return std::pow(double_cast(value), double_cast(exp));
+}
+
+export template <int N>
+  requires(N >= 2 && N <= 9)
+tstorage pow(tstorage value) {
+  // TODO N is a compile-time value this can be used to use a smarter algorithm.
+  if (std::holds_alternative<int64_t>(value))
+    return pow(get<int64_t>(value), N);
+  if (std::holds_alternative<uint64_t>(value))
+    return pow(get<uint64_t>(value), N);
+
+  return pow(get<double>(value), N);
 }
 
 } // namespace math
