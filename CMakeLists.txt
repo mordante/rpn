@@ -39,6 +39,8 @@ set(diagnostic_compile_options
 	-Wno-c++14-compat
 	-Wno-c++17-compat
 	-Wno-c++20-compat
+	# TODO Investigate whether the issues are real or false positives.
+	-Wno-unsafe-buffer-usage
 )
 
 set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
