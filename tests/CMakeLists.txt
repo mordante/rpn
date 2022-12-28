@@ -79,6 +79,9 @@ target_link_libraries(tests
 add_module(tests.format_error format_error.cpp)
 add_module(tests.handle_input handle_input.cpp)
 add_module(tests.test_constexpr test_constexpr.cpp)
+add_dependencies(tests.handle_input.pcm
+	calculator.pcm
+)
 add_dependencies(tests
 	tests.format_error.pcm
 	tests.handle_input.pcm

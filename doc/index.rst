@@ -62,6 +62,20 @@ Input
 At the moment the GUI has no real interaction with the user and can't be
 controlled. All keyboard input is automatically processed by the input buffer.
 
+TUI
+---
+
+The application has a simple TUI with the same elements as the GUI. By default
+the application uses the GUI. To get the TUI run the application with the
+option ``-t``.
+
+The application uses several combinations with the ``ctrl`` key, this doesn't
+work since several of these combinations are handled differently in the
+terminal. An alternative would be the ``alt``, but some of these keys are
+handled by the terminal application. Instead the usage of ``ctrl`` is replaced
+by pressing ``tab``. This assumes the ``ctrl`` is pressed until the next
+handled key press.
+
 Input values
 ------------
 
