@@ -26,6 +26,8 @@ Focusses on improving the input parsing and adding more operations.
   * Using of grouping in the display's output.
   * pow.
 
+* Added a terminal based interface.
+
 Version 0.2.0
 =============
 

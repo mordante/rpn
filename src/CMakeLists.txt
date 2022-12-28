@@ -6,6 +6,7 @@ add_subdirectory(modules)
 add_executable(rpn
 	gui.cpp
 	rpn.cpp
+	tui.cpp
 )
 target_compile_options(rpn
 	PRIVATE
@@ -26,6 +27,9 @@ target_link_libraries(rpn
 	PRIVATE
 		calculator
 		fltk
+		ftxui::screen
+		ftxui::dom
+		ftxui::component
 )
 # Due to the extra include path this can't use the
 # module function to create the target.
@@ -47,6 +51,24 @@ add_custom_target(gui.pcm
 		${CMAKE_CURRENT_SOURCE_DIR}/gui.cpp
 		calculator.pcm
 )
+add_custom_target(tui.pcm
+	COMMAND
+		${CMAKE_CXX_COMPILER}
+		-std=c++2b
+		-stdlib=libc++
+		-fexperimental-library
+		-fmodules
+		-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
+		-c
+		${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp
+		-isystem ${ftxui_SOURCE_DIR}/include
+		-Xclang -emit-module-interface
+		-o ${PREBUILT_MODULE_PATH}/tui.pcm
+	DEPENDS
+		${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp
+		calculator.pcm
+)
 add_dependencies(rpn
 	gui.pcm
+	tui.pcm
 )

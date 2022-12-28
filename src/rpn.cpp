@@ -12,6 +12,13 @@
  * See the COPYING file for more details.
  */
 
-import gui;
+#include <string_view>
 
-int main(int argc, char **argv) { return gui::run(argc, argv); }
+import gui;
+import tui;
+
+int main(int argc, char **argv) {
+  if (argc > 1 && argv[1] == std::string_view{"-t"})
+    return tui::run();
+  return gui::run(argc, argv);
+}

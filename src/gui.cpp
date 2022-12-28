@@ -24,7 +24,9 @@ export module gui;
 import <iostream>;
 
 import calculator;
-
+// When not in an anonymous namespace the twindow classes in tui and gui give
+// issues. This seems like a bug in Clang.
+namespace {
 class twindow final : public Fl_Window {
 public:
   twindow() : Fl_Window(600, 315, "RPN") {
@@ -155,6 +157,7 @@ void twindow::update_ui() {
 
   input_.label(model_.input_get().c_str());
 }
+} // namespace
 
 export namespace gui {
 
