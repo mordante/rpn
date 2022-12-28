@@ -9,7 +9,6 @@ add_executable(rpn
 )
 target_compile_options(rpn
 	PRIVATE
-		-fexperimental-library
 		${module_compile_options}
 		${diagnostic_compile_options}
 )
@@ -27,8 +26,6 @@ target_link_libraries(rpn
 	PRIVATE
 		calculator
 		fltk
-		c++experimental
-		c++
 )
 # Due to the extra include path this can't use the
 # module function to create the target.

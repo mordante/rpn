@@ -6,13 +6,17 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(CheckCXXCompilerFlag)
 include(ClangModule)
 include(CodeCoverage)
+# Make sure all dependencies use the libc++.
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>)
+add_link_options($<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>)
 include(ExternalProjects)
 include(GoogleTest)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
-add_compile_options(-stdlib=libc++ -fexperimental-library)
+add_compile_options(-fexperimental-library)
+add_link_options(-fexperimental-library)
 set(PREBUILT_MODULE_PATH ${CMAKE_BINARY_DIR}/modules)
 set(module_compile_options
 	-fmodules
