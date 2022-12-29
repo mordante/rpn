@@ -14,7 +14,7 @@
 
 import calculator.stack;
 
-import<type_traits>;
+import <type_traits>;
 
 #include <gtest/gtest.h>
 

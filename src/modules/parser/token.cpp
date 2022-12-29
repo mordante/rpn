@@ -14,7 +14,7 @@
 
 export module parser.token;
 
-export import<string>;
+export import <string>;
 
 namespace parser {
 

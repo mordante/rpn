@@ -14,7 +14,7 @@
 
 import calculator.math.bitwise;
 
-import<bit>;
+import <bit>;
 
 #include <gtest/gtest.h>
 

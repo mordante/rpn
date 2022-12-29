@@ -16,13 +16,13 @@ export module calculator.stack;
 
 export import calculator.value;
 
-import<algorithm>;
+import <algorithm>;
 import <concepts>;
-import<format>;
+import <format>;
 import <locale>;
-import<string>;
+import <string>;
 import <utility>;
-export import<vector>;
+export import <vector>;
 
 namespace calculator {
 

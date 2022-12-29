@@ -14,8 +14,8 @@
 
 export module tests.format_error;
 
-import<string>;
-import<format>;
+import <string>;
+import <format>;
 
 export std::string format_error(const char *message) {
   return std::format("{:7} {:>50.50}", "[ERR]", message);

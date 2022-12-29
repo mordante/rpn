@@ -14,9 +14,9 @@
 
 import calculator.math.core;
 
-import<bit>;
-import<cmath>;
-import<limits>;
+import <bit>;
+import <cmath>;
+import <limits>;
 
 #include <gtest/gtest.h>
 
