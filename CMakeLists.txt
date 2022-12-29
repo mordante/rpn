@@ -53,5 +53,6 @@ enable_testing()
 add_code_coverage()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+add_subdirectory(scripts)
 add_subdirectory(src)
 add_subdirectory(tests)
