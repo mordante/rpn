@@ -38,7 +38,7 @@ In order to build the application the following dependencies are required:
 * Optional when enabling coverage ``llvm-cov`` and ``llvm-profdata`` are
   required. This should be the same version as Clang, but normally they are
   installed together with Clang.
-* Optional for formatting ``clang-format``.
+* Optional for formatting ``clang-format``, ``cmake-format``.
 
 The build itself is a normal CMake build. It has the following options:
 

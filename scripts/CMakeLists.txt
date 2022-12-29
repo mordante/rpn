@@ -12,4 +12,18 @@ else()
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-add_custom_target(format DEPENDS clang-format)
+find_program(CMAKE_FORMAT cmake-format)
+if(NOT CMAKE_FORMAT)
+  message("cmake-format not found, formatting target may not work properly")
+  add_custom_target(
+    cmake-format
+    COMMAND ./cmake-format.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+  add_custom_target(
+    cmake-format
+    COMMAND ./cmake-format.sh ${CMAKE_FORMAT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+add_custom_target(format DEPENDS clang-format cmake-format)
