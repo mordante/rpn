@@ -57,8 +57,7 @@ consteval auto make_dictionary(Args... args) {
       return std::make_pair(std::string_view(std::get<2 * I>(all)),
                             std::get<2 * I + 1>(all));
     }()...};
-  }
-  (std::make_index_sequence<sizeof...(Args) / 2>());
+  }(std::make_index_sequence<sizeof...(Args) / 2>());
 
   std::ranges::sort(result, {}, &decltype(result)::value_type::first);
 

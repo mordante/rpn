@@ -14,7 +14,7 @@
 
 import calculator.model;
 
-import<type_traits>;
+import <type_traits>;
 
 #include <gtest/gtest.h>
 
@@ -52,7 +52,6 @@ TEST(model, move_assignment) {
   static_assert(!std ::is_move_assignable_v<tmodel>,
                 "Implement the proper tests.");
 }
-
 
 // *** Diagnostic operations ***
 

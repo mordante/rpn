@@ -17,8 +17,8 @@ export module calculator.model;
 export import calculator.stack;
 export import parser;
 
-import<string>;
-import<string_view>;
+import <string>;
+import <string_view>;
 
 namespace calculator {
 

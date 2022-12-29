@@ -14,7 +14,7 @@
 
 import calculator.model;
 
-import<type_traits>;
+import <type_traits>;
 
 #include <gtest/gtest.h>
 

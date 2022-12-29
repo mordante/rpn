@@ -17,11 +17,11 @@ export module calculator.transaction;
 import calculator.model;
 
 import <array>;
-import<algorithm>;
+import <algorithm>;
 import <memory>;
-import<ranges>;
-import<string>;
-import<vector>;
+import <ranges>;
+import <string>;
+import <vector>;
 
 namespace calculator {
 
@@ -211,8 +211,7 @@ public:
         steps_.push_back(std::make_unique<tpop>(value));
         return value;
       }()...};
-    }
-    (std::make_index_sequence<N>{});
+    }(std::make_index_sequence<N>{});
   }
 
   /** Handles the dropping of @p value from the model's stack. */

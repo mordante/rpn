@@ -17,7 +17,7 @@ export module tests.handle_input;
 import calculator.controller;
 import calculator.model;
 
-import<string_view>;
+import <string_view>;
 
 namespace calculator {
 

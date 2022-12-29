@@ -14,11 +14,11 @@
 
 export module calculator.math.core;
 
-import<bit>;
-import<cmath>;
-import<concepts>;
+import <bit>;
+import <cmath>;
+import <concepts>;
 export import <stdexcept>; // TODO is the export really required?
-export import<variant>;
+export import <variant>;
 
 namespace calculator {
 namespace math {
@@ -27,7 +27,7 @@ export using tstorage = std::variant<int64_t, uint64_t, double>;
 
 export template <class T>
 concept is_storage = std::same_as<T, int64_t> || std::same_as<T, uint64_t> ||
-    std::same_as<T, double>;
+                     std::same_as<T, double>;
 
 static uint64_t bitwise_cast(int64_t value) {
   return static_cast<uint64_t>(value);
@@ -106,8 +106,8 @@ export double double_cast(const tstorage &value) {
  * version preferes the @c uint64_t.
  */
 export template <class T = uint64_t>
-requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>) tstorage
-    to_storage(__int128_t value) {
+  requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>)
+tstorage to_storage(__int128_t value) {
   if (value < std::numeric_limits<int64_t>::min() ||
       value > std::numeric_limits<uint64_t>::max())
     return static_cast<double>(value);
