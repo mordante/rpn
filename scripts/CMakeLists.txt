@@ -26,4 +26,18 @@ else()
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-add_custom_target(format DEPENDS clang-format cmake-format)
+find_program(BLACK black)
+if(NOT BLACK)
+  message("black not found, formatting target may not work properly")
+  add_custom_target(
+    black
+    COMMAND ./black.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+else()
+  add_custom_target(
+    black
+    COMMAND ./black.sh ${BLACK}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+add_custom_target(format DEPENDS clang-format cmake-format black)
