@@ -236,6 +236,34 @@ Negate
 * Returns: :ref:`store_prefer_uint64_t<to-storage-uint64_t>`.
 
 
+Modulo
+------
+
+* If either ``lhs`` or ``rhs`` is a double:
+
+  * ``lhs`` is :ref:`double converted<conversion-double>`.
+  * ``rhs`` is :ref:`double converted<conversion-double>`.
+  * Returns: a ``double``.
+
+* Else if both ``lhs`` and ``rhs`` are an ``int64_t``:
+
+  * ``lhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * ``rhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * Returns: :ref:`store_prefer_uint64_t<to-storage-int64_t>`.
+
+* Else if both ``lhs`` and ``rhs`` are an ``unt64_t``:
+
+  * ``lhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * ``rhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * Returns: :ref:`store_prefer_uint64_t<to-storage-int64_t>`.
+
+* Else:
+
+  * ``lhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * ``rhs`` is :ref:`unmodified<conversion-unmodified>`.
+  * Returns: :ref:`store_prefer_uint64_t<to-storage-uint64_t>`.
+
+
 Bitwise logical operations
 ==========================
 
