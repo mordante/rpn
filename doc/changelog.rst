@@ -26,6 +26,7 @@ Focusses on improving the input parsing and adding more operations.
   * Using of grouping in the display's output.
   * pow.
   * Miscellaneous: debug mode.
+  * Arithmetic: modulo
 
 * Added a terminal based interface.
 

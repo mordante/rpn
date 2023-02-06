@@ -14,6 +14,7 @@ add_executable(tests
 	calculator/controller/key_char_greater_than.cpp
 	calculator/controller/key_char_less_than.cpp
 	calculator/controller/key_char_minus.cpp
+	calculator/controller/key_char_percentage.cpp
 	calculator/controller/key_char_pipe.cpp
 	calculator/controller/key_char_plus.cpp
 	calculator/controller/key_char_star.cpp
@@ -34,6 +35,7 @@ add_executable(tests
 	calculator/value.cpp
 	calculator/value/math/arithmetic/add.cpp
 	calculator/value/math/arithmetic/division.cpp
+	calculator/value/math/arithmetic/modulo.cpp
 	calculator/value/math/arithmetic/multiply.cpp
 	calculator/value/math/arithmetic/negate.cpp
 	calculator/value/math/arithmetic/power.cpp
