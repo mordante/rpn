@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Calculations &#8212; RPN 0.3.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="RPN Calculator" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="calculations">
+<h1>Calculations<a class="headerlink" href="#calculations" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="id1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#named-requirements-conversions" id="id2">Named requirements/conversions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#unmodified" id="id3">Unmodified</a></p></li>
+<li><p><a class="reference internal" href="#integral" id="id4">Integral</a></p></li>
+<li><p><a class="reference internal" href="#positive-integral" id="id5">Positive integral</a></p></li>
+<li><p><a class="reference internal" href="#double" id="id6">Double</a></p></li>
+<li><p><a class="reference internal" href="#bitwise-operations-cast" id="id7">Bitwise operations cast</a></p></li>
+<li><p><a class="reference internal" href="#store-prefer-int64-t" id="id8">Store prefer <code class="docutils literal notranslate"><span class="pre">int64_t</span></code></a></p></li>
+<li><p><a class="reference internal" href="#store-prefer-uint64-t" id="id9">Store prefer <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#arithmetic-operations" id="id10">Arithmetic operations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#add" id="id11">Add</a></p></li>
+<li><p><a class="reference internal" href="#subtract" id="id12">Subtract</a></p></li>
+<li><p><a class="reference internal" href="#multiply" id="id13">Multiply</a></p></li>
+<li><p><a class="reference internal" href="#divide" id="id14">Divide</a></p></li>
+<li><p><a class="reference internal" href="#negate" id="id15">Negate</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#bitwise-logical-operations" id="id16">Bitwise logical operations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#generic" id="id17">Generic</a></p></li>
+<li><p><a class="reference internal" href="#complement" id="id18">Complement</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#bitwise-shifts" id="id19">Bitwise shifts</a></p></li>
+<li><p><a class="reference internal" href="#rounding-functions" id="id20">Rounding functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#round" id="id21">Round</a></p></li>
+<li><p><a class="reference internal" href="#floor" id="id22">Floor</a></p></li>
+<li><p><a class="reference internal" href="#ceil" id="id23">Ceil</a></p></li>
+<li><p><a class="reference internal" href="#trunc" id="id24">Trunc</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#power-functions" id="id25">Power functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pow" id="id26">Pow</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<section id="introduction">
+<h2><a class="toc-backref" href="#id1">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The elements on the stack have the following underlying types:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">int64_t</span></code> a 64-bit signed integral.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> a 64-bit unsigned integral.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">double</span></code> a double precision floating-point value.</p></li>
+</ul>
+<p>The engine mandates <code class="docutils literal notranslate"><span class="pre">sizeof(int64_t)</span> <span class="pre">==</span> <span class="pre">sizeof(uint64_t)</span> <span class="pre">==</span> <span class="pre">sizeof(double)</span></code>.
+For most types this isn’t a real issue, but some bitwise operations execute
+bit-casts.</p>
+<p>Depending on the operation used the types used have different requirements.
+This page describes these requirements. First an generic set of named
+requirements. After that the requirements per type. When a requirement isn’t
+met the integral algorithm will throw an exception. This is shown as a
+diagnostic in the user interface.</p>
+<p>The conventions uses some other terms:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> the first element popped from the stack.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> the second element popped from the stack.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> the first element popped from the stack, for operations using only
+one element.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code> the result of the operation. The type of the result described is
+what’s expected of the engine. How it handles this internally isn’t
+specified. That’s especially important for overflows. In that case the engine
+might need to do the conversion on <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> prior to the operation.</p></li>
+</ul>
+</section>
+<section id="named-requirements-conversions">
+<h2><a class="toc-backref" href="#id2">Named requirements/conversions</a><a class="headerlink" href="#named-requirements-conversions" title="Permalink to this headline">¶</a></h2>
+<section id="unmodified">
+<span id="conversion-unmodified"></span><h3><a class="toc-backref" href="#id3">Unmodified</a><a class="headerlink" href="#unmodified" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">double</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">double</span></code> value.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="integral">
+<h3><a class="toc-backref" href="#id4">Integral</a><a class="headerlink" href="#integral" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">double</span></code></dt><dd><ul class="simple">
+<li><p>Requires: The number has no fractional part.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&lt;</span> <span class="pre">0</span></code></p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&gt;=</span> <span class="pre">INT64_MIN</span></code></p></li>
+<li><p>Returns: <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> equivalent of the value.</p></li>
+</ul>
+</li>
+<li><p>Else</p>
+<ul>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&lt;=</span> <span class="pre">UINT64_MAX</span></code></p></li>
+<li><p>Returns: <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> equivalent of the value.</p></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="positive-integral">
+<span id="conversion-positive"></span><h3><a class="toc-backref" href="#id5">Positive integral</a><a class="headerlink" href="#positive-integral" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></dt><dd><ul class="simple">
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
+<li><p>Returns: <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> equivalent of the value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></dt><dd><ul class="simple">
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">!=</span> <span class="pre">0</span></code>.</p></li>
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">double</span></code></dt><dd><ul class="simple">
+<li><p>Requires: The number has no fractional part.</p></li>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></li>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">&lt;=</span> <span class="pre">UINT64_MAX</span></code></p></li>
+<li><p>Returns: <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> equivalent of the value.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="double">
+<span id="conversion-double"></span><h3><a class="toc-backref" href="#id6">Double</a><a class="headerlink" href="#double" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: the value, possible lossy, converted to a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: the value, possible lossy, converted to a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">double</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">double</span></code> value.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="bitwise-operations-cast">
+<span id="conversion-bitwise"></span><h3><a class="toc-backref" href="#id7">Bitwise operations cast</a><a class="headerlink" href="#bitwise-operations-cast" title="Permalink to this headline">¶</a></h3>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: the value converted to an <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> using modulo arithmetic.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></dt><dd><ul class="simple">
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> value.</p></li>
+</ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">double</span></code></dt><dd><ul class="simple">
+<li><p>Returns: the value bit_casted to an <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code>. The exact value depends
+on the system’s <code class="docutils literal notranslate"><span class="pre">double</span></code> representation.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="store-prefer-int64-t">
+<span id="to-storage-int64-t"></span><h3><a class="toc-backref" href="#id8">Store prefer <code class="docutils literal notranslate"><span class="pre">int64_t</span></code></a><a class="headerlink" href="#store-prefer-int64-t" title="Permalink to this headline">¶</a></h3>
+<p>Stores the <code class="docutils literal notranslate"><span class="pre">result</span></code>, when a value can be stored in the range of both an
+<code class="docutils literal notranslate"><span class="pre">int64_t</span></code> and an <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> this version uses the <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>.</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">&gt;=</span> <span class="pre">INT64_MIN</span> <span class="pre">&amp;&amp;</span> <span class="pre">result</span> <span class="pre">&lt;=</span> <span class="pre">INT64_MAX</span></code>:</p>
+<ul>
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> result.</p></li>
+</ul>
+</li>
+<li><p>Else if <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">&lt;=</span> <span class="pre">UINT64_MAX</span></code>:</p>
+<ul>
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> result.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p>Returns: the result, possible lossy, converted to a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="store-prefer-uint64-t">
+<span id="to-storage-uint64-t"></span><h3><a class="toc-backref" href="#id9">Store prefer <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code></a><a class="headerlink" href="#store-prefer-uint64-t" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">&gt;=</span> <span class="pre">INT64_MIN</span> <span class="pre">&amp;&amp;</span> <span class="pre">result</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>:</p>
+<ul>
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">int64_t</span></code> result.</p></li>
+</ul>
+</li>
+<li><p>Else if <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">&lt;=</span> <span class="pre">UINT64_MAX</span></code>:</p>
+<ul>
+<li><p>Returns: unmodified <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code> result.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p>Returns: the result, possible lossy, converted to a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="arithmetic-operations">
+<h2><a class="toc-backref" href="#id10">Arithmetic operations</a><a class="headerlink" href="#arithmetic-operations" title="Permalink to this headline">¶</a></h2>
+<section id="add">
+<h3><a class="toc-backref" href="#id11">Add</a><a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is a double:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Else if both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-int64-t"><span class="std std-ref">store_prefer_int64_t</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="subtract">
+<h3><a class="toc-backref" href="#id12">Subtract</a><a class="headerlink" href="#subtract" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is a double:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Else if both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-int64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="multiply">
+<h3><a class="toc-backref" href="#id13">Multiply</a><a class="headerlink" href="#multiply" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is a double:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Else if both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-int64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="divide">
+<h3><a class="toc-backref" href="#id14">Divide</a><a class="headerlink" href="#divide" title="Permalink to this headline">¶</a></h3>
+<p>The division algorithm can be optimized, using the integral results if there’s
+no fraction. This might be improved later.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</section>
+<section id="negate">
+<h3><a class="toc-backref" href="#id15">Negate</a><a class="headerlink" href="#negate" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="bitwise-logical-operations">
+<h2><a class="toc-backref" href="#id16">Bitwise logical operations</a><a class="headerlink" href="#bitwise-logical-operations" title="Permalink to this headline">¶</a></h2>
+<section id="generic">
+<h3><a class="toc-backref" href="#id17">Generic</a><a class="headerlink" href="#generic" title="Permalink to this headline">¶</a></h3>
+<p>The bitwise operations <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>, and <code class="docutils literal notranslate"><span class="pre">xor</span></code> all have the same
+conversion behaviour.</p>
+<ul class="simple">
+<li><p>If both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Else:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-bitwise"><span class="std std-ref">bitwise uint64_t casted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-bitwise"><span class="std std-ref">bitwise uint64_t casted</span></a>.</p></li>
+<li><p>Returns: an <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="complement">
+<h3><a class="toc-backref" href="#id18">Complement</a><a class="headerlink" href="#complement" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">value</span></code> is an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p>Else:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> is <a class="reference internal" href="#conversion-bitwise"><span class="std std-ref">bitwise uint64_t casted</span></a>.</p></li>
+<li><p>Returns: an <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code>.</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="bitwise-shifts">
+<h2><a class="toc-backref" href="#id19">Bitwise shifts</a><a class="headerlink" href="#bitwise-shifts" title="Permalink to this headline">¶</a></h2>
+<p>The bitwise shift left and shift right have the same conversion behaviour.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code>:</p>
+<ul>
+<li><p>If an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-bitwise"><span class="std std-ref">bitwise uint64_t casted</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code>:</p>
+<ul>
+<li><p>is <a class="reference internal" href="#conversion-positive"><span class="std std-ref">a positive integral</span></a>.</p></li>
+<li><p>Requires: <code class="docutils literal notranslate"><span class="pre">rhs</span> <span class="pre">&lt;=</span> <span class="pre">64</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">result</span></code> the type used for <code class="docutils literal notranslate"><span class="pre">lhs</span></code>.</p></li>
+</ul>
+</section>
+<section id="rounding-functions">
+<h2><a class="toc-backref" href="#id20">Rounding functions</a><a class="headerlink" href="#rounding-functions" title="Permalink to this headline">¶</a></h2>
+<section id="round">
+<h3><a class="toc-backref" href="#id21">Round</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
+<p>Rounds the value to the nearest integer value. Rounding halfway rounds away
+from zero.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>:</p>
+<ul>
+<li><p>is a <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+</ul>
+</li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</section>
+<section id="floor">
+<h3><a class="toc-backref" href="#id22">Floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
+<p>Returns the value with an integral representation less than or equal to the
+original value.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>:</p>
+<ul>
+<li><p>is a <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+</ul>
+</li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</section>
+<section id="ceil">
+<h3><a class="toc-backref" href="#id23">Ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
+<p>Returns the value with an integral representation greater than or equal to the
+original value.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>:</p>
+<ul>
+<li><p>is a <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+</ul>
+</li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</section>
+<section id="trunc">
+<h3><a class="toc-backref" href="#id24">Trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
+<p>Returns the value with an integral representation greater where the fractional
+part is truncated.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>:</p>
+<ul>
+<li><p>is a <code class="docutils literal notranslate"><span class="pre">double</span></code></p></li>
+</ul>
+</li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</section>
+</section>
+<section id="power-functions">
+<h2><a class="toc-backref" href="#id25">Power functions</a><a class="headerlink" href="#power-functions" title="Permalink to this headline">¶</a></h2>
+<section id="pow">
+<h3><a class="toc-backref" href="#id26">Pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
+<p>Raises a value to a certain power.</p>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is an integral:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Mark de Wever.
+      
+      |
+      <a href="_sources/calculation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
