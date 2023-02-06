@@ -1,72 +1,90 @@
-add_executable(
-  tests
-  calculator/controller.cpp
-  calculator/controller/constants.cpp
-  calculator/controller/function_ceil.cpp
-  calculator/controller/function_floor.cpp
-  calculator/controller/function_pow.cpp
-  calculator/controller/function_round.cpp
-  calculator/controller/function_trunc.cpp
-  calculator/controller/key_char_ampersand.cpp
-  calculator/controller/key_char_circumflex.cpp
-  calculator/controller/key_char_default.cpp
-  calculator/controller/key_char_forward_slash.cpp
-  calculator/controller/key_char_greater_than.cpp
-  calculator/controller/key_char_less_than.cpp
-  calculator/controller/key_char_minus.cpp
-  calculator/controller/key_char_pipe.cpp
-  calculator/controller/key_char_plus.cpp
-  calculator/controller/key_char_star.cpp
-  calculator/controller/key_char_tilde.cpp
-  calculator/controller/key_backspace.cpp
-  calculator/controller/key_enter.cpp
-  calculator/controller/change_base.cpp
-  calculator/controller/key_control_g.cpp
-  calculator/controller/key_control_n.cpp
-  calculator/controller/key_control_pow.cpp
-  calculator/controller/key_control_z.cpp
-  calculator/model.cpp
-  calculator/model/change_base.cpp
-  calculator/model/input.cpp
-  calculator/stack.cpp
-  calculator/transaction.cpp
-  calculator/undo_handler.cpp
-  calculator/value.cpp
-  calculator/value/math/arithmetic/add.cpp
-  calculator/value/math/arithmetic/division.cpp
-  calculator/value/math/arithmetic/multiply.cpp
-  calculator/value/math/arithmetic/negate.cpp
-  calculator/value/math/arithmetic/power.cpp
-  calculator/value/math/arithmetic/subtract.cpp
-  calculator/value/math/bitwise/and.cpp
-  calculator/value/math/bitwise/complement.cpp
-  calculator/value/math/bitwise/or.cpp
-  calculator/value/math/bitwise/shl.cpp
-  calculator/value/math/bitwise/shr.cpp
-  calculator/value/math/bitwise/xor.cpp
-  calculator/value/math/core.cpp
-  calculator/value/math/round/ceil.cpp
-  calculator/value/math/round/floor.cpp
-  calculator/value/math/round/round.cpp
-  calculator/value/math/round/trunc.cpp
-  format_error.cpp
-  handle_input.cpp
-  lib/binary_find.cpp
-  lib/dictionary.cpp
-  parser/parser.cpp
-  parser/unsigned_value.cpp
-  parser/floating_point_value.cpp
-  parser/signed_value.cpp
-  test_constexpr.cpp)
-target_compile_options(tests PRIVATE ${module_compile_options}
-                                     ${diagnostic_compile_options})
-set_target_properties(tests PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
-target_link_libraries(tests PRIVATE calculator lib parser gtest_main
-                                    c++experimental c++)
+add_executable(tests
+	calculator/controller.cpp
+	calculator/controller/constants.cpp
+	calculator/controller/function_ceil.cpp
+	calculator/controller/function_floor.cpp
+	calculator/controller/function_pow.cpp
+	calculator/controller/function_round.cpp
+	calculator/controller/function_trunc.cpp
+	calculator/controller/key_char_ampersand.cpp
+	calculator/controller/key_char_circumflex.cpp
+	calculator/controller/key_char_default.cpp
+	calculator/controller/key_char_forward_slash.cpp
+	calculator/controller/key_char_greater_than.cpp
+	calculator/controller/key_char_less_than.cpp
+	calculator/controller/key_char_minus.cpp
+	calculator/controller/key_char_pipe.cpp
+	calculator/controller/key_char_plus.cpp
+	calculator/controller/key_char_star.cpp
+	calculator/controller/key_char_tilde.cpp
+	calculator/controller/key_backspace.cpp
+	calculator/controller/key_enter.cpp
+	calculator/controller/change_base.cpp
+	calculator/controller/key_control_g.cpp
+	calculator/controller/key_control_n.cpp
+	calculator/controller/key_control_pow.cpp
+	calculator/controller/key_control_z.cpp
+	calculator/model.cpp
+	calculator/model/change_base.cpp
+	calculator/model/input.cpp
+	calculator/stack.cpp
+	calculator/transaction.cpp
+	calculator/undo_handler.cpp
+	calculator/value.cpp
+	calculator/value/math/arithmetic/add.cpp
+	calculator/value/math/arithmetic/division.cpp
+	calculator/value/math/arithmetic/multiply.cpp
+	calculator/value/math/arithmetic/negate.cpp
+	calculator/value/math/arithmetic/power.cpp
+	calculator/value/math/arithmetic/subtract.cpp
+	calculator/value/math/bitwise/and.cpp
+	calculator/value/math/bitwise/complement.cpp
+	calculator/value/math/bitwise/or.cpp
+	calculator/value/math/bitwise/shl.cpp
+	calculator/value/math/bitwise/shr.cpp
+	calculator/value/math/bitwise/xor.cpp
+	calculator/value/math/core.cpp
+	calculator/value/math/round/ceil.cpp
+	calculator/value/math/round/floor.cpp
+	calculator/value/math/round/round.cpp
+	calculator/value/math/round/trunc.cpp
+	format_error.cpp
+	handle_input.cpp
+	lib/binary_find.cpp
+	lib/dictionary.cpp
+	parser/parser.cpp
+	parser/unsigned_value.cpp
+	parser/floating_point_value.cpp
+	parser/signed_value.cpp
+	test_constexpr.cpp
+)
+target_compile_options(tests
+	PRIVATE
+		${module_compile_options}
+		${diagnostic_compile_options}
+)
+set_target_properties(tests
+	PROPERTIES
+		CXX_CLANG_TIDY "${CLANG_TIDY}"
+)
+target_link_libraries(tests
+	PRIVATE
+		calculator
+		lib
+		parser
+		gtest_main
+		c++experimental
+		c++
+)
 add_module(tests.format_error format_error.cpp)
 add_module(tests.handle_input handle_input.cpp)
 add_module(tests.test_constexpr test_constexpr.cpp)
-add_dependencies(tests.handle_input.pcm calculator.pcm)
-add_dependencies(tests tests.format_error.pcm tests.handle_input.pcm
-                 tests.test_constexpr.pcm)
+add_dependencies(tests.handle_input.pcm
+	calculator.pcm
+)
+add_dependencies(tests
+	tests.format_error.pcm
+	tests.handle_input.pcm
+	tests.test_constexpr.pcm
+)
 target_code_coverage(tests)
