@@ -15,6 +15,10 @@ function(format VAR name)
 endfunction()
 
 format(CLANG_FORMAT clang-format)
-format(CMAKE_FORMAT cmake-format)
+#format(CMAKE_FORMAT cmake-format)
 format(BLACK black)
-add_custom_target(format DEPENDS clang-format cmake-format black)
+add_custom_target(format DEPENDS
+    clang-format
+#   cmake-format
+    black
+)
