@@ -226,7 +226,7 @@ If <code class="docutils literal notranslate"><span class="pre">x</span></code> 
 power of <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 </li>
 <li><p>Miscellaneous:</p>
-<dl class="simple">
+<dl>
 <dt><code class="docutils literal notranslate"><span class="pre">Backspace</span></code></dt><dd><p>As long as the input buffer isn’t empty it removes the last character from
 the input buffer. When the input buffer is empty it discards on element
 from the stack.</p>
@@ -240,6 +240,12 @@ application.</p>
 <li><p>reaching the final undo action,</p></li>
 <li><p>doing a regular operation.</p></li>
 </ul>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">debug</span></code></dt><dd><p>Enables debug mode. This shows the type of the element on the stack to aid
+verifying and debugging the application. The values are:</p>
+<p><code class="docutils literal notranslate"><span class="pre">i</span></code> <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>
+<code class="docutils literal notranslate"><span class="pre">u</span></code> <code class="docutils literal notranslate"><span class="pre">uint64_t</span></code>
+<code class="docutils literal notranslate"><span class="pre">d</span></code> <code class="docutils literal notranslate"><span class="pre">double</span></code></p>
 </dd>
 </dl>
 </li>
