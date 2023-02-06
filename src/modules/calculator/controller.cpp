@@ -34,6 +34,11 @@ import <string_view>;
 
 namespace calculator {
 
+/** Functor for a nullary operation. */
+template <class F>
+concept nullary_operation =
+    std::same_as<std::invoke_result_t<F, ttransaction>, void>;
+
 /** Functor for an unary math operation. */
 template <class F>
 concept unary_operation =
@@ -341,6 +346,11 @@ static std::optional<tvalue> get_constant(std::string_view input) {
 }
 
 static void exectute_operation(ttransaction &transaction,
+                               nullary_operation auto operation) {
+  std::invoke(operation, transaction);
+}
+
+static void exectute_operation(ttransaction &transaction,
                                unary_operation auto operation) {
   auto [value] = transaction.pop();
   value = std::invoke(operation, value);
@@ -354,6 +364,14 @@ static void exectute_operation(ttransaction &transaction,
 }
 
 static void execute_command(ttransaction &transaction, std::string_view input) {
+  /*** Nullary ***/
+  static constexpr std::array nullary_commands =
+      lib::make_dictionary("debug", &ttransaction::debug_mode_toggle);
+
+  if (auto iter = lib::find(nullary_commands, input);
+      iter != nullary_commands.end())
+    return exectute_operation(transaction, iter->second);
+
   /*** Unary ***/
   static constexpr std::array unary_commands = lib::make_dictionary(
       /*** Rounding ***/

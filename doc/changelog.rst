@@ -25,6 +25,7 @@ Focusses on improving the input parsing and adding more operations.
   * Rounding: round, floor, ceil, trunc.
   * Using of grouping in the display's output.
   * pow.
+  * Miscellaneous: debug mode.
 
 * Added a terminal based interface.
 

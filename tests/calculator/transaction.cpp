@@ -163,4 +163,19 @@ TEST(action, duplicate) {
             (std::vector<std::string>{{"42"}, {"42"}}));
 }
 
+TEST(action, debug_mode_toggle) {
+  tmodel model;
+  model.stack().push(tvalue(uint64_t(42)));
+
+  ttransaction transaction{model};
+  transaction.debug_mode_toggle();
+  taction action = std::move(transaction).release();
+  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42 |u"}));
+
+  action.undo();
+  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42"}));
+  action.redo();
+  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{{"42 |u"}}));
+}
+
 } // namespace calculator
