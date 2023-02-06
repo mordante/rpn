@@ -8,6 +8,7 @@ add_executable(tests
 	calculator/controller/function_round.cpp
 	calculator/controller/function_trunc.cpp
 	calculator/controller/key_char_ampersand.cpp
+	calculator/controller/key_char_backslash.cpp
 	calculator/controller/key_char_circumflex.cpp
 	calculator/controller/key_char_default.cpp
 	calculator/controller/key_char_forward_slash.cpp
@@ -40,6 +41,7 @@ add_executable(tests
 	calculator/value/math/arithmetic/negate.cpp
 	calculator/value/math/arithmetic/power.cpp
 	calculator/value/math/arithmetic/subtract.cpp
+	calculator/value/math/arithmetic/quotient.cpp
 	calculator/value/math/bitwise/and.cpp
 	calculator/value/math/bitwise/complement.cpp
 	calculator/value/math/bitwise/or.cpp
