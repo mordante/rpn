@@ -1,0 +1,475 @@
+Bottom: 43aceed1b077a5d766fb8d9f9bbc59e743ddc5eb
+Top:    6d5503f9757240e51bb749aad70902ab584fb87b
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2023-02-06 17:36:49 +0100
+
+Implements log operations.
+
+This adds log operations for the following bases, 2, e, 10.
+
+
+---
+diff --git a/doc/calculation.rst b/doc/calculation.rst
+index 62b1f07..463025d 100644
+--- a/doc/calculation.rst
++++ b/doc/calculation.rst
+@@ -323,6 +323,17 @@ The bitwise shift left and shift right have the same conversion behaviour.
+ 
+ * ``result`` the type used for ``lhs``.
+ 
++Logarithm
++=========
++
++The logarithm operations ``lg``, ``ln``, and ``log`` have the same conversion
++behaviour.
++
++* If either ``value`` is an integral:
++
++  * ``value`` is :ref:`double converted<conversion-double>`.
++  * Returns: a ``double``.
++
+ 
+ Rounding functions
+ ==================
+diff --git a/doc/changelog.rst b/doc/changelog.rst
+index 1db0b6a..de72fe9 100644
+--- a/doc/changelog.rst
++++ b/doc/changelog.rst
+@@ -25,6 +25,7 @@ Focusses on improving the input parsing and adding more operations.
+   * Rounding: round, floor, ceil, trunc.
+   * Using of grouping in the display's output.
+   * pow.
++  * Logarithms: lg (base 2), ln, log (base 10).
+   * Miscellaneous: debug mode.
+   * Arithmetic: modulo, quotient
+ 
+diff --git a/doc/index.rst b/doc/index.rst
+index bdab96a..1809793 100644
+--- a/doc/index.rst
++++ b/doc/index.rst
+@@ -261,6 +261,11 @@ Functions
+ 
+ Other special textual values will execute an operation. These commands are
+ 
++* Logarithms
++  * ``lg`` calculates the base-2 logarithm of a ``double``.
++  * ``ln`` calculates the natural logarithm of a ``double``.
++  * ``log`` calculates the base-10 logarithm of a ``double``.
++
+ * Rounding functions
+ 
+   * ``round`` rounds a ``double`` to its nearest integral representation.
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index 1f07f97..7646a47 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -6,6 +6,7 @@ add_library(calculator
+ 	math/arithmetic.cpp
+ 	math/bitwise.cpp
+ 	math/core.cpp
++	math/logarithm.cpp
+ 	math/round.cpp
+ 	stack.cpp
+ 	transaction.cpp
+@@ -32,6 +33,7 @@ add_module(calculator.math.core math/core.cpp)
+ add_module(calculator.math.arithmetic math/arithmetic.cpp)
+ add_module(calculator.math.bitwise math/bitwise.cpp)
+ add_module(calculator.math.round math/round.cpp)
++add_module(calculator.math.logarithm math/logarithm.cpp)
+ add_module(calculator.model model.cpp)
+ add_module(calculator.stack stack.cpp)
+ add_module(calculator.transaction transaction.cpp)
+@@ -46,11 +48,15 @@ add_dependencies(calculator.math.bitwise.pcm
+ add_dependencies(calculator.math.round.pcm
+ 	calculator.math.core.pcm
+ )
++add_dependencies(calculator.math.logarithm.pcm
++	calculator.math.core.pcm
++)
+ add_dependencies(calculator.value.pcm
+ 	calculator.math.arithmetic.pcm
+ 	calculator.math.bitwise.pcm
+ 	calculator.math.core.pcm
+ 	calculator.math.round.pcm
++	calculator.math.logarithm.pcm
+ )
+ add_dependencies(calculator.stack.pcm
+ 	calculator.value.pcm
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index 0d2d88d..a963769 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -17,6 +17,7 @@ export module calculator.controller;
+ import calculator.math.arithmetic;
+ import calculator.math.bitwise;
+ import calculator.math.core;
++import calculator.math.logarithm;
+ import calculator.math.round;
+ import calculator.model;
+ import calculator.transaction;
+@@ -380,6 +381,10 @@ static void execute_command(ttransaction &transaction, std::string_view input) {
+ 
+   /*** Unary ***/
+   static constexpr std::array unary_commands = lib::make_dictionary(
++      /*** Logarithm ***/
++      "lg", &math::lg,   //
++      "ln", &math::ln,   //
++      "log", &math::log, //
+       /*** Rounding ***/
+       "round", &math::round, //
+       "floor", &math::floor, //
+diff --git a/src/modules/calculator/math/logarithm.cpp b/src/modules/calculator/math/logarithm.cpp
+new file mode 100644
+index 0000000..bd4c34c
+--- /dev/null
++++ b/src/modules/calculator/math/logarithm.cpp
+@@ -0,0 +1,34 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++export module calculator.math.logarithm;
++
++export import calculator.math.core;
++
++export import <variant>;
++import <cmath>;
++
++namespace calculator {
++namespace math {
++
++// Note since logarithms are expected to be used on floating-point values these
++// functions always return a floating-point value.
++export tstorage lg(tstorage value) { return std::log2(double_cast(value)); }
++
++export tstorage ln(tstorage value) { return std::log(double_cast(value)); }
++
++export tstorage log(tstorage value) { return std::log10(double_cast(value)); }
++
++} // namespace math
++} // namespace calculator
+diff --git a/src/modules/parser/parser.cpp b/src/modules/parser/parser.cpp
+index bd7f7b1..d2f953b 100644
+--- a/src/modules/parser/parser.cpp
++++ b/src/modules/parser/parser.cpp
+@@ -15,8 +15,8 @@
+ export module parser;
+ 
+ export import parser.token;
+-export import <algorithm>;
+-export import <vector>;
++import <algorithm>;
++import <vector>;
+ 
+ import parser.detail.base;
+ import parser.detail.invalid_value;
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 28cdca9..3e6aba2 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -4,6 +4,7 @@ add_executable(tests
+ 	calculator/controller/function_ceil.cpp
+ 	calculator/controller/function_debug.cpp
+ 	calculator/controller/function_floor.cpp
++	calculator/controller/function_logarithm.cpp
+ 	calculator/controller/function_pow.cpp
+ 	calculator/controller/function_round.cpp
+ 	calculator/controller/function_trunc.cpp
+@@ -49,6 +50,9 @@ add_executable(tests
+ 	calculator/value/math/bitwise/shr.cpp
+ 	calculator/value/math/bitwise/xor.cpp
+ 	calculator/value/math/core.cpp
++	calculator/value/math/logarithm/lg.cpp
++	calculator/value/math/logarithm/ln.cpp
++	calculator/value/math/logarithm/log.cpp
+ 	calculator/value/math/round/ceil.cpp
+ 	calculator/value/math/round/floor.cpp
+ 	calculator/value/math/round/round.cpp
+diff --git a/tests/calculator/controller/function_logarithm.cpp b/tests/calculator/controller/function_logarithm.cpp
+new file mode 100644
+index 0000000..a8dd74a
+--- /dev/null
++++ b/tests/calculator/controller/function_logarithm.cpp
+@@ -0,0 +1,130 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.controller;
++
++import calculator.model;
++import tests.format_error;
++import tests.handle_input;
++
++import <string_view>;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++
++// TODO Make this a generic available test
++static void test_require_1_element(std::string_view input) {
++  {
++    tmodel model;
++    tcontroller controller{model};
++
++    handle_input(controller, model, input);
++    EXPECT_EQ(model.diagnostics_get(),
++              format_error("The stack doesn't contain an element"));
++    EXPECT_TRUE(model.stack().empty());
++    EXPECT_EQ(model.input_get(), input);
++  }
++}
++
++/*** *** LG *** ***/
++
++TEST(controller, lg_too_few_elements) { test_require_1_element("lg"); }
++
++TEST(controller, lg_stack) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "2");
++  handle_input(controller, model, "lg");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"1"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, lg_input) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "2 lg");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"1"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++/*** *** LN *** ***/
++
++TEST(controller, ln_too_few_elements) { test_require_1_element("ln"); }
++
++TEST(controller, ln_stack) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "2.71828");
++  handle_input(controller, model, "ln");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  // Note this test is fragile, the exact result is 1.
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"0.999999"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, ln_input) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "2.71828 ln");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  // Note this test is fragile, the exact result is 1.
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"0.999999"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++/*** *** LOG *** ***/
++
++TEST(controller, log_too_few_elements) { test_require_1_element("log"); }
++
++TEST(controller, log_stack) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "10");
++  handle_input(controller, model, "log");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"1"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, log_input) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++
++  handle_input(controller, model, "10 log");
++
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"1"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++} // namespace calculator
+diff --git a/tests/calculator/value/math/logarithm/lg.cpp b/tests/calculator/value/math/logarithm/lg.cpp
+new file mode 100644
+index 0000000..a47bcfa
+--- /dev/null
++++ b/tests/calculator/value/math/logarithm/lg.cpp
+@@ -0,0 +1,64 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.math.logarithm;
++
++import <cmath>;
++import <limits>;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++namespace math {
++
++TEST(arithmetic, lg_int64_t) {
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(lg(tstorage{std::numeric_limits<int64_t>::min()}))));
++  EXPECT_TRUE(
++      std::isnan(std::get<double>(lg(tstorage{static_cast<int64_t>(-1)}))));
++  EXPECT_EQ(std::get<double>(lg(tstorage{static_cast<int64_t>(0)})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(lg(tstorage{static_cast<int64_t>(2)})), 1.);
++  EXPECT_EQ(std::get<double>(lg(tstorage{std::numeric_limits<int64_t>::max()})),
++            std::log2(std::numeric_limits<int64_t>::max()));
++}
++
++TEST(arithmetic, lg_uint64_t) {
++  EXPECT_EQ(std::get<double>(lg(tstorage{static_cast<uint64_t>(0)})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(lg(tstorage{static_cast<uint64_t>(2)})), 1.);
++  EXPECT_EQ(
++      std::get<double>(lg(tstorage{std::numeric_limits<uint64_t>::max()})),
++      std::log2(std::numeric_limits<uint64_t>::max()));
++}
++
++TEST(arithmetic, lg_double) {
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(lg(tstorage{-std::numeric_limits<double>::max()}))));
++  EXPECT_TRUE(std::isnan(std::get<double>(lg(tstorage{-1.}))));
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(lg(tstorage{-std::numeric_limits<double>::min()}))));
++  EXPECT_EQ(std::get<double>(lg(tstorage{-0.})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(lg(tstorage{0.})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(lg(tstorage{std::numeric_limits<double>::min()})),
++            std::log2(std::numeric_limits<double>::min()));
++  EXPECT_EQ(std::get<double>(lg(tstorage{2.})), 1.);
++  EXPECT_EQ(std::get<double>(lg(tstorage{std::numeric_limits<double>::max()})),
++            std::log2(std::numeric_limits<double>::max()));
++}
++
++} // namespace math
++} // namespace calculator
+diff --git a/tests/calculator/value/math/logarithm/ln.cpp b/tests/calculator/value/math/logarithm/ln.cpp
+new file mode 100644
+index 0000000..b7daaec
+--- /dev/null
++++ b/tests/calculator/value/math/logarithm/ln.cpp
+@@ -0,0 +1,66 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.math.logarithm;
++
++import <cmath>;
++import <limits>;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++namespace math {
++
++TEST(arithmetic, ln_int64_t) {
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(ln(tstorage{std::numeric_limits<int64_t>::min()}))));
++  EXPECT_TRUE(
++      std::isnan(std::get<double>(ln(tstorage{static_cast<int64_t>(-1)}))));
++  EXPECT_EQ(std::get<double>(ln(tstorage{static_cast<int64_t>(0)})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(ln(tstorage{static_cast<int64_t>(2)})),
++            std::log(2.));
++  EXPECT_EQ(std::get<double>(ln(tstorage{std::numeric_limits<int64_t>::max()})),
++            std::log(std::numeric_limits<int64_t>::max()));
++}
++
++TEST(arithmetic, ln_uint64_t) {
++  EXPECT_EQ(std::get<double>(ln(tstorage{static_cast<uint64_t>(0)})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(ln(tstorage{static_cast<uint64_t>(2)})),
++            std::log(2.));
++  EXPECT_EQ(
++      std::get<double>(ln(tstorage{std::numeric_limits<uint64_t>::max()})),
++      std::log(std::numeric_limits<uint64_t>::max()));
++}
++
++TEST(arithmetic, ln_double) {
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(ln(tstorage{-std::numeric_limits<double>::max()}))));
++  EXPECT_TRUE(std::isnan(std::get<double>(ln(tstorage{-1.}))));
++  EXPECT_TRUE(std::isnan(
++      std::get<double>(ln(tstorage{-std::numeric_limits<double>::min()}))));
++  EXPECT_EQ(std::get<double>(ln(tstorage{-0.})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(ln(tstorage{0.})),
++            -std::numeric_limits<double>::infinity());
++  EXPECT_EQ(std::get<double>(ln(tstorage{std::numeric_limits<double>::min()})),
++            std::log(std::numeric_limits<double>::min()));
++  EXPECT_NEAR(std::get<double>(ln(tstorage{2.71828})), 1., 1e-6);
++  EXPECT_EQ(std::get<double>(ln(tstorage{std::numeric_limits<double>::max()})),
++            std::log(std::numeric_limits<double>::max()));
++}
++
++} // namespace math
++} // namespace calculator

@@ -1,0 +1,473 @@
+Bottom: 84fcf7f4df7a57a78b2ac08d73fc40fef4c0d8c1
+Top:    58c291715cf918ed6353bfba91097bb4759024dc
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2023-02-06 17:36:48 +0100
+
+debug mode
+
+
+---
+diff --git a/doc/changelog.rst b/doc/changelog.rst
+index 900dacf..f20f5d1 100644
+--- a/doc/changelog.rst
++++ b/doc/changelog.rst
+@@ -25,6 +25,7 @@ Focusses on improving the input parsing and adding more operations.
+   * Rounding: round, floor, ceil, trunc.
+   * Using of grouping in the display's output.
+   * pow.
++  * Miscellaneous: debug mode.
+ 
+ * Added a terminal based interface.
+ 
+diff --git a/doc/index.rst b/doc/index.rst
+index 0356bb7..bdab96a 100644
+--- a/doc/index.rst
++++ b/doc/index.rst
+@@ -203,6 +203,14 @@ This is a short summary of the operations, but behind the scenes the
+     * reaching the final undo action,
+     * doing a regular operation.
+ 
++  ``debug``
++   Enables debug mode. This shows the type of the element on the stack to aid
++   verifying and debugging the application. The values are:
++
++   ``i`` ``int64_t``
++   ``u`` ``uint64_t``
++   ``d`` ``double``
++
+ Constants
+ ---------
+ 
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index 188ee6b..6ea06e3 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -34,6 +34,11 @@ import <string_view>;
+ 
+ namespace calculator {
+ 
++/** Functor for a nullary operation. */
++template <class F>
++concept nullary_operation =
++    std::same_as<std::invoke_result_t<F, ttransaction>, void>;
++
+ /** Functor for an unary math operation. */
+ template <class F>
+ concept unary_operation =
+@@ -340,6 +345,11 @@ static std::optional<tvalue> get_constant(std::string_view input) {
+   return {};
+ }
+ 
++static void exectute_operation(ttransaction &transaction,
++                               nullary_operation auto operation) {
++  std::invoke(operation, transaction);
++}
++
+ static void exectute_operation(ttransaction &transaction,
+                                unary_operation auto operation) {
+   auto [value] = transaction.pop();
+@@ -354,6 +364,14 @@ static void exectute_operation(ttransaction &transaction,
+ }
+ 
+ static void execute_command(ttransaction &transaction, std::string_view input) {
++  /*** Nullary ***/
++  static constexpr std::array nullary_commands =
++      lib::make_dictionary("debug", &ttransaction::debug_mode_toggle);
++
++  if (auto iter = lib::find(nullary_commands, input);
++      iter != nullary_commands.end())
++    return exectute_operation(transaction, iter->second);
++
+   /*** Unary ***/
+   static constexpr std::array unary_commands = lib::make_dictionary(
+       /*** Rounding ***/
+diff --git a/src/modules/calculator/model.cpp b/src/modules/calculator/model.cpp
+index 2e027fc..3701823 100644
+--- a/src/modules/calculator/model.cpp
++++ b/src/modules/calculator/model.cpp
+@@ -117,6 +117,9 @@ public:
+   /** Toggles the display of grouping symbols in the output. */
+   void grouping_toggle() { stack_.grouping_toggle(); }
+ 
++  /** Toggles the display of type debug info in the output. */
++  void debug_mode_toggle() { stack_.debug_mode_toggle(); }
++
+ private:
+   /** The execution issues to report to the user. */
+   std::string diagnotics_{};
+diff --git a/src/modules/calculator/stack.cpp b/src/modules/calculator/stack.cpp
+index f71e5e6..d2a6f3c 100644
+--- a/src/modules/calculator/stack.cpp
++++ b/src/modules/calculator/stack.cpp
+@@ -74,6 +74,11 @@ public:
+     invalidate_cache();
+   }
+ 
++  void debug_mode_toggle() {
++    debug_mode_ = !debug_mode_;
++    invalidate_cache();
++  }
++
+ private:
+   void invalidate_cache() {
+     std::ranges::for_each(strings_,
+@@ -118,6 +123,9 @@ private:
+ 
+   /** Whether or not the grouping symbols are shown in the output. */
+   bool grouping_{true};
++
++  /** Show debug information in the output? */
++  bool debug_mode_{false};
+ };
+ 
+ void tstack::duplicate() {
+@@ -157,21 +165,23 @@ void tstack::synchronise_display() const {
+   dirty_ = false;
+ }
+ 
+-static std::string format_integral(tbase base, auto value) {
++static std::string format_integral(tbase base, std::string_view debug,
++                                   auto value) {
+   switch (base) {
+   case tbase::binary:
+-    return std::format("{:#b}", value);
++    return std::format("{:#b}{}", value, debug);
+   case tbase::octal:
+-    return std::format("{:#o}", value);
++    return std::format("{:#o}{}", value, debug);
+   case tbase::decimal:
+-    return std::format("{}", value);
++    return std::format("{}{}", value, debug);
+   case tbase::hexadecimal:
+-    return std::format("{:#x}", value);
++    return std::format("{:#x}{}", value, debug);
+   }
+   std::unreachable();
+ }
+ 
+-static std::string format_integral_grouped(tbase base, auto value) {
++static std::string format_integral_grouped(tbase base, std::string_view debug,
++                                           auto value) {
+   // The hard-code grouping used in the bases.
+   // Note this might becom more generic in the future.
+   struct grouping_3 : std::numpunct<char> {
+@@ -197,13 +207,13 @@ static std::string format_integral_grouped(tbase base, auto value) {
+ 
+   switch (base) {
+   case tbase::binary:
+-    return std::format(locale_4, "{:#Lb}", value);
++    return std::format(locale_4, "{:#Lb}{}", value, debug);
+   case tbase::octal:
+-    return std::format(locale_3, "{:#Lo}", value);
++    return std::format(locale_3, "{:#Lo}{}", value, debug);
+   case tbase::decimal:
+-    return std::format(locale_3, "{:L}", value);
++    return std::format(locale_3, "{:L}{}", value, debug);
+   case tbase::hexadecimal:
+-    return std::format(locale_4, "{:#Lx}", value);
++    return std::format(locale_4, "{:#Lx}{}", value, debug);
+   }
+   std::unreachable();
+ }
+@@ -211,29 +221,43 @@ static std::string format_integral_grouped(tbase base, auto value) {
+ /** The integral types used in the value class. */
+ template <class T>
+   requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
+-static std::string format(tbase base, bool grouping, T value) {
++static std::string format(tbase base, bool grouping, bool debug_mode, T value) {
++  std::string_view debug = [&] {
++    if (!debug_mode)
++      return "";
++    if constexpr (std::same_as<T, int64_t>)
++      return " |i";
++    else
++      return " |u";
++  }();
++
+   if (grouping)
+-    return format_integral_grouped(base, value);
++    return format_integral_grouped(base, debug, value);
+ 
+-  return format_integral(base, value);
++  return format_integral(base, debug, value);
+ }
+ 
+-static std::string format(tbase, bool, double value) {
++static std::string format(tbase, bool, bool debug_mode, double value) {
+   char buf[128];
+-  std::sprintf(buf, "%g", value);
++  if (debug_mode)
++    std::sprintf(buf, "%g |d", value);
++  else
++    std::sprintf(buf, "%g", value);
+   return std::string{buf};
+ }
+ 
+ /** Catches changes of @ref tstorage. */
+ template <class T> static uint64_t format(tbase, bool, T) = delete;
+ 
+-static std::string format(tbase base, bool grouping, const tvalue &value) {
+-  return value.visit(
+-      [base, grouping](auto v) { return format(base, grouping, v); });
++static std::string format(tbase base, bool grouping, bool debug_mode,
++                          const tvalue &value) {
++  return value.visit([base, debug_mode, grouping](auto v) {
++    return format(base, grouping, debug_mode, v);
++  });
+ }
+ 
+ [[nodiscard]] std::string tstack::format(const tvalue &value) const {
+-  return calculator::format(base_, grouping_, value);
++  return calculator::format(base_, grouping_, debug_mode_, value);
+ }
+ 
+ } // namespace calculator
+diff --git a/src/modules/calculator/transaction.cpp b/src/modules/calculator/transaction.cpp
+index bc75c7b..957735f 100644
+--- a/src/modules/calculator/transaction.cpp
++++ b/src/modules/calculator/transaction.cpp
+@@ -89,6 +89,14 @@ public:
+   void redo(tmodel &model) override { model.stack().duplicate(); }
+ };
+ 
++class tdebug_mode_toggle final : public tstep_ {
++public:
++  /** Handles the changing of the debug mode. */
++  // Since it's a boolean toggle undo and redo do the same thing.
++  void undo(tmodel &model) override { model.debug_mode_toggle(); }
++  void redo(tmodel &model) override { model.debug_mode_toggle(); }
++};
++
+ /**
+  * The action class to undo and redo actions.
+  *
+@@ -232,6 +240,11 @@ public:
+     steps_.push_back(std::make_unique<tduplicate>());
+   }
+ 
++  void debug_mode_toggle() {
++    model_.debug_mode_toggle();
++    steps_.push_back(std::make_unique<tdebug_mode_toggle>());
++  }
++
+   /**
+    * Finalises the transaction as succesful.
+    *
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 9a0c570..cc67474 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -2,6 +2,7 @@ add_executable(tests
+ 	calculator/controller.cpp
+ 	calculator/controller/constants.cpp
+ 	calculator/controller/function_ceil.cpp
++	calculator/controller/function_debug.cpp
+ 	calculator/controller/function_floor.cpp
+ 	calculator/controller/function_pow.cpp
+ 	calculator/controller/function_round.cpp
+diff --git a/tests/calculator/controller/function_debug.cpp b/tests/calculator/controller/function_debug.cpp
+new file mode 100644
+index 0000000..b635398
+--- /dev/null
++++ b/tests/calculator/controller/function_debug.cpp
+@@ -0,0 +1,163 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.controller;
++
++import calculator.model;
++import tests.handle_input;
++
++import <locale>;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++
++TEST(controller, debug_basic) {
++  tmodel model;
++  tcontroller controller{model};
++
++  handle_input(controller, model, "42 i-42 42.0");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"42", "-42", "42"}}));
++  EXPECT_TRUE(model.input_get().empty());
++
++  model.diagnostics_set("Cleared");
++  handle_input(controller, model, "debug");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"42 |u", "-42 |i", "42 |d"}}));
++  EXPECT_TRUE(model.input_get().empty());
++
++  model.diagnostics_set("Cleared");
++  handle_input(controller, model, "debug");
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"42", "-42", "42"}}));
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, debug_base_2) {
++  tmodel model;
++  model.base_set(tbase::binary);
++  tcontroller controller{model};
++
++  handle_input(controller, model, "0b1111_0000 0b1111_0000");
++  controller.handle_keyboard_input(tmodifiers::control, 'n');
++  ASSERT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"0b1111'0000"}, {"-0b1111'0000"}}));
++
++  handle_input(controller, model, "debug");
++  EXPECT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{{"0b1111'0000 |u"}, {"-0b1111'0000 |i"}}));
++
++  controller.handle_keyboard_input(tmodifiers::control, 'g');
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"0b11110000 |u"}, {"-0b11110000 |i"}}));
++}
++
++TEST(controller, debug_base_8) {
++  tmodel model;
++  model.base_set(tbase::octal);
++  tcontroller controller{model};
++
++  handle_input(controller, model, "0777_555 0777_555");
++  controller.handle_keyboard_input(tmodifiers::control, 'n');
++  ASSERT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{
++          {std::string{"0777"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "555"},
++          {std::string{"-0777"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "555"}}));
++
++  handle_input(controller, model, "debug");
++  EXPECT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{
++          {std::string{"0777"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "555 |u"},
++          {std::string{"-0777"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "555 |i"}}));
++
++  controller.handle_keyboard_input(tmodifiers::control, 'g');
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"0777555 |u"}, {"-0777555 |i"}}));
++}
++
++TEST(controller, debug_base_10) {
++  tmodel model;
++  tcontroller controller{model};
++
++  handle_input(controller, model, "123456, i-123456");
++  ASSERT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{
++          {std::string{"123"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "456"},
++          {std::string{"-123"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "456"}}));
++
++  handle_input(controller, model, "debug");
++  EXPECT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{
++          {std::string{"123"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "456 |u"},
++          {std::string{"-123"} +
++           // Uses the separator of the current locale.
++           std::use_facet<std::numpunct<char>>(std::locale()).thousands_sep() +
++           "456 |i"}}));
++
++  controller.handle_keyboard_input(tmodifiers::control, 'g');
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"123456 |u"}, {"-123456 |i"}}));
++}
++
++TEST(controller, debug_base_16) {
++  tmodel model;
++  model.base_set(tbase::hexadecimal);
++  tcontroller controller{model};
++
++  handle_input(controller, model, "0x1234_5678 0x1234_5678");
++  controller.handle_keyboard_input(tmodifiers::control, 'n');
++  ASSERT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"0x1234'5678"}, {"-0x1234'5678"}}));
++
++  handle_input(controller, model, "debug");
++  EXPECT_EQ(
++      model.stack().strings(),
++      (std::vector<std::string>{{"0x1234'5678 |u"}, {"-0x1234'5678 |i"}}));
++
++  controller.handle_keyboard_input(tmodifiers::control, 'g');
++  EXPECT_EQ(model.stack().strings(),
++            (std::vector<std::string>{{"0x12345678 |u"}, {"-0x12345678 |i"}}));
++}
++
++} // namespace calculator
+diff --git a/tests/calculator/transaction.cpp b/tests/calculator/transaction.cpp
+index 6ebc6fe..e70d235 100644
+--- a/tests/calculator/transaction.cpp
++++ b/tests/calculator/transaction.cpp
+@@ -163,4 +163,19 @@ TEST(action, duplicate) {
+             (std::vector<std::string>{{"42"}, {"42"}}));
+ }
+ 
++TEST(action, debug_mode_toggle) {
++  tmodel model;
++  model.stack().push(tvalue(uint64_t(42)));
++
++  ttransaction transaction{model};
++  transaction.debug_mode_toggle();
++  taction action = std::move(transaction).release();
++  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42 |u"}));
++
++  action.undo();
++  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{"42"}));
++  action.redo();
++  EXPECT_EQ(model.stack().strings(), (std::vector<std::string>{{"42 |u"}}));
++}
++
+ } // namespace calculator
+diff --git a/utils/check_coverage.py b/utils/check_coverage.py
+index 0c192a4..c507898 100755
+--- a/utils/check_coverage.py
++++ b/utils/check_coverage.py
+@@ -48,7 +48,7 @@ not_covered = {
+     + "/src/modules/calculator/stack.cpp": {
+         "lines": 4,
+         "branches": 2,
+-        "regions": 2,
++        "regions": 3,
+     },
+     path
+     + "/src/modules/calculator/value.cpp": {

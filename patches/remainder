@@ -1,0 +1,652 @@
+Bottom: 08802a1478113534f2300e9ec79e7fa9dbd7a9fd
+Top:    43aceed1b077a5d766fb8d9f9bbc59e743ddc5eb
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2023-02-06 17:36:49 +0100
+
+remainder
+
+
+---
+diff --git a/doc/calculation.rst b/doc/calculation.rst
+index 20fa61d..62b1f07 100644
+--- a/doc/calculation.rst
++++ b/doc/calculation.rst
+@@ -263,6 +263,8 @@ Modulo
+   * ``rhs`` is :ref:`unmodified<conversion-unmodified>`.
+   * Returns: :ref:`store_prefer_uint64_t<to-storage-uint64_t>`.
+ 
++Quotient
++--------
+ 
+ Bitwise logical operations
+ ==========================
+diff --git a/doc/changelog.rst b/doc/changelog.rst
+index 7acefe2..1db0b6a 100644
+--- a/doc/changelog.rst
++++ b/doc/changelog.rst
+@@ -26,7 +26,7 @@ Focusses on improving the input parsing and adding more operations.
+   * Using of grouping in the display's output.
+   * pow.
+   * Miscellaneous: debug mode.
+-  * Arithmetic: modulo
++  * Arithmetic: modulo, quotient
+ 
+ * Added a terminal based interface.
+ 
+diff --git a/src/modules/calculator/controller.cpp b/src/modules/calculator/controller.cpp
+index a9e5537..0d2d88d 100644
+--- a/src/modules/calculator/controller.cpp
++++ b/src/modules/calculator/controller.cpp
+@@ -217,6 +217,9 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
+   case '%':
+     return math_binary_operation(&math::mod);
+ 
++  case '\\':
++    return math_binary_operation(&math::quotient);
++
+     /*** Bitwise operations ***/
+   case '&':
+     return math_binary_operation(&math::bit_and);
+diff --git a/src/modules/calculator/math/arithmetic.cpp b/src/modules/calculator/math/arithmetic.cpp
+index 87b9f95..f344e84 100644
+--- a/src/modules/calculator/math/arithmetic.cpp
++++ b/src/modules/calculator/math/arithmetic.cpp
+@@ -240,6 +240,53 @@ export tstorage mod(const tstorage &lhs, const tstorage &rhs) {
+              static_cast<__int128_t>(get<uint64_t>(rhs)));
+ }
+ 
++/** @see https://mordante.github.io/rpn/calculation.html#quotient */
++static int64_t quotient(int64_t lhs, int64_t rhs) {
++  if (rhs == 0)
++    throw std::domain_error("Division by zero");
++  return lhs / rhs;
++}
++
++static uint64_t quotient(uint64_t lhs, uint64_t rhs) {
++  if (rhs == 0)
++    throw std::domain_error("Division by zero");
++  return lhs / rhs;
++}
++
++static tstorage quotient(__int128_t lhs, __int128_t rhs) {
++  if (rhs == 0)
++    throw std::domain_error("Division by zero");
++  return to_storage(lhs / rhs);
++}
++
++export tstorage quotient(tstorage lhs, tstorage rhs) {
++  if (std::holds_alternative<double>(lhs))
++    lhs = integral_cast(lhs);
++
++  if (std::holds_alternative<double>(rhs))
++    rhs = integral_cast(rhs);
++
++  if (std::holds_alternative<int64_t>(lhs) &&
++      std::holds_alternative<int64_t>(rhs))
++    return quotient(get<int64_t>(lhs), get<int64_t>(rhs));
++
++  if (std::holds_alternative<uint64_t>(lhs) &&
++      std::holds_alternative<uint64_t>(rhs))
++    return quotient(get<uint64_t>(lhs), get<uint64_t>(rhs));
++
++  // At this point either lhs or rhs is an uint64_t and the other is an
++  // int64_t. Since the calculation needs to be done in 128-bit domain
++  // do a cast here. (With some additional sanity checks most can be done in
++  // 64-bit. TODO improve this function.)
++
++  if (std::holds_alternative<uint64_t>(lhs))
++    return quotient(static_cast<__int128_t>(get<uint64_t>(lhs)),
++                    static_cast<__int128_t>(get<int64_t>(rhs)));
++
++  return quotient(static_cast<__int128_t>(get<int64_t>(lhs)),
++                  static_cast<__int128_t>(get<uint64_t>(rhs)));
++}
++
+ // TODO static can't be used, since caller is a template.
+ /*static*/ tstorage pow(double value, int exp) { return std::pow(value, exp); }
+ 
+diff --git a/src/modules/calculator/math/core.cpp b/src/modules/calculator/math/core.cpp
+index 5fbcedf..b80434b 100644
+--- a/src/modules/calculator/math/core.cpp
++++ b/src/modules/calculator/math/core.cpp
+@@ -82,6 +82,61 @@ export uint64_t positive_integral_cast(const tstorage &value) {
+   return std::visit([](auto v) { return positive_integral_cast(v); }, value);
+ }
+ 
++static int64_t negative_integral_cast(int64_t value) {
++  if (value >= 0)
++    throw std::range_error("Not a negative value");
++  return value;
++}
++
++static int64_t negative_integral_cast(uint64_t) {
++  throw std::range_error("Not a negative value");
++}
++
++static int64_t negative_integral_cast(double value) {
++  // This tests means we don't need to test for -0 later.
++  if (value >= 0.)
++    throw std::range_error("Not a negative value");
++
++  if (value < static_cast<double>(std::numeric_limits<int64_t>::min()))
++    throw std::range_error("Value too large");
++
++  double result;
++  if (modf(value, &result) != 0.)
++    throw std::range_error("Not an integral");
++  return static_cast<int64_t>(result);
++}
++
++/** Catches changes of @ref tstorage. */
++template <class T> static int64_t negative_integral_cast(T) = delete;
++
++export int64_t negative_integral_cast(const tstorage &value) {
++  return std::visit([](auto v) { return negative_integral_cast(v); }, value);
++}
++
++template <class T>
++  requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>)
++static tstorage integral_cast(T value) {
++  return value;
++}
++
++static tstorage integral_cast(double value) {
++  if (value == 0.)
++    return uint64_t(0);
++  if (value < 0.)
++    return negative_integral_cast(value);
++  if (value > 0.)
++    return positive_integral_cast(value);
++
++  throw std::domain_error("value can't be converted to an integral");
++}
++
++/** Catches changes of @ref tstorage. */
++template <class T> static tstorage integral_cast(T) = delete;
++
++export tstorage integral_cast(const tstorage &value) {
++  return std::visit([](auto v) { return integral_cast(v); }, value);
++}
++
+ static double double_cast(int64_t value) { return static_cast<double>(value); }
+ 
+ static double double_cast(uint64_t value) { return static_cast<double>(value); }
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index 456d4cd..28cdca9 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -8,6 +8,7 @@ add_executable(tests
+ 	calculator/controller/function_round.cpp
+ 	calculator/controller/function_trunc.cpp
+ 	calculator/controller/key_char_ampersand.cpp
++	calculator/controller/key_char_backslash.cpp
+ 	calculator/controller/key_char_circumflex.cpp
+ 	calculator/controller/key_char_default.cpp
+ 	calculator/controller/key_char_forward_slash.cpp
+@@ -40,6 +41,7 @@ add_executable(tests
+ 	calculator/value/math/arithmetic/negate.cpp
+ 	calculator/value/math/arithmetic/power.cpp
+ 	calculator/value/math/arithmetic/subtract.cpp
++	calculator/value/math/arithmetic/quotient.cpp
+ 	calculator/value/math/bitwise/and.cpp
+ 	calculator/value/math/bitwise/complement.cpp
+ 	calculator/value/math/bitwise/or.cpp
+diff --git a/tests/calculator/controller/key_char_backslash.cpp b/tests/calculator/controller/key_char_backslash.cpp
+new file mode 100644
+index 0000000..896a4fd
+--- /dev/null
++++ b/tests/calculator/controller/key_char_backslash.cpp
+@@ -0,0 +1,105 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.controller;
++
++import calculator.model;
++import tests.format_error;
++import tests.handle_input;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++
++TEST(controller, key_char_backslash_too_few_elements) {
++  tmodel model;
++  tcontroller controller{model};
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("The stack doesn't contain two elements"));
++  EXPECT_TRUE(model.stack().empty());
++  EXPECT_TRUE(model.input_get().empty());
++
++  handle_input(controller, model, "42");
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("The stack doesn't contain two elements"));
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, key_char_backslash_stack_input) {
++  tmodel model;
++  tcontroller controller{model};
++  handle_input(controller, model, "99");
++  model.input_append("42");
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"2"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, key_char_backslash_stack_stack) {
++  tmodel model;
++  tcontroller controller{model};
++  handle_input(controller, model, "99");
++  handle_input(controller, model, "42");
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"2"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, key_char_backslash_diagnostics_cleared) {
++  tmodel model;
++  tcontroller controller{model};
++  model.diagnostics_set("Cleared");
++  handle_input(controller, model, "99");
++  handle_input(controller, model, "42");
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_TRUE(model.diagnostics_get().empty());
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"2"});
++  EXPECT_TRUE(model.input_get().empty());
++}
++
++TEST(controller, key_char_backslash_input_invalid) {
++  tmodel model;
++  tcontroller controller{model};
++  handle_input(controller, model, "42");
++  model.input_append("abc");
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_EQ(model.diagnostics_get(),
++            format_error("Invalid numeric value or command"));
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
++  EXPECT_EQ(model.input_get(), "abc");
++}
++
++TEST(controller, key_char_backslash_division_zero) {
++  tmodel model;
++  tcontroller controller{model};
++  handle_input(controller, model, "42");
++  model.input_append("0");
++
++  controller.handle_keyboard_input(tmodifiers::none, '\\');
++  EXPECT_EQ(model.diagnostics_get(), format_error("Division by zero"));
++  EXPECT_EQ(model.stack().strings(), std::vector<std::string>{"42"});
++  EXPECT_EQ(model.input_get(), "0");
++}
++
++} // namespace calculator
+diff --git a/tests/calculator/controller/key_char_default.cpp b/tests/calculator/controller/key_char_default.cpp
+index f20dd19..9778bbe 100644
+--- a/tests/calculator/controller/key_char_default.cpp
++++ b/tests/calculator/controller/key_char_default.cpp
+@@ -25,7 +25,7 @@ constexpr std::string_view all_characters =
+     "0123456789"
+     "`-=~!@#$%^&*()_+[]\\{}|;':\",./<>?";
+ 
+-constexpr std::string_view special_characters_no_modifier = "+-/%*&|^~<>";
++constexpr std::string_view special_characters_no_modifier = R"(+-/\%*&|^~<>)";
+ constexpr std::string_view special_characters_control = "bodhnzZ23456789";
+ 
+ namespace calculator {
+diff --git a/tests/calculator/controller/key_char_percentage.cpp b/tests/calculator/controller/key_char_percentage.cpp
+index 3d3f2b4..3fe905d 100644
+--- a/tests/calculator/controller/key_char_percentage.cpp
++++ b/tests/calculator/controller/key_char_percentage.cpp
+@@ -90,7 +90,7 @@ TEST(controller, key_char_percentage_input_invalid) {
+   EXPECT_EQ(model.input_get(), "abc");
+ }
+ 
+-TEST(controller, key_char_backslash_division_zero) {
++TEST(controller, key_char_percentage_division_zero) {
+   tmodel model;
+   tcontroller controller{model};
+   handle_input(controller, model, "42");
+diff --git a/tests/calculator/value/math/arithmetic/quotient.cpp b/tests/calculator/value/math/arithmetic/quotient.cpp
+new file mode 100644
+index 0000000..a97456f
+--- /dev/null
++++ b/tests/calculator/value/math/arithmetic/quotient.cpp
+@@ -0,0 +1,158 @@
++/*
++ * Copyright (C) Mark de Wever <koraq@xs4all.nl>
++ * Part of the RPN project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * quotientify it under the terms of the GNU General Public License
++ * version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY.
++ *
++ * See the COPYING file for more details.
++ */
++
++import calculator.math.arithmetic;
++
++import <cmath>;
++import <limits>;
++
++#include <gtest/gtest.h>
++
++namespace calculator {
++namespace math {
++
++TEST(arithmetic, quotient_int64_t_int64_t) {
++  EXPECT_EQ(quotient(tstorage{int64_t(4)}, tstorage{int64_t(3)}),
++            tstorage{int64_t(1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(4)}, tstorage{int64_t(-3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(-4)}, tstorage{int64_t(3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(-4)}, tstorage{int64_t(-3)}),
++            tstorage{int64_t(1)});
++
++  EXPECT_THROW(quotient(tstorage{int64_t(3)}, tstorage{int64_t(0)}),
++               std::domain_error);
++}
++TEST(arithmetic, quotient_int64_t_uint64_t) {
++  EXPECT_EQ(quotient(tstorage{int64_t(4)}, tstorage{uint64_t(3)}),
++            tstorage{uint64_t(1)});
++
++  EXPECT_EQ(quotient(tstorage{int64_t(-4)}, tstorage{uint64_t(3)}),
++            tstorage{int64_t(-1)});
++
++  EXPECT_THROW(quotient(tstorage{int64_t(3)}, tstorage{uint64_t(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_int64_t_double) {
++  EXPECT_EQ(quotient(tstorage{int64_t(4)}, tstorage{double(3)}),
++            tstorage{uint64_t(1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(4)}, tstorage{double(-3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(-4)}, tstorage{double(3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{int64_t(-4)}, tstorage{double(-3)}),
++            tstorage{int64_t(1)});
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(quotient(tstorage{int64_t(1)}, tstorage{limit::quiet_NaN()}),
++               std::domain_error);
++  EXPECT_THROW(quotient(tstorage{int64_t(1)}, tstorage{limit::signaling_NaN()}),
++               std::domain_error);
++
++  EXPECT_THROW(quotient(tstorage{int64_t(3)}, tstorage{double(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_uint64_t_int64_t) {
++  EXPECT_EQ(quotient(tstorage{uint64_t(4)}, tstorage{int64_t(3)}),
++            tstorage{uint64_t(1)});
++
++  EXPECT_EQ(quotient(tstorage{uint64_t(4)}, tstorage{int64_t(-3)}),
++            tstorage{int64_t(-1)});
++
++  EXPECT_THROW(quotient(tstorage{uint64_t(3)}, tstorage{int64_t(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_uint64_t_uint64_t) {
++  EXPECT_EQ(quotient(tstorage{uint64_t(4)}, tstorage{uint64_t(3)}),
++            tstorage{uint64_t(1)});
++
++  EXPECT_THROW(quotient(tstorage{uint64_t(3)}, tstorage{uint64_t(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_double_int64_t) {
++  EXPECT_EQ(quotient(tstorage{double(4)}, tstorage{int64_t(3)}),
++            tstorage{uint64_t(1)});
++  EXPECT_EQ(quotient(tstorage{double(4)}, tstorage{int64_t(-3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{double(-4)}, tstorage{int64_t(3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{double(-4)}, tstorage{int64_t(-3)}),
++            tstorage{int64_t(1)});
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(quotient(tstorage{-limit::infinity()}, tstorage{int64_t(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::infinity()}, tstorage{int64_t(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::quiet_NaN()}, tstorage{int64_t(1)}),
++               std::domain_error);
++  EXPECT_THROW(quotient(tstorage{limit::signaling_NaN()}, tstorage{int64_t(1)}),
++               std::domain_error);
++
++  EXPECT_THROW(quotient(tstorage{double(3)}, tstorage{int64_t(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_double_uint64_t) {
++  EXPECT_EQ(quotient(tstorage{double(4)}, tstorage{uint64_t(3)}),
++            tstorage{uint64_t(1)});
++  EXPECT_EQ(quotient(tstorage{double(-4)}, tstorage{uint64_t(3)}),
++            tstorage{int64_t(-1)});
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(quotient(tstorage{-limit::infinity()}, tstorage{uint64_t(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::infinity()}, tstorage{uint64_t(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::quiet_NaN()}, tstorage{uint64_t(1)}),
++               std::domain_error);
++  EXPECT_THROW(
++      quotient(tstorage{limit::signaling_NaN()}, tstorage{uint64_t(1)}),
++      std::domain_error);
++
++  EXPECT_THROW(quotient(tstorage{double(3)}, tstorage{uint64_t(0)}),
++               std::domain_error);
++}
++
++TEST(arithmetic, quotient_double_double) {
++  EXPECT_EQ(quotient(tstorage{double(4)}, tstorage{double(3)}),
++            tstorage{uint64_t(1)});
++  EXPECT_EQ(quotient(tstorage{double(4)}, tstorage{double(-3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{double(-4)}, tstorage{double(3)}),
++            tstorage{int64_t(-1)});
++  EXPECT_EQ(quotient(tstorage{double(-4)}, tstorage{double(-3)}),
++            tstorage{int64_t(1)});
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(quotient(tstorage{-limit::infinity()}, tstorage{double(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::infinity()}, tstorage{double(1)}),
++               std::range_error);
++  EXPECT_THROW(quotient(tstorage{limit::quiet_NaN()}, tstorage{double(1)}),
++               std::domain_error);
++  EXPECT_THROW(quotient(tstorage{limit::signaling_NaN()}, tstorage{double(1)}),
++               std::domain_error);
++
++  EXPECT_THROW(quotient(tstorage{double(3)}, tstorage{double(0)}),
++               std::domain_error);
++}
++
++} // namespace math
++} // namespace calculator
+diff --git a/tests/calculator/value/math/core.cpp b/tests/calculator/value/math/core.cpp
+index 341ee5f..574f0e9 100644
+--- a/tests/calculator/value/math/core.cpp
++++ b/tests/calculator/value/math/core.cpp
+@@ -89,15 +89,18 @@ TEST(core, positive_integral_cast_double) {
+       std::same_as<decltype(positive_integral_cast(tstorage{double(1)})),
+                    uint64_t>);
+ 
+-  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MIN}), std::range_error);
++  EXPECT_THROW(positive_integral_cast(tstorage{-DBL_MAX}), std::range_error);
+   EXPECT_THROW(positive_integral_cast(tstorage{double(-1.)}), std::range_error);
++  EXPECT_THROW(positive_integral_cast(tstorage{-DBL_MIN}), std::range_error);
+   EXPECT_THROW(positive_integral_cast(tstorage{double(-0.)}), std::range_error);
+-  EXPECT_THROW(positive_integral_cast(tstorage{double(-0.)}), std::range_error);
++  EXPECT_THROW(positive_integral_cast(tstorage{double(0.)}), std::range_error);
++  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MIN}), std::range_error);
+   EXPECT_EQ(positive_integral_cast(tstorage{double(1.)}), 1);
++  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MAX}), std::range_error);
++
+   EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(
+-                   std::numeric_limits<uint64_t>::max(), 1e300)}),
++                   std::numeric_limits<uint64_t>::max(), DBL_MAX)}),
+                std::range_error);
+-
+   EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(2., 1.)}),
+                std::range_error);
+   EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(2., 3.)}),
+@@ -114,6 +117,117 @@ TEST(core, positive_integral_cast_double) {
+                std::range_error);
+ }
+ 
++TEST(core, negative_integral_cast_int64_t) {
++  static_assert(
++      std::same_as<decltype(negative_integral_cast(tstorage{int64_t(-1)})),
++                   int64_t>);
++  EXPECT_EQ(negative_integral_cast(tstorage{INT64_MIN}), INT64_MIN);
++  EXPECT_EQ(negative_integral_cast(tstorage{-1}), -1);
++  EXPECT_THROW(negative_integral_cast(tstorage{0}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{int64_t(1)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{INT64_MAX}), std::range_error);
++}
++
++TEST(core, negative_integral_cast_uint64_t) {
++  static_assert(
++      std::same_as<decltype(negative_integral_cast(tstorage{uint64_t(1)})),
++                   int64_t>);
++  EXPECT_THROW(negative_integral_cast(tstorage{uint64_t(0)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{uint64_t(1)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{UINT64_MAX}), std::range_error);
++}
++
++TEST(core, negative_integral_cast_double) {
++  static_assert(
++      std::same_as<decltype(negative_integral_cast(tstorage{double(1)})),
++                   int64_t>);
++
++  EXPECT_THROW(negative_integral_cast(tstorage{-DBL_MAX}), std::range_error);
++  EXPECT_EQ(negative_integral_cast(tstorage{double(-1.)}), -1);
++  EXPECT_THROW(negative_integral_cast(tstorage{-DBL_MIN}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{double(-0.)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{double(0.)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{DBL_MIN}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{double(1.)}), std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{DBL_MAX}), std::range_error);
++
++  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(
++                   std::numeric_limits<int64_t>::min(), -DBL_MAX)}),
++               std::range_error);
++
++  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(-2., -1.)}),
++               std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(-2., -3.)}),
++               std::range_error);
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(negative_integral_cast(tstorage{-limit::infinity()}),
++               std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{limit::infinity()}),
++               std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{limit::quiet_NaN()}),
++               std::range_error);
++  EXPECT_THROW(negative_integral_cast(tstorage{limit::signaling_NaN()}),
++               std::range_error);
++}
++
++TEST(core, integral_cast_int64_t) {
++  static_assert(
++      std::same_as<decltype(integral_cast(tstorage{int64_t(-1)})), tstorage>);
++  EXPECT_EQ(integral_cast(tstorage{INT64_MIN}), tstorage{int64_t(INT64_MIN)});
++  EXPECT_EQ(integral_cast(tstorage{-1}), tstorage{int64_t(-1)});
++  EXPECT_EQ(integral_cast(tstorage{0}), tstorage{int64_t(0)});
++  EXPECT_EQ(integral_cast(tstorage{int64_t(1)}), tstorage{int64_t(1)});
++  EXPECT_EQ(integral_cast(tstorage{INT64_MAX}), tstorage{int64_t(INT64_MAX)});
++}
++
++TEST(core, integral_cast_uint64_t) {
++  static_assert(
++      std::same_as<decltype(integral_cast(tstorage{uint64_t(1)})), tstorage>);
++  EXPECT_EQ(integral_cast(tstorage{uint64_t(0)}), tstorage{uint64_t(0)});
++  EXPECT_EQ(integral_cast(tstorage{uint64_t(1)}), tstorage{uint64_t(1)});
++  EXPECT_EQ(integral_cast(tstorage{UINT64_MAX}),
++            tstorage{uint64_t(UINT64_MAX)});
++}
++
++TEST(core, integral_cast_double) {
++  static_assert(
++      std::same_as<decltype(integral_cast(tstorage{double(1)})), tstorage>);
++
++  EXPECT_THROW(integral_cast(tstorage{-DBL_MAX}), std::range_error);
++  EXPECT_EQ(integral_cast(tstorage{double(INT64_MIN)}),
++            tstorage{int64_t(INT64_MIN)});
++  EXPECT_EQ(integral_cast(tstorage{double(-1.)}), tstorage{int64_t(-1)});
++  EXPECT_THROW(integral_cast(tstorage{-DBL_MIN}), std::range_error);
++  EXPECT_EQ(integral_cast(tstorage{double(-0.)}), tstorage{uint64_t(0)});
++  EXPECT_EQ(integral_cast(tstorage{double(0.)}), tstorage{uint64_t(0)});
++  EXPECT_THROW(integral_cast(tstorage{DBL_MIN}), std::range_error);
++  EXPECT_EQ(integral_cast(tstorage{double(1.)}), tstorage{uint64_t(1)});
++  // Note the 64-bit maxima don't round-trip through a double due to the lack
++  // of precision in a double.
++  EXPECT_EQ(integral_cast(tstorage{double(INT32_MAX)}),
++            tstorage{uint64_t(INT32_MAX)});
++  EXPECT_EQ(integral_cast(tstorage{double(UINT32_MAX)}),
++            tstorage{uint64_t(UINT32_MAX)});
++  EXPECT_THROW(integral_cast(tstorage{DBL_MAX}), std::range_error);
++
++  EXPECT_THROW(integral_cast(tstorage{std::nextafter(
++                   std::numeric_limits<int64_t>::min(), -DBL_MAX)}),
++               std::range_error);
++
++  EXPECT_THROW(integral_cast(tstorage{std::nextafter(-2., -1.)}),
++               std::range_error);
++  EXPECT_THROW(integral_cast(tstorage{std::nextafter(-2., -3.)}),
++               std::range_error);
++
++  using limit = std::numeric_limits<double>;
++  EXPECT_THROW(integral_cast(tstorage{-limit::infinity()}), std::range_error);
++  EXPECT_THROW(integral_cast(tstorage{limit::infinity()}), std::range_error);
++  EXPECT_THROW(integral_cast(tstorage{limit::quiet_NaN()}), std::domain_error);
++  EXPECT_THROW(integral_cast(tstorage{limit::signaling_NaN()}),
++               std::domain_error);
++}
++
+ template <class I> static void to_storage_double() {
+   ASSERT_TRUE(std::holds_alternative<double>(
+       to_storage<I>(__int128_t(std::numeric_limits<int64_t>::min()) - 1)));
+diff --git a/utils/check_coverage.py b/utils/check_coverage.py
+index c507898..09fd3d7 100755
+--- a/utils/check_coverage.py
++++ b/utils/check_coverage.py
+@@ -40,7 +40,7 @@ not_covered = {
+     },
+     path
+     + "/src/modules/calculator/math/core.cpp": {
+-        "lines": 3,
++        "lines": 4,
+         "branches": 0,
+         "regions": 1,
+     },

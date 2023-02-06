@@ -1,0 +1,716 @@
+Bottom: e3c3faf6acf32c5dcc13ca8dfad18e872b6aca78
+Top:    84fcf7f4df7a57a78b2ac08d73fc40fef4c0d8c1
+Author: Mark de Wever <koraq@xs4all.nl>
+Date:   2023-02-06 17:36:47 +0100
+
+Undo cmake formatting
+
+
+---
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b5861b4..b819a25 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,7 @@
+ cmake_minimum_required(VERSION 3.20.0 FATAL_ERROR)
+-project(rpn LANGUAGES CXX)
++project(rpn
++	LANGUAGES CXX
++)
+ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+ include(CheckCXXCompilerFlag)
+ include(ClangModule)
+@@ -17,34 +19,35 @@ add_compile_options(-fexperimental-library)
+ add_link_options(-fexperimental-library)
+ set(PREBUILT_MODULE_PATH ${CMAKE_BINARY_DIR}/modules)
+ set(module_compile_options
+-    -fmodules -fbuiltin-module-map -fimplicit-module-maps
+-    -fprebuilt-module-path=${PREBUILT_MODULE_PATH})
++	-fmodules
++	-fbuiltin-module-map
++	-fimplicit-module-maps
++	-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
++)
+ set(diagnostic_compile_options
+-    -Werror
+-    -Weverything
+-    -Wno-exit-time-destructors # Don't care about exit time destructors.
+-    -Wno-padded # Don't care about the padding.
+-    -Wno-missing-prototypes # False postives with export.
+-    -Wno-switch-enum # False positives with default.
+-    # GoogleTest generated errors. TODO make GoogleTest a system header
+-    -Wno-global-constructors
+-    # Needs more investigation; anchoring them gives issues with a modular
+-    # build.
+-    -Wno-weak-vtables
+-    # Ignore all compatibility with older C++ standards.
+-    -Wno-pre-c++20-compat
+-    -Wno-c++98-compat
+-    -Wno-c++98-compat-pedantic
+-    -Wno-c++11-compat
+-    -Wno-c++14-compat
+-    -Wno-c++17-compat
+-    -Wno-c++20-compat
+-    # TODO Investigate whether the issues are real or false positives.
+-    -Wno-unsafe-buffer-usage)
++	-Werror
++	-Weverything
++	-Wno-exit-time-destructors # Don't care about exit time destructors.
++	-Wno-padded                # Don't care about the padding.
++	-Wno-missing-prototypes    # False postives with export.
++	-Wno-switch-enum           # False positives with default.
++	# GoogleTest generated errors. TODO make GoogleTest a system header
++	-Wno-global-constructors
++	# Needs more investigation; anchoring them gives issues with a modular build.
++	-Wno-weak-vtables
++	# Ignore all compatibility with older C++ standards.
++	-Wno-pre-c++20-compat
++	-Wno-c++98-compat
++	-Wno-c++98-compat-pedantic
++	-Wno-c++11-compat
++	-Wno-c++14-compat
++	-Wno-c++17-compat
++	-Wno-c++20-compat
++	# TODO Investigate whether the issues are real or false positives.
++	-Wno-unsafe-buffer-usage
++)
+ 
+-set(CLANG_TIDY
+-    ""
+-    CACHE FILEPATH "The clang-tidy executable to use")
++set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
+ 
+ enable_testing()
+ add_code_coverage()
+diff --git a/cmake/ClangModule.cmake b/cmake/ClangModule.cmake
+index 39d0f0d..66d34b3 100644
+--- a/cmake/ClangModule.cmake
++++ b/cmake/ClangModule.cmake
+@@ -1,16 +1,23 @@
+ # Adds a module to the system.
+ #
+ # This code has originally been copied from
+-# https://stackoverflow.com/a/62499857. The usage of the library modules in the
+-# system is heavily inspired by the same post and the clang modules
+-# documentation.
++# https://stackoverflow.com/a/62499857.
++# The usage of the library modules in the system is heavily inspired by the
++# same post and the clang modules documentation.
+ function(add_module name)
+-  file(MAKE_DIRECTORY ${PREBUILT_MODULE_PATH})
+-  add_custom_target(
+-    ${name}.pcm
+-    COMMAND
+-      ${CMAKE_CXX_COMPILER} -std=c++2b -stdlib=libc++ -fexperimental-library
+-      -fmodules -fprebuilt-module-path=${PREBUILT_MODULE_PATH} -c
+-      ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN} -Xclang -emit-module-interface -o
+-      ${PREBUILT_MODULE_PATH}/${name}.pcm)
++    file(MAKE_DIRECTORY ${PREBUILT_MODULE_PATH})
++    add_custom_target(${name}.pcm
++            COMMAND
++                ${CMAKE_CXX_COMPILER}
++                -std=c++2b
++                -stdlib=libc++
++				-fexperimental-library
++                -fmodules
++				-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
++                -c
++                ${CMAKE_CURRENT_SOURCE_DIR}/${ARGN}
++                -Xclang -emit-module-interface
++                -o ${PREBUILT_MODULE_PATH}/${name}.pcm
++
++            )
+ endfunction()
+diff --git a/cmake/ExternalProjects.cmake b/cmake/ExternalProjects.cmake
+index 49af238..cb33a4f 100644
+--- a/cmake/ExternalProjects.cmake
++++ b/cmake/ExternalProjects.cmake
+@@ -3,28 +3,25 @@ include(FetchContent)
+ FetchContent_Declare(
+   fltk
+   GIT_REPOSITORY https://github.com/fltk/fltk
+-  GIT_TAG release-1.3.8)
++  GIT_TAG        release-1.3.8
++)
+ FetchContent_GetProperties(fltk)
+ if(NOT fltk_POPULATED)
+   FetchContent_Populate(fltk)
+-  set(FLTK_BUILD_TEST
+-      OFF
+-      CACHE BOOL "" FORCE)
++  set(FLTK_BUILD_TEST OFF CACHE BOOL "" FORCE)
+   add_subdirectory(${fltk_SOURCE_DIR} ${fltk_BINARY_DIR} EXCLUDE_FROM_ALL)
+ endif()
+ 
+ FetchContent_Declare(
+   googletest
+   GIT_REPOSITORY https://github.com/google/googletest.git
+-  GIT_TAG release-1.11.0)
++  GIT_TAG        release-1.11.0
++)
+ FetchContent_GetProperties(googletest)
+ if(NOT googletest_POPULATED)
+   FetchContent_Populate(googletest)
+-  set(BUILD_GMOCK
+-      OFF
+-      CACHE BOOL "" FORCE)
+-  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR}
+-                   EXCLUDE_FROM_ALL)
++  set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
++  add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+ endif()
+ 
+ FetchContent_Declare(
+@@ -32,7 +29,8 @@ FetchContent_Declare(
+   GIT_REPOSITORY https://github.com/ArthurSonzogni/ftxui
+   # The 3.0.0 release doesn't build with libc++16 due to usage of deprecated
+   # constructs.
+-  GIT_TAG 60b9e49)
++  GIT_TAG 60b9e49
++)
+ FetchContent_GetProperties(ftxui)
+ if(NOT ftxui_POPULATED)
+   FetchContent_Populate(ftxui)
+diff --git a/scripts/CMakeLists.txt b/scripts/CMakeLists.txt
+index 834497d..8feec1a 100644
+--- a/scripts/CMakeLists.txt
++++ b/scripts/CMakeLists.txt
+@@ -15,6 +15,10 @@ function(format VAR name)
+ endfunction()
+ 
+ format(CLANG_FORMAT clang-format)
+-format(CMAKE_FORMAT cmake-format)
++#format(CMAKE_FORMAT cmake-format)
+ format(BLACK black)
+-add_custom_target(format DEPENDS clang-format cmake-format black)
++add_custom_target(format DEPENDS
++    clang-format
++#   cmake-format
++    black
++)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index f950f6c..2563cfc 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -1,36 +1,74 @@
+ include_directories(
+-  ${fltk_SOURCE_DIR} # Default include directory
+-  ${fltk_BINARY_DIR} # Contains the build information header
++		${fltk_SOURCE_DIR} # Default include directory
++		${fltk_BINARY_DIR} # Contains the build information header
+ )
+ add_subdirectory(modules)
+-add_executable(rpn gui.cpp rpn.cpp tui.cpp)
+-target_compile_options(rpn PRIVATE ${module_compile_options}
+-                                   ${diagnostic_compile_options})
+-set_target_properties(rpn PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
++add_executable(rpn
++	gui.cpp
++	rpn.cpp
++	tui.cpp
++)
++target_compile_options(rpn
++	PRIVATE
++		${module_compile_options}
++		${diagnostic_compile_options}
++)
++set_target_properties(rpn
++	PROPERTIES
++		CXX_CLANG_TIDY "${CLANG_TIDY}"
++)
+ # These aren't properly set by fltk itself.
+-target_include_directories(
+-  rpn SYSTEM PRIVATE ${fltk_SOURCE_DIR} # Default include directory
+-                     ${fltk_BINARY_DIR} # Contains the build information header
+-)
+-target_link_libraries(rpn PRIVATE calculator fltk ftxui::screen ftxui::dom
+-                                  ftxui::component)
+-# Due to the extra include path this can't use the module function to create the
+-# target.
+-add_custom_target(
+-  gui.pcm
+-  COMMAND
+-    ${CMAKE_CXX_COMPILER} -std=c++2b -stdlib=libc++ -fexperimental-library
+-    -fmodules -fprebuilt-module-path=${PREBUILT_MODULE_PATH} -c
+-    ${CMAKE_CURRENT_SOURCE_DIR}/gui.cpp -isystem ${fltk_SOURCE_DIR} -isystem
+-    ${fltk_BINARY_DIR} -Xclang -emit-module-interface -o
+-    ${PREBUILT_MODULE_PATH}/gui.pcm
+-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gui.cpp calculator.pcm)
+-add_custom_target(
+-  tui.pcm
+-  COMMAND
+-    ${CMAKE_CXX_COMPILER} -std=c++2b -stdlib=libc++ -fexperimental-library
+-    -fmodules -fprebuilt-module-path=${PREBUILT_MODULE_PATH} -c
+-    ${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp -isystem ${ftxui_SOURCE_DIR}/include
+-    -Xclang -emit-module-interface -o ${PREBUILT_MODULE_PATH}/tui.pcm
+-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp calculator.pcm)
+-add_dependencies(rpn gui.pcm tui.pcm)
++target_include_directories(rpn
++	SYSTEM PRIVATE
++		${fltk_SOURCE_DIR} # Default include directory
++		${fltk_BINARY_DIR} # Contains the build information header
++)
++target_link_libraries(rpn
++	PRIVATE
++		calculator
++		fltk
++		ftxui::screen
++		ftxui::dom
++		ftxui::component
++)
++# Due to the extra include path this can't use the
++# module function to create the target.
++add_custom_target(gui.pcm
++	COMMAND
++		${CMAKE_CXX_COMPILER}
++		-std=c++2b
++		-stdlib=libc++
++		-fexperimental-library
++		-fmodules
++		-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
++		-c
++		${CMAKE_CURRENT_SOURCE_DIR}/gui.cpp
++		-isystem ${fltk_SOURCE_DIR}
++		-isystem ${fltk_BINARY_DIR}
++		-Xclang -emit-module-interface
++		-o ${PREBUILT_MODULE_PATH}/gui.pcm
++	DEPENDS
++		${CMAKE_CURRENT_SOURCE_DIR}/gui.cpp
++		calculator.pcm
++)
++add_custom_target(tui.pcm
++	COMMAND
++		${CMAKE_CXX_COMPILER}
++		-std=c++2b
++		-stdlib=libc++
++		-fexperimental-library
++		-fmodules
++		-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
++		-c
++		${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp
++		-isystem ${ftxui_SOURCE_DIR}/include
++		-Xclang -emit-module-interface
++		-o ${PREBUILT_MODULE_PATH}/tui.pcm
++	DEPENDS
++		${CMAKE_CURRENT_SOURCE_DIR}/tui.cpp
++		calculator.pcm
++)
++add_dependencies(rpn
++	gui.pcm
++	tui.pcm
++)
+diff --git a/src/modules/calculator/CMakeLists.txt b/src/modules/calculator/CMakeLists.txt
+index 8559ba1..1f07f97 100644
+--- a/src/modules/calculator/CMakeLists.txt
++++ b/src/modules/calculator/CMakeLists.txt
+@@ -1,21 +1,31 @@
+-add_library(
+-  calculator
+-  calculator.cpp
+-  controller.cpp
+-  model.cpp
+-  # TODO Evaluate whether this needs its own module
+-  math/arithmetic.cpp
+-  math/bitwise.cpp
+-  math/core.cpp
+-  math/round.cpp
+-  stack.cpp
+-  transaction.cpp
+-  undo_handler.cpp
+-  value.cpp)
+-target_compile_options(calculator PRIVATE ${module_compile_options}
+-                                          ${diagnostic_compile_options})
+-set_target_properties(calculator PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
+-target_link_libraries(calculator PRIVATE lib parser)
++add_library(calculator
++	calculator.cpp
++	controller.cpp
++	model.cpp
++	# TODO Evaluate whether this needs its own module
++	math/arithmetic.cpp
++	math/bitwise.cpp
++	math/core.cpp
++	math/round.cpp
++	stack.cpp
++	transaction.cpp
++	undo_handler.cpp
++	value.cpp
++)
++target_compile_options(calculator
++	PRIVATE
++		${module_compile_options}
++		${diagnostic_compile_options}
++)
++set_target_properties(calculator
++	PROPERTIES
++		CXX_CLANG_TIDY "${CLANG_TIDY}"
++)
++target_link_libraries(calculator
++	PRIVATE
++		lib
++		parser
++)
+ add_module(calculator calculator.cpp)
+ add_module(calculator.controller controller.cpp)
+ add_module(calculator.math.core math/core.cpp)
+@@ -27,20 +37,45 @@ add_module(calculator.stack stack.cpp)
+ add_module(calculator.transaction transaction.cpp)
+ add_module(calculator.undo_handler undo_handler.cpp)
+ add_module(calculator.value value.cpp)
+-add_dependencies(calculator.math.arithmetic.pcm calculator.math.core.pcm)
+-add_dependencies(calculator.math.bitwise.pcm calculator.math.core.pcm)
+-add_dependencies(calculator.math.round.pcm calculator.math.core.pcm)
+-add_dependencies(
+-  calculator.value.pcm calculator.math.arithmetic.pcm
+-  calculator.math.bitwise.pcm calculator.math.core.pcm
+-  calculator.math.round.pcm)
+-add_dependencies(calculator.stack.pcm calculator.value.pcm)
+-add_dependencies(calculator.model.pcm parser.pcm calculator.stack.pcm)
+-add_dependencies(calculator.transaction.pcm calculator.model.pcm)
+-add_dependencies(calculator.undo_handler.pcm calculator.transaction.pcm)
+-add_dependencies(
+-  calculator.controller.pcm calculator.model.pcm calculator.transaction.pcm
+-  calculator.undo_handler.pcm lib.dictionary.pcm)
+-add_dependencies(calculator.pcm calculator.controller.pcm calculator.model.pcm
+-                 calculator.value.pcm)
+-add_dependencies(calculator calculator.pcm)
++add_dependencies(calculator.math.arithmetic.pcm
++	calculator.math.core.pcm
++)
++add_dependencies(calculator.math.bitwise.pcm
++	calculator.math.core.pcm
++)
++add_dependencies(calculator.math.round.pcm
++	calculator.math.core.pcm
++)
++add_dependencies(calculator.value.pcm
++	calculator.math.arithmetic.pcm
++	calculator.math.bitwise.pcm
++	calculator.math.core.pcm
++	calculator.math.round.pcm
++)
++add_dependencies(calculator.stack.pcm
++	calculator.value.pcm
++)
++add_dependencies(calculator.model.pcm
++	parser.pcm
++	calculator.stack.pcm
++)
++add_dependencies(calculator.transaction.pcm
++	calculator.model.pcm
++)
++add_dependencies(calculator.undo_handler.pcm
++	calculator.transaction.pcm
++)
++add_dependencies(calculator.controller.pcm
++	calculator.model.pcm
++	calculator.transaction.pcm
++	calculator.undo_handler.pcm
++	lib.dictionary.pcm
++)
++add_dependencies(calculator.pcm
++	calculator.controller.pcm
++	calculator.model.pcm
++	calculator.value.pcm
++)
++add_dependencies(calculator
++	calculator.pcm
++)
+diff --git a/src/modules/lib/CMakeLists.txt b/src/modules/lib/CMakeLists.txt
+index a1d5ece..9a50950 100644
+--- a/src/modules/lib/CMakeLists.txt
++++ b/src/modules/lib/CMakeLists.txt
+@@ -2,11 +2,24 @@
+ #
+ # This probably needs a better structure when more library code is added.
+ # Therefore there's no generic lib module.
+-add_library(lib dictionary.cpp binary_find.cpp)
+-target_compile_options(lib PRIVATE ${module_compile_options}
+-                                   ${diagnostic_compile_options})
+-set_target_properties(lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
++add_library(lib
++	dictionary.cpp
++	binary_find.cpp
++)
++target_compile_options(lib
++	PRIVATE
++		${module_compile_options}
++		${diagnostic_compile_options}
++)
++set_target_properties(lib
++	PROPERTIES
++		CXX_CLANG_TIDY "${CLANG_TIDY}"
++)
+ add_module(lib.binary_find binary_find.cpp)
+ add_module(lib.dictionary dictionary.cpp)
+-add_dependencies(lib.dictionary.pcm lib.binary_find.pcm)
+-add_dependencies(lib lib.dictionary.pcm)
++add_dependencies(lib.dictionary.pcm
++	lib.binary_find.pcm
++)
++add_dependencies(lib
++	lib.dictionary.pcm
++)
+diff --git a/src/modules/parser/CMakeLists.txt b/src/modules/parser/CMakeLists.txt
+index 9487722..a686900 100644
+--- a/src/modules/parser/CMakeLists.txt
++++ b/src/modules/parser/CMakeLists.txt
+@@ -1,16 +1,22 @@
+-add_library(
+-  parser
+-  detail/base.cpp
+-  detail/floating_point.cpp
+-  detail/invalid_value.cpp
+-  detail/signed.cpp
+-  detail/string.cpp
+-  detail/unsigned.cpp
+-  parser.cpp
+-  token.cpp)
+-target_compile_options(parser PRIVATE ${module_compile_options}
+-                                      ${diagnostic_compile_options})
+-set_target_properties(parser PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
++add_library(parser
++	detail/base.cpp
++	detail/floating_point.cpp
++	detail/invalid_value.cpp
++	detail/signed.cpp
++	detail/string.cpp
++	detail/unsigned.cpp
++	parser.cpp
++	token.cpp
++)
++target_compile_options(parser
++	PRIVATE
++		${module_compile_options}
++		${diagnostic_compile_options}
++)
++set_target_properties(parser
++	PROPERTIES
++		CXX_CLANG_TIDY "${CLANG_TIDY}"
++)
+ add_module(parser.detail.base detail/base.cpp)
+ add_module(parser.detail.floating_point detail/floating_point.cpp)
+ add_module(parser.detail.invalid_value detail/invalid_value.cpp)
+@@ -19,23 +25,39 @@ add_module(parser.detail.string detail/string.cpp)
+ add_module(parser.detail.unsigned_value detail/unsigned.cpp)
+ add_module(parser.token token.cpp)
+ add_module(parser parser.cpp)
+-add_dependencies(parser.detail.base.pcm parser.token.pcm)
+-add_dependencies(parser.detail.floating_point.pcm parser.detail.base.pcm
+-                 parser.detail.invalid_value.pcm)
+-add_dependencies(parser.detail.invalid_value.pcm parser.detail.base.pcm)
+-add_dependencies(parser.detail.signed_value.pcm parser.detail.base.pcm
+-                 parser.detail.invalid_value.pcm parser.detail.string.pcm)
+-add_dependencies(parser.detail.string.pcm parser.detail.base.pcm)
+-add_dependencies(
+-  parser.detail.unsigned_value.pcm calculator.stack.pcm parser.detail.base.pcm
+-  parser.detail.invalid_value.pcm parser.detail.floating_point.pcm)
+-add_dependencies(
+-  parser.pcm
+-  parser.detail.base.pcm
+-  parser.detail.floating_point.pcm
+-  parser.detail.invalid_value.pcm
+-  parser.detail.signed_value.pcm
+-  parser.detail.string.pcm
+-  parser.detail.unsigned_value.pcm
+-  parser.token.pcm)
+-add_dependencies(parser parser.pcm)
++add_dependencies(parser.detail.base.pcm
++	parser.token.pcm
++)
++add_dependencies(parser.detail.floating_point.pcm
++	parser.detail.base.pcm
++	parser.detail.invalid_value.pcm
++)
++add_dependencies(parser.detail.invalid_value.pcm
++	parser.detail.base.pcm
++)
++add_dependencies(parser.detail.signed_value.pcm
++	parser.detail.base.pcm
++	parser.detail.invalid_value.pcm
++	parser.detail.string.pcm
++)
++add_dependencies(parser.detail.string.pcm
++	parser.detail.base.pcm
++)
++add_dependencies(parser.detail.unsigned_value.pcm
++	calculator.stack.pcm
++	parser.detail.base.pcm
++	parser.detail.invalid_value.pcm
++	parser.detail.floating_point.pcm
++)
++add_dependencies(parser.pcm
++	parser.detail.base.pcm
++	parser.detail.floating_point.pcm
++	parser.detail.invalid_value.pcm
++	parser.detail.signed_value.pcm
++	parser.detail.string.pcm
++	parser.detail.unsigned_value.pcm
++	parser.token.pcm
++)
++add_dependencies(parser
++	parser.pcm
++)
+diff --git a/tests/CMakeLists.txt b/tests/CMakeLists.txt
+index e6a677b..9a0c570 100644
+--- a/tests/CMakeLists.txt
++++ b/tests/CMakeLists.txt
+@@ -1,72 +1,90 @@
+-add_executable(
+-  tests
+-  calculator/controller.cpp
+-  calculator/controller/constants.cpp
+-  calculator/controller/function_ceil.cpp
+-  calculator/controller/function_floor.cpp
+-  calculator/controller/function_pow.cpp
+-  calculator/controller/function_round.cpp
+-  calculator/controller/function_trunc.cpp
+-  calculator/controller/key_char_ampersand.cpp
+-  calculator/controller/key_char_circumflex.cpp
+-  calculator/controller/key_char_default.cpp
+-  calculator/controller/key_char_forward_slash.cpp
+-  calculator/controller/key_char_greater_than.cpp
+-  calculator/controller/key_char_less_than.cpp
+-  calculator/controller/key_char_minus.cpp
+-  calculator/controller/key_char_pipe.cpp
+-  calculator/controller/key_char_plus.cpp
+-  calculator/controller/key_char_star.cpp
+-  calculator/controller/key_char_tilde.cpp
+-  calculator/controller/key_backspace.cpp
+-  calculator/controller/key_enter.cpp
+-  calculator/controller/change_base.cpp
+-  calculator/controller/key_control_g.cpp
+-  calculator/controller/key_control_n.cpp
+-  calculator/controller/key_control_pow.cpp
+-  calculator/controller/key_control_z.cpp
+-  calculator/model.cpp
+-  calculator/model/change_base.cpp
+-  calculator/model/input.cpp
+-  calculator/stack.cpp
+-  calculator/transaction.cpp
+-  calculator/undo_handler.cpp
+-  calculator/value.cpp
+-  calculator/value/math/arithmetic/add.cpp
+-  calculator/value/math/arithmetic/division.cpp
+-  calculator/value/math/arithmetic/multiply.cpp
+-  calculator/value/math/arithmetic/negate.cpp
+-  calculator/value/math/arithmetic/power.cpp
+-  calculator/value/math/arithmetic/subtract.cpp
+-  calculator/value/math/bitwise/and.cpp
+-  calculator/value/math/bitwise/complement.cpp
+-  calculator/value/math/bitwise/or.cpp
+-  calculator/value/math/bitwise/shl.cpp
+-  calculator/value/math/bitwise/shr.cpp
+-  calculator/value/math/bitwise/xor.cpp
+-  calculator/value/math/core.cpp
+-  calculator/value/math/round/ceil.cpp
+-  calculator/value/math/round/floor.cpp
+-  calculator/value/math/round/round.cpp
+-  calculator/value/math/round/trunc.cpp
+-  format_error.cpp
+-  handle_input.cpp
+-  lib/binary_find.cpp
+-  lib/dictionary.cpp
+-  parser/parser.cpp
+-  parser/unsigned_value.cpp
+-  parser/floating_point_value.cpp
+-  parser/signed_value.cpp
+-  test_constexpr.cpp)
+-target_compile_options(tests PRIVATE ${module_compile_options}
+-                                     ${diagnostic_compile_options})
+-set_target_properties(tests PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
+-target_link_libraries(tests PRIVATE calculator lib parser gtest_main
+-                                    c++experimental c++)
++add_executable(tests
++	calculator/controller.cpp
++	calculator/controller/constants.cpp
++	calculator/controller/function_ceil.cpp
++	calculator/controller/function_floor.cpp
++	calculator/controller/function_pow.cpp
++	calculator/controller/function_round.cpp
++	calculator/controller/function_trunc.cpp
++	calculator/controller/key_char_ampersand.cpp
++	calculator/controller/key_char_circumflex.cpp
++	calculator/controller/key_char_default.cpp
++	calculator/controller/key_char_forward_slash.cpp
++	calculator/controller/key_char_greater_than.cpp
++	calculator/controller/key_char_less_than.cpp
++	calculator/controller/key_char_minus.cpp
++	calculator/controller/key_char_pipe.cpp
++	calculator/controller/key_char_plus.cpp
++	calculator/controller/key_char_star.cpp
++	calculator/controller/key_char_tilde.cpp
++	calculator/controller/key_backspace.cpp
++	calculator/controller/key_enter.cpp
++	calculator/controller/change_base.cpp
++	calculator/controller/key_control_g.cpp
++	calculator/controller/key_control_n.cpp
++	calculator/controller/key_control_pow.cpp
++	calculator/controller/key_control_z.cpp
++	calculator/model.cpp
++	calculator/model/change_base.cpp
++	calculator/model/input.cpp
++	calculator/stack.cpp
++	calculator/transaction.cpp
++	calculator/undo_handler.cpp
++	calculator/value.cpp
++	calculator/value/math/arithmetic/add.cpp
++	calculator/value/math/arithmetic/division.cpp
++	calculator/value/math/arithmetic/multiply.cpp
++	calculator/value/math/arithmetic/negate.cpp
++	calculator/value/math/arithmetic/power.cpp
++	calculator/value/math/arithmetic/subtract.cpp
++	calculator/value/math/bitwise/and.cpp
++	calculator/value/math/bitwise/complement.cpp
++	calculator/value/math/bitwise/or.cpp
++	calculator/value/math/bitwise/shl.cpp
++	calculator/value/math/bitwise/shr.cpp
++	calculator/value/math/bitwise/xor.cpp
++	calculator/value/math/core.cpp
++	calculator/value/math/round/ceil.cpp
++	calculator/value/math/round/floor.cpp
++	calculator/value/math/round/round.cpp
++	calculator/value/math/round/trunc.cpp
++	format_error.cpp
++	handle_input.cpp
++	lib/binary_find.cpp
++	lib/dictionary.cpp
++	parser/parser.cpp
++	parser/unsigned_value.cpp
++	parser/floating_point_value.cpp
++	parser/signed_value.cpp
++	test_constexpr.cpp
++)
++target_compile_options(tests
++	PRIVATE
++		${module_compile_options}
++		${diagnostic_compile_options}
++)
++set_target_properties(tests
++	PROPERTIES
++		CXX_CLANG_TIDY "${CLANG_TIDY}"
++)
++target_link_libraries(tests
++	PRIVATE
++		calculator
++		lib
++		parser
++		gtest_main
++		c++experimental
++		c++
++)
+ add_module(tests.format_error format_error.cpp)
+ add_module(tests.handle_input handle_input.cpp)
+ add_module(tests.test_constexpr test_constexpr.cpp)
+-add_dependencies(tests.handle_input.pcm calculator.pcm)
+-add_dependencies(tests tests.format_error.pcm tests.handle_input.pcm
+-                 tests.test_constexpr.pcm)
++add_dependencies(tests.handle_input.pcm
++	calculator.pcm
++)
++add_dependencies(tests
++	tests.format_error.pcm
++	tests.handle_input.pcm
++	tests.test_constexpr.pcm
++)
+ target_code_coverage(tests)
