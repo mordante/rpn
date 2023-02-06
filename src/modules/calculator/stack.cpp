@@ -74,6 +74,11 @@ public:
     invalidate_cache();
   }
 
+  void debug_mode_toggle() {
+    debug_mode_ = !debug_mode_;
+    invalidate_cache();
+  }
+
 private:
   void invalidate_cache() {
     std::ranges::for_each(strings_,
@@ -118,6 +123,9 @@ private:
 
   /** Whether or not the grouping symbols are shown in the output. */
   bool grouping_{true};
+
+  /** Show debug information in the output? */
+  bool debug_mode_{false};
 };
 
 void tstack::duplicate() {
@@ -157,21 +165,23 @@ void tstack::synchronise_display() const {
   dirty_ = false;
 }
 
-static std::string format_integral(tbase base, auto value) {
+static std::string format_integral(tbase base, std::string_view debug,
+                                   auto value) {
   switch (base) {
   case tbase::binary:
-    return std::format("{:#b}", value);
+    return std::format("{:#b}{}", value, debug);
   case tbase::octal:
-    return std::format("{:#o}", value);
+    return std::format("{:#o}{}", value, debug);
   case tbase::decimal:
-    return std::format("{}", value);
+    return std::format("{}{}", value, debug);
   case tbase::hexadecimal:
-    return std::format("{:#x}", value);
+    return std::format("{:#x}{}", value, debug);
   }
   std::unreachable();
 }
 
-static std::string format_integral_grouped(tbase base, auto value) {
+static std::string format_integral_grouped(tbase base, std::string_view debug,
+                                           auto value) {
   // The hard-code grouping used in the bases.
   // Note this might becom more generic in the future.
   struct grouping_3 : std::numpunct<char> {
@@ -197,13 +207,13 @@ static std::string format_integral_grouped(tbase base, auto value) {
 
   switch (base) {
   case tbase::binary:
-    return std::format(locale_4, "{:#Lb}", value);
+    return std::format(locale_4, "{:#Lb}{}", value, debug);
   case tbase::octal:
-    return std::format(locale_3, "{:#Lo}", value);
+    return std::format(locale_3, "{:#Lo}{}", value, debug);
   case tbase::decimal:
-    return std::format(locale_3, "{:L}", value);
+    return std::format(locale_3, "{:L}{}", value, debug);
   case tbase::hexadecimal:
-    return std::format(locale_4, "{:#Lx}", value);
+    return std::format(locale_4, "{:#Lx}{}", value, debug);
   }
   std::unreachable();
 }
@@ -211,29 +221,43 @@ static std::string format_integral_grouped(tbase base, auto value) {
 /** The integral types used in the value class. */
 template <class T>
   requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
-static std::string format(tbase base, bool grouping, T value) {
-  if (grouping)
-    return format_integral_grouped(base, value);
+static std::string format(tbase base, bool grouping, bool debug_mode, T value) {
+  std::string_view debug = [&] {
+    if (!debug_mode)
+      return "";
+    if constexpr (std::same_as<T, int64_t>)
+      return " |i";
+    else
+      return " |u";
+  }();
 
-  return format_integral(base, value);
+  if (grouping)
+    return format_integral_grouped(base, debug, value);
+
+  return format_integral(base, debug, value);
 }
 
-static std::string format(tbase, bool, double value) {
+static std::string format(tbase, bool, bool debug_mode, double value) {
   char buf[128];
-  std::sprintf(buf, "%g", value);
+  if (debug_mode)
+    std::sprintf(buf, "%g |d", value);
+  else
+    std::sprintf(buf, "%g", value);
   return std::string{buf};
 }
 
 /** Catches changes of @ref tstorage. */
 template <class T> static uint64_t format(tbase, bool, T) = delete;
 
-static std::string format(tbase base, bool grouping, const tvalue &value) {
-  return value.visit(
-      [base, grouping](auto v) { return format(base, grouping, v); });
+static std::string format(tbase base, bool grouping, bool debug_mode,
+                          const tvalue &value) {
+  return value.visit([base, debug_mode, grouping](auto v) {
+    return format(base, grouping, debug_mode, v);
+  });
 }
 
 [[nodiscard]] std::string tstack::format(const tvalue &value) const {
-  return calculator::format(base_, grouping_, value);
+  return calculator::format(base_, grouping_, debug_mode_, value);
 }
 
 } // namespace calculator

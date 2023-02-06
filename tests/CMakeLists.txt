@@ -2,6 +2,7 @@ add_executable(tests
 	calculator/controller.cpp
 	calculator/controller/constants.cpp
 	calculator/controller/function_ceil.cpp
+	calculator/controller/function_debug.cpp
 	calculator/controller/function_floor.cpp
 	calculator/controller/function_pow.cpp
 	calculator/controller/function_round.cpp

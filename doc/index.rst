@@ -203,6 +203,14 @@ This is a short summary of the operations, but behind the scenes the
     * reaching the final undo action,
     * doing a regular operation.
 
+  ``debug``
+   Enables debug mode. This shows the type of the element on the stack to aid
+   verifying and debugging the application. The values are:
+
+   ``i`` ``int64_t``
+   ``u`` ``uint64_t``
+   ``d`` ``double``
+
 Constants
 ---------
 
