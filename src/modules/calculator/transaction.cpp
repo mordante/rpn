@@ -89,6 +89,14 @@ public:
   void redo(tmodel &model) override { model.stack().duplicate(); }
 };
 
+class tdebug_mode_toggle final : public tstep_ {
+public:
+  /** Handles the changing of the debug mode. */
+  // Since it's a boolean toggle undo and redo do the same thing.
+  void undo(tmodel &model) override { model.debug_mode_toggle(); }
+  void redo(tmodel &model) override { model.debug_mode_toggle(); }
+};
+
 /**
  * The action class to undo and redo actions.
  *
@@ -230,6 +238,11 @@ public:
   void duplicate() {
     model_.stack().duplicate();
     steps_.push_back(std::make_unique<tduplicate>());
+  }
+
+  void debug_mode_toggle() {
+    model_.debug_mode_toggle();
+    steps_.push_back(std::make_unique<tdebug_mode_toggle>());
   }
 
   /**

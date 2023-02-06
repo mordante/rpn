@@ -117,6 +117,9 @@ public:
   /** Toggles the display of grouping symbols in the output. */
   void grouping_toggle() { stack_.grouping_toggle(); }
 
+  /** Toggles the display of type debug info in the output. */
+  void debug_mode_toggle() { stack_.debug_mode_toggle(); }
+
 private:
   /** The execution issues to report to the user. */
   std::string diagnotics_{};
