@@ -6,6 +6,7 @@ add_library(calculator
 	math/arithmetic.cpp
 	math/bitwise.cpp
 	math/core.cpp
+	math/logarithm.cpp
 	math/round.cpp
 	stack.cpp
 	transaction.cpp
@@ -32,6 +33,7 @@ add_module(calculator.math.core math/core.cpp)
 add_module(calculator.math.arithmetic math/arithmetic.cpp)
 add_module(calculator.math.bitwise math/bitwise.cpp)
 add_module(calculator.math.round math/round.cpp)
+add_module(calculator.math.logarithm math/logarithm.cpp)
 add_module(calculator.model model.cpp)
 add_module(calculator.stack stack.cpp)
 add_module(calculator.transaction transaction.cpp)
@@ -46,11 +48,15 @@ add_dependencies(calculator.math.bitwise.pcm
 add_dependencies(calculator.math.round.pcm
 	calculator.math.core.pcm
 )
+add_dependencies(calculator.math.logarithm.pcm
+	calculator.math.core.pcm
+)
 add_dependencies(calculator.value.pcm
 	calculator.math.arithmetic.pcm
 	calculator.math.bitwise.pcm
 	calculator.math.core.pcm
 	calculator.math.round.pcm
+	calculator.math.logarithm.pcm
 )
 add_dependencies(calculator.stack.pcm
 	calculator.value.pcm
