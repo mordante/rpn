@@ -3,7 +3,9 @@ Top:    84fcf7f4df7a57a78b2ac08d73fc40fef4c0d8c1
 Author: Mark de Wever <koraq@xs4all.nl>
 Date:   2023-02-06 17:36:47 +0100
 
-Undo cmake formatting
+Undos cmake formatting.
+
+The formatting looks quite bad, so revert these changes.
 
 
 ---
