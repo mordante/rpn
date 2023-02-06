@@ -263,6 +263,8 @@ Modulo
   * ``rhs`` is :ref:`unmodified<conversion-unmodified>`.
   * Returns: :ref:`store_prefer_uint64_t<to-storage-uint64_t>`.
 
+Quotient
+--------
 
 Bitwise logical operations
 ==========================

@@ -40,7 +40,7 @@ not_covered = {
     },
     path
     + "/src/modules/calculator/math/core.cpp": {
-        "lines": 3,
+        "lines": 4,
         "branches": 0,
         "regions": 1,
     },

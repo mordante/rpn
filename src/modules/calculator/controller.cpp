@@ -217,6 +217,9 @@ void tcontroller::handle_keyboard_input_no_modifiers(char key) {
   case '%':
     return math_binary_operation(&math::mod);
 
+  case '\\':
+    return math_binary_operation(&math::quotient);
+
     /*** Bitwise operations ***/
   case '&':
     return math_binary_operation(&math::bit_and);

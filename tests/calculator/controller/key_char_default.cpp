@@ -25,7 +25,7 @@ constexpr std::string_view all_characters =
     "0123456789"
     "`-=~!@#$%^&*()_+[]\\{}|;':\",./<>?";
 
-constexpr std::string_view special_characters_no_modifier = "+-/%*&|^~<>";
+constexpr std::string_view special_characters_no_modifier = R"(+-/\%*&|^~<>)";
 constexpr std::string_view special_characters_control = "bodhnzZ23456789";
 
 namespace calculator {

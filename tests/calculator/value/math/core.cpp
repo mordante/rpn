@@ -89,15 +89,18 @@ TEST(core, positive_integral_cast_double) {
       std::same_as<decltype(positive_integral_cast(tstorage{double(1)})),
                    uint64_t>);
 
-  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MIN}), std::range_error);
+  EXPECT_THROW(positive_integral_cast(tstorage{-DBL_MAX}), std::range_error);
   EXPECT_THROW(positive_integral_cast(tstorage{double(-1.)}), std::range_error);
+  EXPECT_THROW(positive_integral_cast(tstorage{-DBL_MIN}), std::range_error);
   EXPECT_THROW(positive_integral_cast(tstorage{double(-0.)}), std::range_error);
-  EXPECT_THROW(positive_integral_cast(tstorage{double(-0.)}), std::range_error);
+  EXPECT_THROW(positive_integral_cast(tstorage{double(0.)}), std::range_error);
+  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MIN}), std::range_error);
   EXPECT_EQ(positive_integral_cast(tstorage{double(1.)}), 1);
-  EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(
-                   std::numeric_limits<uint64_t>::max(), 1e300)}),
-               std::range_error);
+  EXPECT_THROW(positive_integral_cast(tstorage{DBL_MAX}), std::range_error);
 
+  EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(
+                   std::numeric_limits<uint64_t>::max(), DBL_MAX)}),
+               std::range_error);
   EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(2., 1.)}),
                std::range_error);
   EXPECT_THROW(positive_integral_cast(tstorage{std::nextafter(2., 3.)}),
@@ -112,6 +115,117 @@ TEST(core, positive_integral_cast_double) {
                std::range_error);
   EXPECT_THROW(positive_integral_cast(tstorage{limit::signaling_NaN()}),
                std::range_error);
+}
+
+TEST(core, negative_integral_cast_int64_t) {
+  static_assert(
+      std::same_as<decltype(negative_integral_cast(tstorage{int64_t(-1)})),
+                   int64_t>);
+  EXPECT_EQ(negative_integral_cast(tstorage{INT64_MIN}), INT64_MIN);
+  EXPECT_EQ(negative_integral_cast(tstorage{-1}), -1);
+  EXPECT_THROW(negative_integral_cast(tstorage{0}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{int64_t(1)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{INT64_MAX}), std::range_error);
+}
+
+TEST(core, negative_integral_cast_uint64_t) {
+  static_assert(
+      std::same_as<decltype(negative_integral_cast(tstorage{uint64_t(1)})),
+                   int64_t>);
+  EXPECT_THROW(negative_integral_cast(tstorage{uint64_t(0)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{uint64_t(1)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{UINT64_MAX}), std::range_error);
+}
+
+TEST(core, negative_integral_cast_double) {
+  static_assert(
+      std::same_as<decltype(negative_integral_cast(tstorage{double(1)})),
+                   int64_t>);
+
+  EXPECT_THROW(negative_integral_cast(tstorage{-DBL_MAX}), std::range_error);
+  EXPECT_EQ(negative_integral_cast(tstorage{double(-1.)}), -1);
+  EXPECT_THROW(negative_integral_cast(tstorage{-DBL_MIN}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{double(-0.)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{double(0.)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{DBL_MIN}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{double(1.)}), std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{DBL_MAX}), std::range_error);
+
+  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(
+                   std::numeric_limits<int64_t>::min(), -DBL_MAX)}),
+               std::range_error);
+
+  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(-2., -1.)}),
+               std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{std::nextafter(-2., -3.)}),
+               std::range_error);
+
+  using limit = std::numeric_limits<double>;
+  EXPECT_THROW(negative_integral_cast(tstorage{-limit::infinity()}),
+               std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{limit::infinity()}),
+               std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{limit::quiet_NaN()}),
+               std::range_error);
+  EXPECT_THROW(negative_integral_cast(tstorage{limit::signaling_NaN()}),
+               std::range_error);
+}
+
+TEST(core, integral_cast_int64_t) {
+  static_assert(
+      std::same_as<decltype(integral_cast(tstorage{int64_t(-1)})), tstorage>);
+  EXPECT_EQ(integral_cast(tstorage{INT64_MIN}), tstorage{int64_t(INT64_MIN)});
+  EXPECT_EQ(integral_cast(tstorage{-1}), tstorage{int64_t(-1)});
+  EXPECT_EQ(integral_cast(tstorage{0}), tstorage{int64_t(0)});
+  EXPECT_EQ(integral_cast(tstorage{int64_t(1)}), tstorage{int64_t(1)});
+  EXPECT_EQ(integral_cast(tstorage{INT64_MAX}), tstorage{int64_t(INT64_MAX)});
+}
+
+TEST(core, integral_cast_uint64_t) {
+  static_assert(
+      std::same_as<decltype(integral_cast(tstorage{uint64_t(1)})), tstorage>);
+  EXPECT_EQ(integral_cast(tstorage{uint64_t(0)}), tstorage{uint64_t(0)});
+  EXPECT_EQ(integral_cast(tstorage{uint64_t(1)}), tstorage{uint64_t(1)});
+  EXPECT_EQ(integral_cast(tstorage{UINT64_MAX}),
+            tstorage{uint64_t(UINT64_MAX)});
+}
+
+TEST(core, integral_cast_double) {
+  static_assert(
+      std::same_as<decltype(integral_cast(tstorage{double(1)})), tstorage>);
+
+  EXPECT_THROW(integral_cast(tstorage{-DBL_MAX}), std::range_error);
+  EXPECT_EQ(integral_cast(tstorage{double(INT64_MIN)}),
+            tstorage{int64_t(INT64_MIN)});
+  EXPECT_EQ(integral_cast(tstorage{double(-1.)}), tstorage{int64_t(-1)});
+  EXPECT_THROW(integral_cast(tstorage{-DBL_MIN}), std::range_error);
+  EXPECT_EQ(integral_cast(tstorage{double(-0.)}), tstorage{uint64_t(0)});
+  EXPECT_EQ(integral_cast(tstorage{double(0.)}), tstorage{uint64_t(0)});
+  EXPECT_THROW(integral_cast(tstorage{DBL_MIN}), std::range_error);
+  EXPECT_EQ(integral_cast(tstorage{double(1.)}), tstorage{uint64_t(1)});
+  // Note the 64-bit maxima don't round-trip through a double due to the lack
+  // of precision in a double.
+  EXPECT_EQ(integral_cast(tstorage{double(INT32_MAX)}),
+            tstorage{uint64_t(INT32_MAX)});
+  EXPECT_EQ(integral_cast(tstorage{double(UINT32_MAX)}),
+            tstorage{uint64_t(UINT32_MAX)});
+  EXPECT_THROW(integral_cast(tstorage{DBL_MAX}), std::range_error);
+
+  EXPECT_THROW(integral_cast(tstorage{std::nextafter(
+                   std::numeric_limits<int64_t>::min(), -DBL_MAX)}),
+               std::range_error);
+
+  EXPECT_THROW(integral_cast(tstorage{std::nextafter(-2., -1.)}),
+               std::range_error);
+  EXPECT_THROW(integral_cast(tstorage{std::nextafter(-2., -3.)}),
+               std::range_error);
+
+  using limit = std::numeric_limits<double>;
+  EXPECT_THROW(integral_cast(tstorage{-limit::infinity()}), std::range_error);
+  EXPECT_THROW(integral_cast(tstorage{limit::infinity()}), std::range_error);
+  EXPECT_THROW(integral_cast(tstorage{limit::quiet_NaN()}), std::domain_error);
+  EXPECT_THROW(integral_cast(tstorage{limit::signaling_NaN()}),
+               std::domain_error);
 }
 
 template <class I> static void to_storage_double() {
