@@ -55,26 +55,28 @@
 <li><p><a class="reference internal" href="#multiply" id="id13">Multiply</a></p></li>
 <li><p><a class="reference internal" href="#divide" id="id14">Divide</a></p></li>
 <li><p><a class="reference internal" href="#negate" id="id15">Negate</a></p></li>
+<li><p><a class="reference internal" href="#modulo" id="id16">Modulo</a></p></li>
+<li><p><a class="reference internal" href="#quotient" id="id17">Quotient</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#bitwise-logical-operations" id="id16">Bitwise logical operations</a></p>
+<li><p><a class="reference internal" href="#bitwise-logical-operations" id="id18">Bitwise logical operations</a></p>
 <ul>
-<li><p><a class="reference internal" href="#generic" id="id17">Generic</a></p></li>
-<li><p><a class="reference internal" href="#complement" id="id18">Complement</a></p></li>
+<li><p><a class="reference internal" href="#generic" id="id19">Generic</a></p></li>
+<li><p><a class="reference internal" href="#complement" id="id20">Complement</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#bitwise-shifts" id="id19">Bitwise shifts</a></p></li>
-<li><p><a class="reference internal" href="#rounding-functions" id="id20">Rounding functions</a></p>
+<li><p><a class="reference internal" href="#bitwise-shifts" id="id21">Bitwise shifts</a></p></li>
+<li><p><a class="reference internal" href="#rounding-functions" id="id22">Rounding functions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#round" id="id21">Round</a></p></li>
-<li><p><a class="reference internal" href="#floor" id="id22">Floor</a></p></li>
-<li><p><a class="reference internal" href="#ceil" id="id23">Ceil</a></p></li>
-<li><p><a class="reference internal" href="#trunc" id="id24">Trunc</a></p></li>
+<li><p><a class="reference internal" href="#round" id="id23">Round</a></p></li>
+<li><p><a class="reference internal" href="#floor" id="id24">Floor</a></p></li>
+<li><p><a class="reference internal" href="#ceil" id="id25">Ceil</a></p></li>
+<li><p><a class="reference internal" href="#trunc" id="id26">Trunc</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#power-functions" id="id25">Power functions</a></p>
+<li><p><a class="reference internal" href="#power-functions" id="id27">Power functions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#pow" id="id26">Pow</a></p></li>
+<li><p><a class="reference internal" href="#pow" id="id28">Pow</a></p></li>
 </ul>
 </li>
 </ul>
@@ -352,11 +354,47 @@ no fraction. This might be improved later.</p>
 <li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
 </ul>
 </section>
+<section id="modulo">
+<h3><a class="toc-backref" href="#id16">Modulo</a><a class="headerlink" href="#modulo" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is a double:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Else if both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-int64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else if both <code class="docutils literal notranslate"><span class="pre">lhs</span></code> and <code class="docutils literal notranslate"><span class="pre">rhs</span></code> are an <code class="docutils literal notranslate"><span class="pre">unt64_t</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-int64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+<li><p>Else:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rhs</span></code> is <a class="reference internal" href="#conversion-unmodified"><span class="std std-ref">unmodified</span></a>.</p></li>
+<li><p>Returns: <a class="reference internal" href="#to-storage-uint64-t"><span class="std std-ref">store_prefer_uint64_t</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="quotient">
+<h3><a class="toc-backref" href="#id17">Quotient</a><a class="headerlink" href="#quotient" title="Permalink to this headline">¶</a></h3>
+</section>
 </section>
 <section id="bitwise-logical-operations">
-<h2><a class="toc-backref" href="#id16">Bitwise logical operations</a><a class="headerlink" href="#bitwise-logical-operations" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">Bitwise logical operations</a><a class="headerlink" href="#bitwise-logical-operations" title="Permalink to this headline">¶</a></h2>
 <section id="generic">
-<h3><a class="toc-backref" href="#id17">Generic</a><a class="headerlink" href="#generic" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">Generic</a><a class="headerlink" href="#generic" title="Permalink to this headline">¶</a></h3>
 <p>The bitwise operations <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>, and <code class="docutils literal notranslate"><span class="pre">xor</span></code> all have the same
 conversion behaviour.</p>
 <ul class="simple">
@@ -378,7 +416,7 @@ conversion behaviour.</p>
 </div></blockquote>
 </section>
 <section id="complement">
-<h3><a class="toc-backref" href="#id18">Complement</a><a class="headerlink" href="#complement" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">Complement</a><a class="headerlink" href="#complement" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>If <code class="docutils literal notranslate"><span class="pre">value</span></code> is an <code class="docutils literal notranslate"><span class="pre">int64_t</span></code>:</p>
 <ul>
@@ -397,7 +435,7 @@ conversion behaviour.</p>
 </section>
 </section>
 <section id="bitwise-shifts">
-<h2><a class="toc-backref" href="#id19">Bitwise shifts</a><a class="headerlink" href="#bitwise-shifts" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id21">Bitwise shifts</a><a class="headerlink" href="#bitwise-shifts" title="Permalink to this headline">¶</a></h2>
 <p>The bitwise shift left and shift right have the same conversion behaviour.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">lhs</span></code>:</p>
@@ -424,9 +462,9 @@ conversion behaviour.</p>
 </ul>
 </section>
 <section id="rounding-functions">
-<h2><a class="toc-backref" href="#id20">Rounding functions</a><a class="headerlink" href="#rounding-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id22">Rounding functions</a><a class="headerlink" href="#rounding-functions" title="Permalink to this headline">¶</a></h2>
 <section id="round">
-<h3><a class="toc-backref" href="#id21">Round</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">Round</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
 <p>Rounds the value to the nearest integer value. Rounding halfway rounds away
 from zero.</p>
 <ul class="simple">
@@ -439,7 +477,7 @@ from zero.</p>
 </ul>
 </section>
 <section id="floor">
-<h3><a class="toc-backref" href="#id22">Floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">Floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation less than or equal to the
 original value.</p>
 <ul class="simple">
@@ -452,7 +490,7 @@ original value.</p>
 </ul>
 </section>
 <section id="ceil">
-<h3><a class="toc-backref" href="#id23">Ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">Ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation greater than or equal to the
 original value.</p>
 <ul class="simple">
@@ -465,7 +503,7 @@ original value.</p>
 </ul>
 </section>
 <section id="trunc">
-<h3><a class="toc-backref" href="#id24">Trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">Trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation greater where the fractional
 part is truncated.</p>
 <ul class="simple">
@@ -479,9 +517,9 @@ part is truncated.</p>
 </section>
 </section>
 <section id="power-functions">
-<h2><a class="toc-backref" href="#id25">Power functions</a><a class="headerlink" href="#power-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id27">Power functions</a><a class="headerlink" href="#power-functions" title="Permalink to this headline">¶</a></h2>
 <section id="pow">
-<h3><a class="toc-backref" href="#id26">Pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">Pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
 <p>Raises a value to a certain power.</p>
 <ul class="simple">
 <li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is an integral:</p>
