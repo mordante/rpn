@@ -189,6 +189,104 @@ export tstorage negate(tstorage value) {
   return negate(get<double>(value));
 }
 
+/** @see https://mordante.github.io/rpn/calculation.html#modulo */
+static int64_t mod(int64_t lhs, int64_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return lhs % rhs;
+}
+
+static uint64_t mod(uint64_t lhs, uint64_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return lhs % rhs;
+}
+
+static tstorage mod(__int128_t lhs, __int128_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return to_storage(lhs % rhs);
+}
+
+static double mod(double lhs, double rhs) {
+  if (rhs == 0.)
+    throw std::domain_error("Division by zero");
+  return std::fmod(lhs, rhs);
+}
+
+export tstorage mod(const tstorage &lhs, const tstorage &rhs) {
+  if (std::holds_alternative<double>(lhs) ||
+      std::holds_alternative<double>(rhs))
+    return mod(double_cast(lhs), double_cast(rhs));
+
+  if (std::holds_alternative<int64_t>(lhs) &&
+      std::holds_alternative<int64_t>(rhs))
+    return mod(get<int64_t>(lhs), get<int64_t>(rhs));
+
+  if (std::holds_alternative<uint64_t>(lhs) &&
+      std::holds_alternative<uint64_t>(rhs))
+    return mod(get<uint64_t>(lhs), get<uint64_t>(rhs));
+
+  // At this point either lhs or rhs is an uint64_t and the other is an
+  // int64_t. Since the calculation needs to be done in 128-bit domain
+  // do a cast here. (With some additional sanity checks most can be done in
+  // 64-bit. TODO improve this function.)
+
+  if (std::holds_alternative<uint64_t>(lhs))
+    return mod(static_cast<__int128_t>(get<uint64_t>(lhs)),
+               static_cast<__int128_t>(get<int64_t>(rhs)));
+
+  return mod(static_cast<__int128_t>(get<int64_t>(lhs)),
+             static_cast<__int128_t>(get<uint64_t>(rhs)));
+}
+
+/** @see https://mordante.github.io/rpn/calculation.html#quotient */
+static int64_t quotient(int64_t lhs, int64_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return lhs / rhs;
+}
+
+static uint64_t quotient(uint64_t lhs, uint64_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return lhs / rhs;
+}
+
+static tstorage quotient(__int128_t lhs, __int128_t rhs) {
+  if (rhs == 0)
+    throw std::domain_error("Division by zero");
+  return to_storage(lhs / rhs);
+}
+
+export tstorage quotient(tstorage lhs, tstorage rhs) {
+  if (std::holds_alternative<double>(lhs))
+    lhs = integral_cast(lhs);
+
+  if (std::holds_alternative<double>(rhs))
+    rhs = integral_cast(rhs);
+
+  if (std::holds_alternative<int64_t>(lhs) &&
+      std::holds_alternative<int64_t>(rhs))
+    return quotient(get<int64_t>(lhs), get<int64_t>(rhs));
+
+  if (std::holds_alternative<uint64_t>(lhs) &&
+      std::holds_alternative<uint64_t>(rhs))
+    return quotient(get<uint64_t>(lhs), get<uint64_t>(rhs));
+
+  // At this point either lhs or rhs is an uint64_t and the other is an
+  // int64_t. Since the calculation needs to be done in 128-bit domain
+  // do a cast here. (With some additional sanity checks most can be done in
+  // 64-bit. TODO improve this function.)
+
+  if (std::holds_alternative<uint64_t>(lhs))
+    return quotient(static_cast<__int128_t>(get<uint64_t>(lhs)),
+                    static_cast<__int128_t>(get<int64_t>(rhs)));
+
+  return quotient(static_cast<__int128_t>(get<int64_t>(lhs)),
+                  static_cast<__int128_t>(get<uint64_t>(rhs)));
+}
+
 // TODO static can't be used, since caller is a template.
 /*static*/ tstorage pow(double value, int exp) { return std::pow(value, exp); }
 
