@@ -261,6 +261,11 @@ Functions
 
 Other special textual values will execute an operation. These commands are
 
+* Logarithms
+  * ``lg`` calculates the base-2 logarithm of a ``double``.
+  * ``ln`` calculates the natural logarithm of a ``double``.
+  * ``log`` calculates the base-10 logarithm of a ``double``.
+
 * Rounding functions
 
   * ``round`` rounds a ``double`` to its nearest integral representation.

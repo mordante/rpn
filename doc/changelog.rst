@@ -25,6 +25,7 @@ Focusses on improving the input parsing and adding more operations.
   * Rounding: round, floor, ceil, trunc.
   * Using of grouping in the display's output.
   * pow.
+  * Logarithms: lg (base 2), ln, log (base 10).
   * Miscellaneous: debug mode.
   * Arithmetic: modulo, quotient
 
