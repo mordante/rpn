@@ -323,6 +323,17 @@ The bitwise shift left and shift right have the same conversion behaviour.
 
 * ``result`` the type used for ``lhs``.
 
+Logarithm
+=========
+
+The logarithm operations ``lg``, ``ln``, and ``log`` have the same conversion
+behaviour.
+
+* If either ``value`` is an integral:
+
+  * ``value`` is :ref:`double converted<conversion-double>`.
+  * Returns: a ``double``.
+
 
 Rounding functions
 ==================

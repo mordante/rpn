@@ -66,17 +66,18 @@
 </ul>
 </li>
 <li><p><a class="reference internal" href="#bitwise-shifts" id="id21">Bitwise shifts</a></p></li>
-<li><p><a class="reference internal" href="#rounding-functions" id="id22">Rounding functions</a></p>
+<li><p><a class="reference internal" href="#logarithm" id="id22">Logarithm</a></p></li>
+<li><p><a class="reference internal" href="#rounding-functions" id="id23">Rounding functions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#round" id="id23">Round</a></p></li>
-<li><p><a class="reference internal" href="#floor" id="id24">Floor</a></p></li>
-<li><p><a class="reference internal" href="#ceil" id="id25">Ceil</a></p></li>
-<li><p><a class="reference internal" href="#trunc" id="id26">Trunc</a></p></li>
+<li><p><a class="reference internal" href="#round" id="id24">Round</a></p></li>
+<li><p><a class="reference internal" href="#floor" id="id25">Floor</a></p></li>
+<li><p><a class="reference internal" href="#ceil" id="id26">Ceil</a></p></li>
+<li><p><a class="reference internal" href="#trunc" id="id27">Trunc</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#power-functions" id="id27">Power functions</a></p>
+<li><p><a class="reference internal" href="#power-functions" id="id28">Power functions</a></p>
 <ul>
-<li><p><a class="reference internal" href="#pow" id="id28">Pow</a></p></li>
+<li><p><a class="reference internal" href="#pow" id="id29">Pow</a></p></li>
 </ul>
 </li>
 </ul>
@@ -461,10 +462,23 @@ conversion behaviour.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">result</span></code> the type used for <code class="docutils literal notranslate"><span class="pre">lhs</span></code>.</p></li>
 </ul>
 </section>
+<section id="logarithm">
+<h2><a class="toc-backref" href="#id22">Logarithm</a><a class="headerlink" href="#logarithm" title="Permalink to this headline">¶</a></h2>
+<p>The logarithm operations <code class="docutils literal notranslate"><span class="pre">lg</span></code>, <code class="docutils literal notranslate"><span class="pre">ln</span></code>, and <code class="docutils literal notranslate"><span class="pre">log</span></code> have the same conversion
+behaviour.</p>
+<ul class="simple">
+<li><p>If either <code class="docutils literal notranslate"><span class="pre">value</span></code> is an integral:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code> is <a class="reference internal" href="#conversion-double"><span class="std std-ref">double converted</span></a>.</p></li>
+<li><p>Returns: a <code class="docutils literal notranslate"><span class="pre">double</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 <section id="rounding-functions">
-<h2><a class="toc-backref" href="#id22">Rounding functions</a><a class="headerlink" href="#rounding-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Rounding functions</a><a class="headerlink" href="#rounding-functions" title="Permalink to this headline">¶</a></h2>
 <section id="round">
-<h3><a class="toc-backref" href="#id23">Round</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">Round</a><a class="headerlink" href="#round" title="Permalink to this headline">¶</a></h3>
 <p>Rounds the value to the nearest integer value. Rounding halfway rounds away
 from zero.</p>
 <ul class="simple">
@@ -477,7 +491,7 @@ from zero.</p>
 </ul>
 </section>
 <section id="floor">
-<h3><a class="toc-backref" href="#id24">Floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">Floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation less than or equal to the
 original value.</p>
 <ul class="simple">
@@ -490,7 +504,7 @@ original value.</p>
 </ul>
 </section>
 <section id="ceil">
-<h3><a class="toc-backref" href="#id25">Ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">Ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation greater than or equal to the
 original value.</p>
 <ul class="simple">
@@ -503,7 +517,7 @@ original value.</p>
 </ul>
 </section>
 <section id="trunc">
-<h3><a class="toc-backref" href="#id26">Trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">Trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h3>
 <p>Returns the value with an integral representation greater where the fractional
 part is truncated.</p>
 <ul class="simple">
@@ -517,9 +531,9 @@ part is truncated.</p>
 </section>
 </section>
 <section id="power-functions">
-<h2><a class="toc-backref" href="#id27">Power functions</a><a class="headerlink" href="#power-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id28">Power functions</a><a class="headerlink" href="#power-functions" title="Permalink to this headline">¶</a></h2>
 <section id="pow">
-<h3><a class="toc-backref" href="#id28">Pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">Pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h3>
 <p>Raises a value to a certain power.</p>
 <ul class="simple">
 <li><p>If either <code class="docutils literal notranslate"><span class="pre">lhs</span></code> or <code class="docutils literal notranslate"><span class="pre">rhs</span></code> is an integral:</p>
