@@ -17,6 +17,7 @@ export module calculator.controller;
 import calculator.math.arithmetic;
 import calculator.math.bitwise;
 import calculator.math.core;
+import calculator.math.logarithm;
 import calculator.math.round;
 import calculator.model;
 import calculator.transaction;
@@ -380,6 +381,10 @@ static void execute_command(ttransaction &transaction, std::string_view input) {
 
   /*** Unary ***/
   static constexpr std::array unary_commands = lib::make_dictionary(
+      /*** Logarithm ***/
+      "lg", &math::lg,   //
+      "ln", &math::ln,   //
+      "log", &math::log, //
       /*** Rounding ***/
       "round", &math::round, //
       "floor", &math::floor, //
