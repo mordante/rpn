@@ -114,7 +114,7 @@ not_covered = {
     # Is this a false positive?
     path
     + "/tests/lib/binary_find.cpp": {
-        "lines": 26,
+        "lines": 3,
         "branches": 0,
         "regions": 1,
     },

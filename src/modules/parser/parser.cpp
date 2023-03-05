@@ -12,11 +12,16 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <algorithm>
+#include <cctype>
+#include <memory>
+#include <string_view>
+#include <vector>
+
 export module parser;
 
 export import parser.token;
-import <algorithm>;
-import <vector>;
 
 import parser.detail.base;
 import parser.detail.invalid_value;

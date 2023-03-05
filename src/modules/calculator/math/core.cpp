@@ -12,13 +12,14 @@
  * See the COPYING file for more details.
  */
 
-export module calculator.math.core;
+module;
+#include <bit>
+#include <cmath>
+#include <concepts>
+#include <stdexcept>
+#include <variant>
 
-import <bit>;
-import <cmath>;
-import <concepts>;
-export import <stdexcept>; // TODO is the export really required?
-export import <variant>;
+export module calculator.math.core;
 
 namespace calculator {
 namespace math {

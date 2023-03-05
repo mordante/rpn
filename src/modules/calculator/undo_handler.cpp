@@ -12,11 +12,12 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <vector>
+
 export module calculator.undo_handler;
 
 export import calculator.transaction;
-
-import <vector>;
 
 namespace calculator {
 

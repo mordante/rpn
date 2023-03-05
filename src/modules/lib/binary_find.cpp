@@ -12,11 +12,12 @@
  * See the COPYING file for more details.
  */
 
-export module lib.binary_find;
+module;
+#include <algorithm>
+#include <functional>
+#include <ranges>
 
-export import <functional>;
-import <algorithm>;
-import <ranges>;
+export module lib.binary_find;
 
 namespace lib {
 namespace detail {

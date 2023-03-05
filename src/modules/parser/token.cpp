@@ -12,9 +12,10 @@
  * See the COPYING file for more details.
  */
 
-export module parser.token;
+module;
+#include <string>
 
-export import <string>;
+export module parser.token;
 
 namespace parser {
 

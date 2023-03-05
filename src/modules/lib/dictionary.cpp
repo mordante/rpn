@@ -12,15 +12,20 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <algorithm>
+#include <array>
+#include <concepts>
+#include <iterator>
+#include <ranges>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
 export module lib.dictionary;
 
 import lib.binary_find;
-
-import <algorithm>;
-import <array>;
-import <concepts>;
-import <string_view>;
-import <tuple>;
 
 namespace lib {
 /**

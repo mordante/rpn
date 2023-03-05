@@ -12,12 +12,14 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <cmath>
+#include <stdexcept>
+#include <variant>
+
 export module calculator.math.arithmetic;
 
 export import calculator.math.core;
-
-export import <variant>;
-import <cmath>;
 
 namespace calculator {
 namespace math {

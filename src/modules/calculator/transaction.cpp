@@ -12,16 +12,17 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <algorithm>
+#include <array>
+#include <memory>
+#include <ranges>
+#include <string>
+#include <vector>
+
 export module calculator.transaction;
 
 import calculator.model;
-
-import <array>;
-import <algorithm>;
-import <memory>;
-import <ranges>;
-import <string>;
-import <vector>;
 
 namespace calculator {
 

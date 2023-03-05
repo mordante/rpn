@@ -17,7 +17,7 @@ import calculator.controller;
 import calculator.model;
 import tests.handle_input;
 
-import <locale>;
+#include <locale>
 
 #include <gtest/gtest.h>
 

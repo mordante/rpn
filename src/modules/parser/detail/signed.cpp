@@ -12,6 +12,10 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <memory>
+#include <string>
+
 // TODO Rename siged_value to signed when that becomes valid.
 export module parser.detail.signed_value;
 

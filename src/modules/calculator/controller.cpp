@@ -12,6 +12,23 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <algorithm>
+#include <array>
+#include <charconv>
+#include <concepts>
+#include <format>
+#include <iterator>
+#include <numbers>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <variant>
+#include <vector>
+
 export module calculator.controller;
 
 import calculator.math.arithmetic;
@@ -23,15 +40,6 @@ import calculator.model;
 import calculator.transaction;
 import calculator.undo_handler;
 import lib.dictionary;
-
-import <algorithm>;
-import <array>;
-import <concepts>;
-import <charconv>;
-import <format>;
-import <numbers>;
-import <string>;
-import <string_view>;
 
 namespace calculator {
 

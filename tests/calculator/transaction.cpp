@@ -16,6 +16,8 @@ import calculator.transaction;
 
 import calculator.model;
 
+#include <array>
+
 #include <gtest/gtest.h>
 
 namespace calculator {

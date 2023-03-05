@@ -16,11 +16,13 @@ import lib.binary_find;
 
 import tests.test_constexpr;
 
-import <concepts>;
-import <array>;
-import <forward_list>;
-import <string_view>;
-import <ranges>;
+#include <algorithm>
+#include <array>
+#include <concepts>
+#include <forward_list>
+#include <functional>
+#include <ranges>
+#include <string_view>
 
 #include <gtest/gtest.h>
 

@@ -12,10 +12,13 @@
  * See the COPYING file for more details.
  */
 
+module;
+#include <stdexcept>
+#include <variant>
+
 export module calculator.math.bitwise;
 
 export import calculator.math.core;
-export import <stdexcept>;
 
 namespace calculator {
 namespace math {
