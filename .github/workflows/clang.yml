@@ -20,15 +20,24 @@ jobs:
           sudo sh -c 'echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list'
           sudo apt update
           sudo apt-get install -y clang-17 libc++-17-dev libc++abi-17-dev libunwind-17-dev python3-sphinx
+          # Ninja 1.11 is needed to use modules in CMake. This version is not
+          # available in Ubuntu 22.04. Therefore install it manually.
+          sudo wget -qO /usr/local/bin/ninja.gz https://github.com/ninja-build/ninja/releases/latest/download/ninja-linux.zip
+          sudo gunzip /usr/local/bin/ninja.gz
+          sudo chmod a+x /usr/local/bin/ninja
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_CXX_COMPILER=clang++-17 -DLLVM_COV_PATH=/usr/bin/llvm-cov-17 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-17 -DCODE_COVERAGE=ON ..
-          make VERBOSE=1
-          make ccov-export-tests
+          # The full path to the CXX compiler is needed when using modules.
+          # clang-scan-deps does not work properly with a symlink.
+          cmake -DCMAKE_CXX_COMPILER=/usr/lib/llvm-17/bin/clang++ -DLLVM_COV_PATH=/usr/bin/llvm-cov-17 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-17 -DCODE_COVERAGE=ON -GNinja ..
+          # The dependency information is not entirely correct, this leads to
+          # build failures when running jobs in parallel.
+          ninja -j1 -v
+          ninja -j1 ccov-export-tests
           ../utils/check_coverage.py
-          make ccov-tests
+          ninja -j1 ccov-tests
 
       - name: Documentation
         run: |
