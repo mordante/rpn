@@ -25,6 +25,11 @@ jobs:
           sudo wget -qO /usr/local/bin/ninja.gz https://github.com/ninja-build/ninja/releases/latest/download/ninja-linux.zip
           sudo gunzip /usr/local/bin/ninja.gz
           sudo chmod a+x /usr/local/bin/ninja
+          # CMake 3.26 is needed to use modules. This version is not available
+          # yet so manually install a RC version.
+          sudo apt-get remove -y cmake
+          wget https://github.com/Kitware/CMake/releases/download/v3.26.0-rc5/cmake-3.26.0-rc5-linux-x86_64.sh -O /tmp/install-cmake.sh
+          sudo bash /tmp/install-cmake.sh --prefix=/usr --exclude-subdir --skip-license
       - name: Build
         run: |
           mkdir build
