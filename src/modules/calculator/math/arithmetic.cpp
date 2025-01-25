@@ -18,6 +18,7 @@ export import calculator.math.core;
 
 export import <variant>;
 import <cmath>;
+import <cstdint>;
 
 namespace calculator {
 namespace math {

@@ -12,13 +12,15 @@
  * See the COPYING file for more details.
  */
 
-export module tests.test_constexpr;
+module;
 
 // Note including gtest fails, thus use asserts instead.
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
 #include <assert.h>
+
+export module tests.test_constexpr;
 
 export void test_constexpr(auto f) {
   static_assert(f());

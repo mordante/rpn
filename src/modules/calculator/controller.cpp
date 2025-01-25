@@ -26,12 +26,16 @@ import lib.dictionary;
 
 import <algorithm>;
 import <array>;
+import <cerrno>;
 import <concepts>;
 import <charconv>;
+import <cstdint>;
+import <cstdlib>;
 import <format>;
 import <numbers>;
 import <string>;
 import <string_view>;
+import <system_error>;
 
 namespace calculator {
 
