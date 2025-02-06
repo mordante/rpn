@@ -18,7 +18,7 @@ import calculator.model;
 import lib.base;
 import tests.handle_input;
 
-import <locale>;
+#include <locale>
 
 #include <gtest/gtest.h>
 

@@ -12,10 +12,12 @@
  * See the COPYING file for more details.
  */
 
-export module tests.format_error;
+module;
 
-import <string>;
-import <format>;
+#include <format>
+#include <string>
+
+export module tests.format_error;
 
 export std::string format_error(const char *message) {
   return std::format("{:7} {:>50.50}", "[ERR]", message);

@@ -12,6 +12,37 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <__config>
+
+_LIBCPP_BEGIN_NAMESPACE_STD
+
+#if _LIBCPP_STD_VER >= 17
+template <class _Tp>
+[[nodiscard]] _LIBCPP_HIDE_FROM_ABI constexpr const _Tp &
+as_const(_Tp &__t) noexcept {
+  return __t;
+}
+
+template <class _Tp> void as_const(const _Tp &&) = delete;
+#endif
+
+_LIBCPP_END_NAMESPACE_STD
+
+#include <algorithm>
+#include <array>
+#include <cerrno>
+#include <charconv>
+#include <concepts>
+#include <cstdint>
+#include <cstdlib>
+#include <format>
+#include <numbers>
+#include <string>
+#include <string_view>
+#include <system_error>
+
 export module calculator.controller;
 
 import calculator.math.arithmetic;
@@ -24,19 +55,6 @@ import calculator.transaction;
 import calculator.undo_handler;
 import lib.base;
 import lib.dictionary;
-
-import <algorithm>;
-import <array>;
-import <cerrno>;
-import <concepts>;
-import <charconv>;
-import <cstdint>;
-import <cstdlib>;
-import <format>;
-import <numbers>;
-import <string>;
-import <string_view>;
-import <system_error>;
 
 namespace calculator {
 

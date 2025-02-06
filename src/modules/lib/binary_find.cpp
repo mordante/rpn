@@ -12,11 +12,11 @@
  * See the COPYING file for more details.
  */
 
-export module lib.binary_find;
+module;
 
-export import <functional>;
-import <algorithm>;
-import <ranges>;
+#include <__algorithm/ranges_lower_bound.h>
+
+export module lib.binary_find;
 
 namespace lib {
 namespace detail {

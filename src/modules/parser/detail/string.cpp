@@ -12,6 +12,11 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <memory>
+#include <string>
+
 export module parser.detail.string;
 
 export import parser.detail.base;

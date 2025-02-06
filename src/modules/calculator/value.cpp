@@ -12,17 +12,19 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <cinttypes>
+#include <concepts>
+#include <string>
+#include <variant>
+
 export module calculator.value;
 
 import calculator.math.arithmetic;
 import calculator.math.bitwise;
 import calculator.math.core;
 import calculator.math.round;
-
-import <cinttypes>;
-import <concepts>;
-import <string>;
-export import <variant>;
 
 namespace calculator {
 /**

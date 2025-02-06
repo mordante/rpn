@@ -57,19 +57,24 @@ add_executable(tests
 	calculator/value/math/round/floor.cpp
 	calculator/value/math/round/round.cpp
 	calculator/value/math/round/trunc.cpp
-	format_error.cpp
-	handle_input.cpp
 	lib/binary_find.cpp
 	lib/dictionary.cpp
 	parser/parser.cpp
 	parser/unsigned_value.cpp
 	parser/floating_point_value.cpp
 	parser/signed_value.cpp
-	test_constexpr.cpp
+)
+
+target_sources(tests
+	PUBLIC
+		FILE_SET CXX_MODULES
+		FILES
+			format_error.cpp
+			handle_input.cpp
+			test_constexpr.cpp
 )
 target_compile_options(tests
 	PRIVATE
-		${module_compile_options}
 		${diagnostic_compile_options}
 )
 set_target_properties(tests
@@ -84,16 +89,5 @@ target_link_libraries(tests
 		gtest_main
 		c++experimental
 		c++
-)
-add_module(tests.format_error format_error.cpp)
-add_module(tests.handle_input handle_input.cpp)
-add_module(tests.test_constexpr test_constexpr.cpp)
-add_dependencies(tests.handle_input.pcm
-	calculator.pcm
-)
-add_dependencies(tests
-	tests.format_error.pcm
-	tests.handle_input.pcm
-	tests.test_constexpr.pcm
 )
 target_code_coverage(tests)

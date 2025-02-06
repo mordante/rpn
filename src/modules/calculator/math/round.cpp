@@ -12,11 +12,15 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <cmath>
+#include <stdexcept>
+#include <variant>
+
 export module calculator.math.round;
 
 export import calculator.math.core;
-
-import <cmath>;
 
 namespace calculator {
 namespace math {

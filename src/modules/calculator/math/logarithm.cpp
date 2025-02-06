@@ -12,12 +12,14 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <cmath>
+#include <variant>
+
 export module calculator.math.logarithm;
 
 export import calculator.math.core;
-
-export import <variant>;
-import <cmath>;
 
 namespace calculator {
 namespace math {

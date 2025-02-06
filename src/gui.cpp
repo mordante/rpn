@@ -19,9 +19,9 @@ module;
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Window.H>
 
-export module gui;
+#include <iostream>
 
-import <iostream>;
+export module gui;
 
 import calculator;
 // When not in an anonymous namespace the twindow classes in tui and gui give

@@ -12,15 +12,33 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <__config>
+
+_LIBCPP_BEGIN_NAMESPACE_STD
+
+#if _LIBCPP_STD_VER >= 17
+template <class _Tp>
+[[nodiscard]] _LIBCPP_HIDE_FROM_ABI constexpr const _Tp &
+as_const(_Tp &__t) noexcept {
+  return __t;
+}
+
+template <class _Tp> void as_const(const _Tp &&) = delete;
+#endif
+
+_LIBCPP_END_NAMESPACE_STD
+
+#include <algorithm>
+#include <array>
+#include <concepts>
+#include <string_view>
+#include <tuple>
+
 export module lib.dictionary;
 
 import lib.binary_find;
-
-import <algorithm>;
-import <array>;
-import <concepts>;
-import <string_view>;
-import <tuple>;
 
 namespace lib {
 /**

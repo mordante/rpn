@@ -14,8 +14,8 @@
 
 import calculator.math.arithmetic;
 
-import <cmath>;
-import <limits>;
+#include <cmath>
+#include <limits>
 
 #include <gtest/gtest.h>
 

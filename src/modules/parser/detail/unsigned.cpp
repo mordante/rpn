@@ -12,11 +12,16 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <memory>
+#include <string>
+
 // TODO Rename unsiged_value to unsigned when that becomes valid.
 export module parser.detail.unsigned_value;
 
-export import parser.detail.base;
 import lib.base;
+
 import parser.detail.floating_point;
 import parser.detail.invalid_value;
 
@@ -139,7 +144,6 @@ private:
         return std::make_unique<tparser_invalid_value>();
       break;
     }
-
     // Expects ASCII
     if (c < '0')
       return std::make_unique<tparser_invalid_value>();

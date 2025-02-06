@@ -14,6 +14,22 @@
 
 module;
 
+#include <__config>
+
+_LIBCPP_BEGIN_NAMESPACE_STD
+
+#if _LIBCPP_STD_VER >= 17
+template <class _Tp>
+[[nodiscard]] _LIBCPP_HIDE_FROM_ABI constexpr const _Tp &
+as_const(_Tp &__t) noexcept {
+  return __t;
+}
+
+template <class _Tp> void as_const(const _Tp &&) = delete;
+#endif
+
+_LIBCPP_END_NAMESPACE_STD
+
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
