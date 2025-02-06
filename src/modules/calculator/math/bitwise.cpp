@@ -14,6 +14,7 @@
 
 export module calculator.math.bitwise;
 
+import <cstdint>;
 export import calculator.math.core;
 export import <stdexcept>;
 

@@ -45,6 +45,18 @@ set(diagnostic_compile_options
 	-Wno-c++20-compat
 	# TODO Investigate whether the issues are real or false positives.
 	-Wno-unsafe-buffer-usage
+	-Wno-integer-overflow
+)
+
+# The set of disagnostics above leads to an ICE.
+# This set shows less issues, but compiles
+#
+# TODO investigate the ICE.
+set(diagnostic_compile_options
+	-Werror
+	-Wall
+	-Wextra
+	-Wno-integer-overflow
 )
 
 set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")
