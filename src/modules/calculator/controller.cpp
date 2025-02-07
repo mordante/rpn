@@ -12,6 +12,10 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <cerrno>
+
 export module calculator.controller;
 
 import calculator.math.arithmetic;
@@ -22,20 +26,9 @@ import calculator.math.round;
 import calculator.model;
 import calculator.transaction;
 import calculator.undo_handler;
+import lib.base;
 import lib.dictionary;
-
-import <algorithm>;
-import <array>;
-import <cerrno>;
-import <concepts>;
-import <charconv>;
-import <cstdint>;
-import <cstdlib>;
-import <format>;
-import <numbers>;
-import <string>;
-import <string_view>;
-import <system_error>;
+import std;
 
 namespace calculator {
 
@@ -286,7 +279,7 @@ static int determine_base(std::string_view &input) {
 }
 
 static void parse_signed(ttransaction &transaction, std::string_view input) {
-  int64_t value;
+  std::int64_t value;
   std::from_chars_result result =
       std::from_chars(input.begin(), input.end(), value);
 
@@ -299,7 +292,7 @@ static void parse_signed(ttransaction &transaction, std::string_view input) {
 
 static void parse_unsigned(ttransaction &transaction, std::string_view input) {
   int base = determine_base(input);
-  uint64_t value;
+  std::uint64_t value;
   std::from_chars_result result =
       std::from_chars(input.begin(), input.end(), value, base);
 
@@ -315,7 +308,7 @@ static void parse_float(ttransaction &transaction, std::string_view input) {
   std::string str{input};
   const char *s = str.c_str();
   char *ptr = nullptr;
-  double value = strtod(s, &ptr);
+  double value = std::strtod(s, &ptr);
 
   if (!ptr || *ptr != '\0' || errno == ERANGE)
     throw std::domain_error("Invalid numeric value");
@@ -326,20 +319,32 @@ static void parse_float(ttransaction &transaction, std::string_view input) {
 static std::optional<tvalue> get_constant(std::string_view input) {
   static constexpr std::array constants = lib::make_dictionary(
       /*** Signed int minimum ***/
-      "int8_min", tvalue{int64_t(std::numeric_limits<int8_t>::min())},   //
-      "int16_min", tvalue{int64_t(std::numeric_limits<int16_t>::min())}, //
-      "int32_min", tvalue{int64_t(std::numeric_limits<int32_t>::min())}, //
-      "int64_min", tvalue{int64_t(std::numeric_limits<int64_t>::min())}, //
+      "int8_min",
+      tvalue{std::int64_t(std::numeric_limits<std::int8_t>::min())}, //
+      "int16_min",
+      tvalue{std::int64_t(std::numeric_limits<std::int16_t>::min())}, //
+      "int32_min",
+      tvalue{std::int64_t(std::numeric_limits<std::int32_t>::min())}, //
+      "int64_min",
+      tvalue{std::int64_t(std::numeric_limits<std::int64_t>::min())}, //
       /*** Signed int maximum ***/
-      "int8_max", tvalue{int64_t(std::numeric_limits<int8_t>::max())},   //
-      "int16_max", tvalue{int64_t(std::numeric_limits<int16_t>::max())}, //
-      "int32_max", tvalue{int64_t(std::numeric_limits<int32_t>::max())}, //
-      "int64_max", tvalue{int64_t(std::numeric_limits<int64_t>::max())}, //
+      "int8_max",
+      tvalue{std::int64_t(std::numeric_limits<std::int8_t>::max())}, //
+      "int16_max",
+      tvalue{std::int64_t(std::numeric_limits<std::int16_t>::max())}, //
+      "int32_max",
+      tvalue{std::int64_t(std::numeric_limits<std::int32_t>::max())}, //
+      "int64_max",
+      tvalue{std::int64_t(std::numeric_limits<std::int64_t>::max())}, //
       /*** Unsigned int maximum ***/
-      "uint8_max", tvalue{uint64_t(std::numeric_limits<uint8_t>::max())},   //
-      "uint16_max", tvalue{uint64_t(std::numeric_limits<uint16_t>::max())}, //
-      "uint32_max", tvalue{uint64_t(std::numeric_limits<uint32_t>::max())}, //
-      "uint64_max", tvalue{uint64_t(std::numeric_limits<uint64_t>::max())}, //
+      "uint8_max",
+      tvalue{std::uint64_t(std::numeric_limits<std::uint8_t>::max())}, //
+      "uint16_max",
+      tvalue{std::uint64_t(std::numeric_limits<std::uint16_t>::max())}, //
+      "uint32_max",
+      tvalue{std::uint64_t(std::numeric_limits<std::uint32_t>::max())}, //
+      "uint64_max",
+      tvalue{std::uint64_t(std::numeric_limits<std::uint64_t>::max())}, //
       /*** Floating point minimum ***/
       "float_min", tvalue{double(std::numeric_limits<float>::min())},   //
       "double_min", tvalue{double(std::numeric_limits<double>::min())}, //
@@ -426,19 +431,19 @@ void tcontroller::handle_keyboard_input_control(char key) {
   switch (key) {
     /*** Modify selected base ***/
   case 'b':
-    model_.base_set(tbase::binary);
+    model_.base_set(lib::tbase::binary);
     break;
 
   case 'o':
-    model_.base_set(tbase::octal);
+    model_.base_set(lib::tbase::octal);
     break;
 
   case 'd':
-    model_.base_set(tbase::decimal);
+    model_.base_set(lib::tbase::decimal);
     break;
 
   case 'h':
-    model_.base_set(tbase::hexadecimal);
+    model_.base_set(lib::tbase::hexadecimal);
     break;
 
     /*** Undo / redo ***/

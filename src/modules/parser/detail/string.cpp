@@ -15,6 +15,7 @@
 export module parser.detail.string;
 
 export import parser.detail.base;
+import std;
 
 namespace parser {
 

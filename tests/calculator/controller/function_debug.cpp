@@ -15,9 +15,11 @@
 import calculator.controller;
 
 import calculator.model;
+import lib.base;
 import tests.handle_input;
 
-import <locale>;
+// TODO import std; fails.
+#include <locale>
 
 #include <gtest/gtest.h>
 
@@ -50,7 +52,7 @@ TEST(controller, debug_basic) {
 
 TEST(controller, debug_base_2) {
   tmodel model;
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
 
   handle_input(controller, model, "0b1111_0000 0b1111_0000");
@@ -70,7 +72,7 @@ TEST(controller, debug_base_2) {
 
 TEST(controller, debug_base_8) {
   tmodel model;
-  model.base_set(tbase::octal);
+  model.base_set(lib::tbase::octal);
   tcontroller controller{model};
 
   handle_input(controller, model, "0777_555 0777_555");
@@ -142,7 +144,7 @@ TEST(controller, debug_base_10) {
 
 TEST(controller, debug_base_16) {
   tmodel model;
-  model.base_set(tbase::hexadecimal);
+  model.base_set(lib::tbase::hexadecimal);
   tcontroller controller{model};
 
   handle_input(controller, model, "0x1234_5678 0x1234_5678");

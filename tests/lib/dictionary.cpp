@@ -14,7 +14,7 @@
 
 import lib.dictionary;
 
-import <array>;
+#include <array>
 
 #include <gtest/gtest.h>
 

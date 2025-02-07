@@ -23,22 +23,19 @@ Building
 
 In order to build the application the following dependencies are required:
 
-* `CMake <https://cmake.org/>`_ 3.20.0 or later. Once CMake adds proper module
-  support the requirement will be incremented to that version.
-* A recent `Clang <clang.llvm.org/>`_ main build. Clang 15.0.0 is expected to
-  work, but when module support improves on Clang a more recent build will be
-  required.
-* A recent `libc++ <libcxx.llvm.org/>`_ main build. In libc++ both ``<ranges>``
-  and ``<format>`` are actively being developed. When features land in the main
-  branch the application will use some of these features.
-* A working Internet connection. The application depends on
-  `GoogleTest <http://google.github.io/googletest/>`_ and
-  `FLTK <https://fltk.org/>`_. The proper dependencies are downloaded during
-  the build process.
-* Optional when enabling coverage ``llvm-cov`` and ``llvm-profdata`` are
-  required. This should be the same version as Clang, but normally they are
-  installed together with Clang.
-* Optional for formatting ``clang-format``, ``cmake-format``, and ``black``.
+Due to module support and using ``import std`` the requirements are quite high:
+ * `CMake <https://cmake.org/>`_ 3.30.0 or later.
+ * A recent `Clang <clang.llvm.org/>`_ main build. Clang 20.0.0 might work.
+ * A recent `libc++ <libcxx.llvm.org/>`_ main build. Libc++ 20.0.0 might work.
+ * `Ninja <https://ninja-build.org/>`_ 1.11 or later.
+ * A working Internet connection. The application depends on
+   `GoogleTest <http://google.github.io/googletest/>`_ and
+   `FLTK <https://fltk.org/>`_. The proper dependencies are downloaded during
+   the build process.
+ * Optional when enabling coverage ``llvm-cov`` and ``llvm-profdata`` are
+   required. This should be the same version as Clang, but normally they are
+   installed together with Clang.
+ * Optional for formatting ``clang-format``, ``cmake-format``, and ``black``.
 
 The build itself is a normal CMake build. It has the following options:
 

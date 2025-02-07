@@ -15,12 +15,7 @@
 export module lib.dictionary;
 
 import lib.binary_find;
-
-import <algorithm>;
-import <array>;
-import <concepts>;
-import <string_view>;
-import <tuple>;
+import std;
 
 namespace lib {
 /**
@@ -45,7 +40,7 @@ consteval auto make_dictionary(Args... args) {
   // TODO Guard against temporary std::string.
   std::tuple all = std::make_tuple(args...);
 
-  auto result = [&all]<size_t... I>(std::index_sequence<I...>) {
+  auto result = [&all]<std::size_t... I>(std::index_sequence<I...>) {
     return std::array{[&all] {
       // Make sure all values have the same type.
       static_assert(
@@ -65,7 +60,7 @@ consteval auto make_dictionary(Args... args) {
 }
 
 /** Executes a find operation on a dictionary. */
-export template <class K, class V, size_t N>
+export template <class K, class V, std::size_t N>
 constexpr auto find(const std::array<std::pair<std::string_view, V>, N> &lut,
                     K &&key) {
   using E = std::pair<std::string_view, V>;

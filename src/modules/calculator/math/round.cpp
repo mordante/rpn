@@ -15,8 +15,7 @@
 export module calculator.math.round;
 
 export import calculator.math.core;
-
-import <cmath>;
+import std;
 
 namespace calculator {
 namespace math {

@@ -21,6 +21,7 @@ module;
 export module tui;
 
 import calculator;
+import std;
 
 namespace {
 

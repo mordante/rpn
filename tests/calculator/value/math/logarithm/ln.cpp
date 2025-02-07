@@ -14,8 +14,8 @@
 
 import calculator.math.logarithm;
 
-import <cmath>;
-import <limits>;
+#include <cmath>
+#include <limits>
 
 #include <gtest/gtest.h>
 

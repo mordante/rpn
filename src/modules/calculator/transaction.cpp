@@ -15,14 +15,7 @@
 export module calculator.transaction;
 
 import calculator.model;
-
-import <array>;
-import <algorithm>;
-import <exception>;
-import <memory>;
-import <ranges>;
-import <string>;
-import <vector>;
+import std;
 
 namespace calculator {
 
@@ -202,7 +195,7 @@ public:
    * The values are returned in an array, the first poped element is at
    * offset 0, the second at offset 1, etc.
    */
-  template <size_t N = 1>
+  template <std::size_t N = 1>
     requires(N >= 1 && N <= 2)
   [[nodiscard]] auto pop() {
     if (model_.stack().size() < N) {
@@ -213,7 +206,7 @@ public:
       throw std::out_of_range(messages[N - 1]);
     }
 
-    return [this]<size_t... I>(std::index_sequence<I...>) {
+    return [this]<std::size_t... I>(std::index_sequence<I...>) {
       return std::array{[this] {
         (void)I; // Needed to execute the this lambda N times.
         tvalue value = model_.stack().pop();

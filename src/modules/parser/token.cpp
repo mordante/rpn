@@ -13,8 +13,7 @@
  */
 
 export module parser.token;
-
-export import <string>;
+import std;
 
 namespace parser {
 

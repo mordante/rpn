@@ -16,9 +16,8 @@ export module calculator.model;
 
 export import calculator.stack;
 export import parser;
-
-import <string>;
-import <string_view>;
+import lib.base;
+import std;
 
 namespace calculator {
 
@@ -112,7 +111,7 @@ public:
    * settings accessed via the model instead of the stack. So keep the function
    * here.
    */
-  void base_set(tbase base) { stack_.base_set(base); }
+  void base_set(lib::tbase base) { stack_.base_set(base); }
 
   /** Toggles the display of grouping symbols in the output. */
   void grouping_toggle() { stack_.grouping_toggle(); }

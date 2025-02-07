@@ -15,6 +15,7 @@
 import calculator.controller;
 
 import calculator.model;
+import lib.base;
 import tests.format_error;
 import tests.handle_input;
 
@@ -43,7 +44,7 @@ TEST(controller, key_char_less_than_too_few_elements) {
 TEST(controller, key_char_less_than_stack_input) {
   tmodel model;
   model.grouping_toggle();
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b101010");
   model.input_append("2");
@@ -57,7 +58,7 @@ TEST(controller, key_char_less_than_stack_input) {
 TEST(controller, key_char_less_than_stack_stack) {
   tmodel model;
   model.grouping_toggle();
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b101010");
   handle_input(controller, model, "2");
@@ -71,7 +72,7 @@ TEST(controller, key_char_less_than_stack_stack) {
 TEST(controller, key_char_less_than_diagnostics_cleared) {
   tmodel model;
   model.grouping_toggle();
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
   model.diagnostics_set("Cleared");
   handle_input(controller, model, "0b101010");

@@ -12,12 +12,14 @@
  * See the COPYING file for more details.
  */
 
+module;
+
+#include <string_view>
+
 export module tests.handle_input;
 
 import calculator.controller;
 import calculator.model;
-
-import <string_view>;
 
 namespace calculator {
 

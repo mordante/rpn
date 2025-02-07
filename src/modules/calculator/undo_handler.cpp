@@ -15,10 +15,7 @@
 export module calculator.undo_handler;
 
 export import calculator.transaction;
-
-import <vector>;
-import <stdexcept>;
-import <utility>;
+import std;
 
 namespace calculator {
 

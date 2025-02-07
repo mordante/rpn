@@ -12,12 +12,14 @@
  * See the COPYING file for more details.
  */
 
-import gui;
-import tui;
-import std;
+export module lib.base;
 
-int main(int argc, char **argv) {
-  if (argc > 1 && argv[1] == std::string_view{"-t"})
-    return tui::run();
-  return gui::run(argc, argv);
-}
+namespace lib {
+
+// TODO This does not seem the best location.
+// Need to consider alternatives.
+
+/** The supported bases in the calculator. */
+export enum class tbase { binary, octal, decimal, hexadecimal };
+
+} // namespace lib

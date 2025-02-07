@@ -1,10 +1,12 @@
-cmake_minimum_required(VERSION 3.20.0 FATAL_ERROR)
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
+cmake_minimum_required(VERSION 3.30.0 FATAL_ERROR)
+# Hack needed to tell CMake we use libc++ for modules.
+string(APPEND CMAKE_CXX_FLAGS_INIT " -stdlib=libc++")
 project(rpn
 	LANGUAGES CXX
 )
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(CheckCXXCompilerFlag)
-include(ClangModule)
 include(CodeCoverage)
 # Make sure all dependencies use the libc++.
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-stdlib=libc++>)
@@ -14,16 +16,9 @@ include(GoogleTest)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
-set(CMAKE_CXX_EXTENSIONS NO)
-add_compile_options(-fexperimental-library)
-add_link_options(-fexperimental-library)
+set(CMAKE_CXX_EXTENSIONS YES)
+set(CMAKE_CXX_MODULE_STD ON)
 set(PREBUILT_MODULE_PATH ${CMAKE_BINARY_DIR}/modules)
-set(module_compile_options
-	-fmodules
-	-fbuiltin-module-map
-	-fimplicit-module-maps
-	-fprebuilt-module-path=${PREBUILT_MODULE_PATH}
-)
 set(diagnostic_compile_options
 	-Werror
 	-Weverything
@@ -57,6 +52,7 @@ set(diagnostic_compile_options
 	-Wall
 	-Wextra
 	-Wno-integer-overflow
+	-D_LIBCPP___UTILITY_AS_CONST_H
 )
 
 set(CLANG_TIDY "" CACHE FILEPATH "The clang-tidy executable to use")

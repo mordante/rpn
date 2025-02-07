@@ -15,10 +15,11 @@
 // TODO Rename unsiged_value to unsigned when that becomes valid.
 export module parser.detail.unsigned_value;
 
-export import parser.detail.base;
-import calculator.stack;
+import lib.base;
+
 import parser.detail.floating_point;
 import parser.detail.invalid_value;
+import std;
 
 namespace parser {
 
@@ -53,7 +54,7 @@ private:
     complete
   };
   tstate state_{tstate::initial};
-  calculator::tbase base_{calculator::tbase::decimal};
+  lib::tbase base_{lib::tbase::decimal};
   std::string buffer_{};
 
   ttoken make_complete() override {
@@ -65,7 +66,7 @@ private:
   }
 
   std::unique_ptr<tparser_> initial(char c) {
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       throw std::logic_error(
           "The caller should have validated input is a digit");
 
@@ -84,12 +85,12 @@ private:
 
     switch (c) {
     case 'b':
-      base_ = calculator::tbase::binary;
+      base_ = lib::tbase::binary;
       state_ = tstate::required_number;
       break;
 
     case 'x':
-      base_ = calculator::tbase::hexadecimal;
+      base_ = lib::tbase::hexadecimal;
       state_ = tstate::required_number;
       break;
 
@@ -98,7 +99,7 @@ private:
       if (c < '0' || c > '7')
         return std::make_unique<tparser_invalid_value>();
 
-      base_ = calculator::tbase::octal;
+      base_ = lib::tbase::octal;
       state_ = tstate::optional_number;
       break;
     }
@@ -118,28 +119,27 @@ private:
 
     buffer_ += c;
     switch (base_) {
-    case calculator::tbase::binary:
+    case lib::tbase::binary:
       if (c > '1')
         return std::make_unique<tparser_invalid_value>();
       break;
 
-    case calculator::tbase::octal:
+    case lib::tbase::octal:
       if (c > '7')
         return std::make_unique<tparser_invalid_value>();
       break;
-    case calculator::tbase::decimal:
+    case lib::tbase::decimal:
       // Non-decimal bases aren't allowed in floating-point values.
       if (c == '.' || c == 'e')
         return create_parser_floating_point();
       if (c > '9')
         return std::make_unique<tparser_invalid_value>();
       break;
-    case calculator::tbase::hexadecimal:
+    case lib::tbase::hexadecimal:
       if (c > '9' && c > 'a' && c > 'f')
         return std::make_unique<tparser_invalid_value>();
       break;
     }
-
     // Expects ASCII
     if (c < '0')
       return std::make_unique<tparser_invalid_value>();

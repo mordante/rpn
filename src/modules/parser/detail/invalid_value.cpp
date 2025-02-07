@@ -15,6 +15,7 @@
 export module parser.detail.invalid_value;
 
 export import parser.detail.base;
+import std;
 
 namespace parser {
 

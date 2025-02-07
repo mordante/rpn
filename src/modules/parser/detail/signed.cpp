@@ -18,6 +18,7 @@ export module parser.detail.signed_value;
 export import parser.detail.base;
 import parser.detail.invalid_value;
 import parser.detail.string;
+import std;
 
 namespace parser {
 
@@ -94,7 +95,7 @@ private:
       return nullptr;
     }
 
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       return create_parser_string();
 
     state_ = tstate::optional_number;
@@ -111,7 +112,7 @@ private:
       return nullptr;
 
     buffer_ += c;
-    if (!isdigit(c)) {
+    if (!std::isdigit(c)) {
       if (has_minus_)
         return std::make_unique<tparser_invalid_value>();
       return create_parser_string();

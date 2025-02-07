@@ -19,17 +19,23 @@ jobs:
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo sh -c 'echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list'
           sudo apt update
-          sudo apt-get install -y clang-21 libc++-21-dev libc++abi-21-dev libunwind-21-dev python3-sphinx
+          sudo apt-get install -y clang-21 clang-tools-21 libc++-21-dev libc++abi-21-dev libunwind-21-dev python3-sphinx
+          # Install a Ninja version with module support. The one shipped with Ubuntu 22.04 is too old.
+          set -e
+          wget -qO /tmp/ninja.gz https://github.com/ninja-build/ninja/releases/latest/download/ninja-linux.zip
+          gunzip /tmp/ninja.gz
+          chmod a+x /tmp/ninja
+          sudo mv /tmp/ninja /usr/local/bin/ninja
       - name: Build
         run: |
           mkdir build
           cd build
-          cmake -DCMAKE_CXX_COMPILER=clang++-21 -DLLVM_COV_PATH=/usr/bin/llvm-cov-21 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-21 -DCODE_COVERAGE=ON ..
-          make VERBOSE=1
-          make ccov-export-tests
+          cmake -DCMAKE_CXX_COMPILER=clang++-21 -DLLVM_COV_PATH=/usr/bin/llvm-cov-21 -DLLVM_PROFDATA_PATH=/usr/bin/llvm-profdata-21 -DCODE_COVERAGE=ON -GNinja ..
+          ninja -v
+          ninja ccov-export-tests
           # TODO investigate
           # ../utils/check_coverage.py
-          make ccov-tests
+          ninja ccov-tests
 
       - name: Documentation
         run: |

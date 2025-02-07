@@ -18,11 +18,7 @@ import calculator.math.arithmetic;
 import calculator.math.bitwise;
 import calculator.math.core;
 import calculator.math.round;
-
-import <cinttypes>;
-import <concepts>;
-import <string>;
-export import <variant>;
+import std;
 
 namespace calculator {
 /**
@@ -38,8 +34,8 @@ namespace calculator {
  */
 export class tvalue final {
 public:
-  explicit constexpr tvalue(int64_t value) noexcept : value_(value) {}
-  explicit constexpr tvalue(uint64_t value) noexcept : value_(value) {}
+  explicit constexpr tvalue(std::int64_t value) noexcept : value_(value) {}
+  explicit constexpr tvalue(std::uint64_t value) noexcept : value_(value) {}
   explicit constexpr tvalue(double value) noexcept : value_(value) {}
 
   constexpr tvalue(math::tstorage value) noexcept : value_(value) {}

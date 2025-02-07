@@ -21,9 +21,9 @@ module;
 
 export module gui;
 
-import <iostream>;
-
 import calculator;
+import std;
+
 // When not in an anonymous namespace the twindow classes in tui and gui give
 // issues. This seems like a bug in Clang.
 namespace {

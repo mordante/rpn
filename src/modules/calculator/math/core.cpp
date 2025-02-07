@@ -12,117 +12,113 @@
  * See the COPYING file for more details.
  */
 
-export module calculator.math.core;
+module;
 
-import <bit>;
-import <cmath>;
-import <concepts>;
-import <cstdint>;
-export import <stdexcept>; // TODO is the export really required?
-export import <variant>;
+export module calculator.math.core;
+import std;
 
 namespace calculator {
 namespace math {
 
-export using tstorage = std::variant<int64_t, uint64_t, double>;
+export using tstorage = std::variant<std::int64_t, std::uint64_t, double>;
 
 export template <class T>
-concept is_storage = std::same_as<T, int64_t> || std::same_as<T, uint64_t> ||
-                     std::same_as<T, double>;
+concept is_storage = std::same_as<T, std::int64_t> ||
+                     std::same_as<T, std::uint64_t> || std::same_as<T, double>;
 
-static uint64_t bitwise_cast(int64_t value) {
-  return static_cast<uint64_t>(value);
+static std::uint64_t bitwise_cast(std::int64_t value) {
+  return static_cast<std::uint64_t>(value);
 }
 
-static uint64_t bitwise_cast(uint64_t value) { return value; }
+static std::uint64_t bitwise_cast(std::uint64_t value) { return value; }
 
-static uint64_t bitwise_cast(double value) {
-  return std::bit_cast<uint64_t>(value);
+static std::uint64_t bitwise_cast(double value) {
+  return std::bit_cast<std::uint64_t>(value);
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static uint64_t bitwise_cast(T) = delete;
+template <class T> static std::uint64_t bitwise_cast(T) = delete;
 
 /**
  * @see https://mordante.github.io/rpn/calculation.html#bitwise-operations-cast
  */
-export uint64_t bitwise_cast(const tstorage &value) {
+export std::uint64_t bitwise_cast(const tstorage &value) {
   return std::visit([](auto v) { return bitwise_cast(v); }, value);
 }
 
-static uint64_t positive_integral_cast(int64_t value) {
+static std::uint64_t positive_integral_cast(std::int64_t value) {
   if (value <= 0)
     throw std::range_error("Not a positive value");
-  return static_cast<uint64_t>(value);
+  return static_cast<std::uint64_t>(value);
 }
 
-static uint64_t positive_integral_cast(uint64_t value) {
+static std::uint64_t positive_integral_cast(std::uint64_t value) {
   if (value == 0)
     throw std::range_error("Not a positive value");
   return value;
 }
 
-static uint64_t positive_integral_cast(double value) {
+static std::uint64_t positive_integral_cast(double value) {
   // This tests means we don't need to test for -0 later.
   if (value <= 0.)
     throw std::range_error("Not a positive value");
 
-  if (value > static_cast<double>(std::numeric_limits<uint64_t>::max()))
+  if (value > static_cast<double>(std::numeric_limits<std::uint64_t>::max()))
     throw std::range_error("Value too large");
 
   double result;
-  if (modf(value, &result) != 0.)
+  if (std::modf(value, &result) != 0.)
     throw std::range_error("Not an integral");
-  return static_cast<uint64_t>(result);
+  return static_cast<std::uint64_t>(result);
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static uint64_t positive_integral_cast(T) = delete;
+template <class T> static std::uint64_t positive_integral_cast(T) = delete;
 
-export uint64_t positive_integral_cast(const tstorage &value) {
+export std::uint64_t positive_integral_cast(const tstorage &value) {
   return std::visit([](auto v) { return positive_integral_cast(v); }, value);
 }
 
-static int64_t negative_integral_cast(int64_t value) {
+static std::int64_t negative_integral_cast(std::int64_t value) {
   if (value >= 0)
     throw std::range_error("Not a negative value");
   return value;
 }
 
-static int64_t negative_integral_cast(uint64_t) {
+static std::int64_t negative_integral_cast(std::uint64_t) {
   throw std::range_error("Not a negative value");
 }
 
-static int64_t negative_integral_cast(double value) {
+static std::int64_t negative_integral_cast(double value) {
   // This tests means we don't need to test for -0 later.
   if (value >= 0.)
     throw std::range_error("Not a negative value");
 
-  if (value < static_cast<double>(std::numeric_limits<int64_t>::min()))
+  if (value < static_cast<double>(std::numeric_limits<std::int64_t>::min()))
     throw std::range_error("Value too large");
 
   double result;
-  if (modf(value, &result) != 0.)
+  if (std::modf(value, &result) != 0.)
     throw std::range_error("Not an integral");
-  return static_cast<int64_t>(result);
+  return static_cast<std::int64_t>(result);
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static int64_t negative_integral_cast(T) = delete;
+template <class T> static std::int64_t negative_integral_cast(T) = delete;
 
-export int64_t negative_integral_cast(const tstorage &value) {
+export std::int64_t negative_integral_cast(const tstorage &value) {
   return std::visit([](auto v) { return negative_integral_cast(v); }, value);
 }
 
 template <class T>
-  requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>)
+  requires(std::same_as<T, std::int64_t> || std::same_as<T, std::uint64_t>)
 static tstorage integral_cast(T value) {
   return value;
 }
 
 static tstorage integral_cast(double value) {
   if (value == 0.)
-    return uint64_t(0);
+    return std::uint64_t(0);
   if (value < 0.)
     return negative_integral_cast(value);
   if (value > 0.)
@@ -138,9 +134,13 @@ export tstorage integral_cast(const tstorage &value) {
   return std::visit([](auto v) { return integral_cast(v); }, value);
 }
 
-static double double_cast(int64_t value) { return static_cast<double>(value); }
+static double double_cast(std::int64_t value) {
+  return static_cast<double>(value);
+}
 
-static double double_cast(uint64_t value) { return static_cast<double>(value); }
+static double double_cast(std::uint64_t value) {
+  return static_cast<double>(value);
+}
 
 static double double_cast(double value) { return value; }
 
@@ -158,34 +158,34 @@ export double double_cast(const tstorage &value) {
  * calculations. This function does the generic store in the best storage type
  * action.
  *
- * When the result can be stored in both an @c uint64_t and an @c int64_t this
- * version preferes the @c uint64_t.
+ * When the result can be stored in both an @c std::uint64_t and an @c
+ * std::int64_t this version preferes the @c std::uint64_t.
  */
-export template <class T = uint64_t>
-  requires(std::same_as<T, int64_t> || std::same_as<T, uint64_t>)
+export template <class T = std::uint64_t>
+  requires(std::same_as<T, std::int64_t> || std::same_as<T, std::uint64_t>)
 tstorage to_storage(__int128_t value) {
-  if (value < std::numeric_limits<int64_t>::min() ||
-      value > std::numeric_limits<uint64_t>::max())
+  if (value < std::numeric_limits<std::int64_t>::min() ||
+      value > std::numeric_limits<std::uint64_t>::max())
     return static_cast<double>(value);
 
-  if constexpr (std::same_as<T, uint64_t>) {
+  if constexpr (std::same_as<T, std::uint64_t>) {
     if (value < 0)
-      return static_cast<int64_t>(value);
+      return static_cast<std::int64_t>(value);
 
-    return static_cast<uint64_t>(value);
+    return static_cast<std::uint64_t>(value);
   } else {
-    if (value > std::numeric_limits<int64_t>::max())
-      return static_cast<uint64_t>(value);
+    if (value > std::numeric_limits<std::int64_t>::max())
+      return static_cast<std::uint64_t>(value);
 
-    return static_cast<int64_t>(value);
+    return static_cast<std::int64_t>(value);
   }
 }
 
 export tstorage to_storage(__uint128_t value) {
-  if (value > std::numeric_limits<uint64_t>::max())
+  if (value > std::numeric_limits<std::uint64_t>::max())
     return static_cast<double>(value);
 
-  return static_cast<uint64_t>(value);
+  return static_cast<std::uint64_t>(value);
 }
 } // namespace math
 } // namespace calculator
