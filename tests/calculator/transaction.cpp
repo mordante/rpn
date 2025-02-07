@@ -15,6 +15,7 @@
 import calculator.transaction;
 
 import calculator.model;
+import lib.base;
 
 #include <gtest/gtest.h>
 
@@ -51,7 +52,7 @@ TEST(transaction, exception_thrown) {
 
     // The diagnostics and base aren't part of the transaction.
     model.diagnostics_set("Unchanged");
-    model.base_set(tbase::binary);
+    model.base_set(lib::tbase::binary);
 
     transaction.input_reset();
     (void)transaction.pop();

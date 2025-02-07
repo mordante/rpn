@@ -15,6 +15,7 @@
 export module calculator.stack;
 
 export import calculator.value;
+import lib.base;
 
 import <algorithm>;
 import <concepts>;
@@ -25,9 +26,6 @@ import <utility>;
 export import <vector>;
 
 namespace calculator {
-
-/** The supported bases in the calculator. */
-export enum class tbase { binary, octal, decimal, hexadecimal };
 
 export class tstack final {
 public:
@@ -64,7 +62,7 @@ public:
    */
   void drop();
 
-  void base_set(tbase base) {
+  void base_set(lib::tbase base) {
     base_ = base;
     invalidate_cache();
   }
@@ -119,7 +117,7 @@ private:
    *
    * @note The input is always base 10, unless the user enters a base prefix.
    */
-  tbase base_{tbase::decimal};
+  lib::tbase base_{lib::tbase::decimal};
 
   /** Whether or not the grouping symbols are shown in the output. */
   bool grouping_{true};
@@ -165,23 +163,23 @@ void tstack::synchronise_display() const {
   dirty_ = false;
 }
 
-static std::string format_integral(tbase base, std::string_view debug,
+static std::string format_integral(lib::tbase base, std::string_view debug,
                                    auto value) {
   switch (base) {
-  case tbase::binary:
+  case lib::tbase::binary:
     return std::format("{:#b}{}", value, debug);
-  case tbase::octal:
+  case lib::tbase::octal:
     return std::format("{:#o}{}", value, debug);
-  case tbase::decimal:
+  case lib::tbase::decimal:
     return std::format("{}{}", value, debug);
-  case tbase::hexadecimal:
+  case lib::tbase::hexadecimal:
     return std::format("{:#x}{}", value, debug);
   }
   std::unreachable();
 }
 
-static std::string format_integral_grouped(tbase base, std::string_view debug,
-                                           auto value) {
+static std::string format_integral_grouped(lib::tbase base,
+                                           std::string_view debug, auto value) {
   // The hard-code grouping used in the bases.
   // Note this might becom more generic in the future.
   struct grouping_3 : std::numpunct<char> {
@@ -206,13 +204,13 @@ static std::string format_integral_grouped(tbase base, std::string_view debug,
   static std::locale locale_4{std::locale(), new grouping_4()};
 
   switch (base) {
-  case tbase::binary:
+  case lib::tbase::binary:
     return std::format(locale_4, "{:#Lb}{}", value, debug);
-  case tbase::octal:
+  case lib::tbase::octal:
     return std::format(locale_3, "{:#Lo}{}", value, debug);
-  case tbase::decimal:
+  case lib::tbase::decimal:
     return std::format(locale_3, "{:L}{}", value, debug);
-  case tbase::hexadecimal:
+  case lib::tbase::hexadecimal:
     return std::format(locale_4, "{:#Lx}{}", value, debug);
   }
   std::unreachable();
@@ -221,7 +219,8 @@ static std::string format_integral_grouped(tbase base, std::string_view debug,
 /** The integral types used in the value class. */
 template <class T>
   requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
-static std::string format(tbase base, bool grouping, bool debug_mode, T value) {
+static std::string format(lib::tbase base, bool grouping, bool debug_mode,
+                          T value) {
   std::string_view debug = [&] {
     if (!debug_mode)
       return "";
@@ -237,7 +236,7 @@ static std::string format(tbase base, bool grouping, bool debug_mode, T value) {
   return format_integral(base, debug, value);
 }
 
-static std::string format(tbase, bool, bool debug_mode, double value) {
+static std::string format(lib::tbase, bool, bool debug_mode, double value) {
   char buf[128];
   if (debug_mode)
     std::sprintf(buf, "%g |d", value);
@@ -247,9 +246,9 @@ static std::string format(tbase, bool, bool debug_mode, double value) {
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static uint64_t format(tbase, bool, T) = delete;
+template <class T> static uint64_t format(lib::tbase, bool, T) = delete;
 
-static std::string format(tbase base, bool grouping, bool debug_mode,
+static std::string format(lib::tbase base, bool grouping, bool debug_mode,
                           const tvalue &value) {
   return value.visit([base, debug_mode, grouping](auto v) {
     return format(base, grouping, debug_mode, v);

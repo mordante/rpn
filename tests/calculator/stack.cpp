@@ -14,6 +14,8 @@
 
 import calculator.stack;
 
+import lib.base;
+
 import <type_traits>;
 
 #include <gtest/gtest.h>
@@ -71,7 +73,7 @@ TEST(stack, base_default) {
 TEST(stack, base_2) {
   tstack stack;
   stack.grouping_toggle();
-  stack.base_set(tbase::binary);
+  stack.base_set(lib::tbase::binary);
   stack.push(tvalue{uint64_t(42)});
   EXPECT_EQ(stack.strings(), std::vector<std::string>{"0b101010"});
 
@@ -81,7 +83,7 @@ TEST(stack, base_2) {
 
 TEST(stack, base_8) {
   tstack stack;
-  stack.base_set(tbase::octal);
+  stack.base_set(lib::tbase::octal);
   stack.push(tvalue{uint64_t(42)});
   EXPECT_EQ(stack.strings(), std::vector<std::string>{"052"});
 
@@ -91,7 +93,7 @@ TEST(stack, base_8) {
 
 TEST(stack, base_10) {
   tstack stack;
-  stack.base_set(tbase::decimal);
+  stack.base_set(lib::tbase::decimal);
   stack.push(tvalue{uint64_t(42)});
   EXPECT_EQ(stack.strings(), std::vector<std::string>{"42"});
 
@@ -101,7 +103,7 @@ TEST(stack, base_10) {
 
 TEST(stack, base_16) {
   tstack stack;
-  stack.base_set(tbase::hexadecimal);
+  stack.base_set(lib::tbase::hexadecimal);
   stack.push(tvalue{uint64_t(42)});
   EXPECT_EQ(stack.strings(), std::vector<std::string>{"0x2a"});
 

@@ -17,6 +17,10 @@ set_target_properties(parser
 	PROPERTIES
 		CXX_CLANG_TIDY "${CLANG_TIDY}"
 )
+target_link_libraries(parser
+	PRIVATE
+		lib
+)
 add_module(parser.detail.base detail/base.cpp)
 add_module(parser.detail.floating_point detail/floating_point.cpp)
 add_module(parser.detail.invalid_value detail/invalid_value.cpp)
@@ -44,7 +48,7 @@ add_dependencies(parser.detail.string.pcm
 	parser.detail.base.pcm
 )
 add_dependencies(parser.detail.unsigned_value.pcm
-	calculator.stack.pcm
+	lib.base.pcm
 	parser.detail.base.pcm
 	parser.detail.invalid_value.pcm
 	parser.detail.floating_point.pcm

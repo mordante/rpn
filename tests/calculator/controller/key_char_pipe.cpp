@@ -15,6 +15,7 @@
 import calculator.controller;
 
 import calculator.model;
+import lib.base;
 import tests.format_error;
 import tests.handle_input;
 
@@ -42,7 +43,7 @@ TEST(controller, key_char_pipe_too_few_elements) {
 
 TEST(controller, key_char_pipe_stack_input) {
   tmodel model;
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b1101");
   model.input_append("2");
@@ -55,7 +56,7 @@ TEST(controller, key_char_pipe_stack_input) {
 
 TEST(controller, key_char_pipe_stack_stack) {
   tmodel model;
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
   handle_input(controller, model, "0b1101");
   handle_input(controller, model, "2");

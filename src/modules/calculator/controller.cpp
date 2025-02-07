@@ -22,6 +22,7 @@ import calculator.math.round;
 import calculator.model;
 import calculator.transaction;
 import calculator.undo_handler;
+import lib.base;
 import lib.dictionary;
 
 import <algorithm>;
@@ -426,19 +427,19 @@ void tcontroller::handle_keyboard_input_control(char key) {
   switch (key) {
     /*** Modify selected base ***/
   case 'b':
-    model_.base_set(tbase::binary);
+    model_.base_set(lib::tbase::binary);
     break;
 
   case 'o':
-    model_.base_set(tbase::octal);
+    model_.base_set(lib::tbase::octal);
     break;
 
   case 'd':
-    model_.base_set(tbase::decimal);
+    model_.base_set(lib::tbase::decimal);
     break;
 
   case 'h':
-    model_.base_set(tbase::hexadecimal);
+    model_.base_set(lib::tbase::hexadecimal);
     break;
 
     /*** Undo / redo ***/

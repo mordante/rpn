@@ -15,6 +15,7 @@
 import calculator.controller;
 
 import calculator.model;
+import lib.base;
 import tests.handle_input;
 
 import <locale>;
@@ -25,7 +26,7 @@ namespace calculator {
 
 TEST(controller, key_char_control_g_basic) {
   tmodel model;
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
 
   model.diagnostics_set("Unchanged");
@@ -57,7 +58,7 @@ TEST(controller, key_char_control_g_basic) {
 
 TEST(controller, key_char_control_g_base_2) {
   tmodel model;
-  model.base_set(tbase::binary);
+  model.base_set(lib::tbase::binary);
   tcontroller controller{model};
 
   handle_input(controller, model, "0b111");
@@ -78,7 +79,7 @@ TEST(controller, key_char_control_g_base_2) {
 
 TEST(controller, key_char_control_g_base_8) {
   tmodel model;
-  model.base_set(tbase::octal);
+  model.base_set(lib::tbase::octal);
   tcontroller controller{model};
 
   handle_input(controller, model, "0777");
@@ -137,7 +138,7 @@ TEST(controller, key_char_control_g_base_10) {
 
 TEST(controller, key_char_control_g_base_16) {
   tmodel model;
-  model.base_set(tbase::hexadecimal);
+  model.base_set(lib::tbase::hexadecimal);
   tcontroller controller{model};
 
   handle_input(controller, model, "0x111");
