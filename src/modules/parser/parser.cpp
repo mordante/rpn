@@ -12,29 +12,6 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <__config>
-
-_LIBCPP_BEGIN_NAMESPACE_STD
-
-#if _LIBCPP_STD_VER >= 17
-template <class _Tp>
-[[nodiscard]] _LIBCPP_HIDE_FROM_ABI constexpr const _Tp &
-as_const(_Tp &__t) noexcept {
-  return __t;
-}
-
-template <class _Tp> void as_const(const _Tp &&) = delete;
-#endif
-
-_LIBCPP_END_NAMESPACE_STD
-
-#include <algorithm>
-#include <cctype>
-#include <string_view>
-#include <vector>
-
 export module parser;
 
 export import parser.token;
@@ -45,6 +22,8 @@ import parser.detail.floating_point;
 import parser.detail.unsigned_value;
 import parser.detail.string;
 import parser.detail.signed_value;
+import std;
+import std.compat;
 
 namespace parser {
 

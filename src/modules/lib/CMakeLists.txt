@@ -18,4 +18,5 @@ target_compile_options(lib
 set_target_properties(lib
 	PROPERTIES
 		CXX_CLANG_TIDY "${CLANG_TIDY}"
+		CMAKE_CXX_MODULE_STD ON
 )

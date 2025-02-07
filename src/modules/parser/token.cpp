@@ -12,11 +12,8 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <string>
-
 export module parser.token;
+import std;
 
 namespace parser {
 

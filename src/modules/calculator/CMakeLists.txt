@@ -25,6 +25,7 @@ target_compile_options(calculator
 set_target_properties(calculator
 	PROPERTIES
 		CXX_CLANG_TIDY "${CLANG_TIDY}"
+		CMAKE_CXX_MODULE_STD ON
 )
 target_link_libraries(calculator
 	PRIVATE

@@ -20,6 +20,7 @@ target_compile_options(parser
 set_target_properties(parser
 	PROPERTIES
 		CXX_CLANG_TIDY "${CLANG_TIDY}"
+		CMAKE_CXX_MODULE_STD ON
 )
 target_link_libraries(parser
 	PRIVATE

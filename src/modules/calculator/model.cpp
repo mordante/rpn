@@ -12,16 +12,12 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <string>
-#include <string_view>
-
 export module calculator.model;
 
 export import calculator.stack;
 export import parser;
 import lib.base;
+import std;
 
 namespace calculator {
 

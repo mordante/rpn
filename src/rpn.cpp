@@ -12,10 +12,9 @@
  * See the COPYING file for more details.
  */
 
-#include <string_view>
-
 import gui;
 import tui;
+import std;
 
 int main(int argc, char **argv) {
   if (argc > 1 && argv[1] == std::string_view{"-t"})

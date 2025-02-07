@@ -12,11 +12,6 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <memory>
-#include <string>
-
 // TODO Rename unsiged_value to unsigned when that becomes valid.
 export module parser.detail.unsigned_value;
 
@@ -24,6 +19,8 @@ import lib.base;
 
 import parser.detail.floating_point;
 import parser.detail.invalid_value;
+import std;
+import std.compat;
 
 namespace parser {
 

@@ -14,14 +14,9 @@
 
 module;
 
-#include <bit>
-#include <cmath>
-#include <concepts>
-#include <cstdint>
-#include <stdexcept>
-#include <variant>
-
 export module calculator.math.core;
+import std;
+import std.compat;
 
 namespace calculator {
 namespace math {

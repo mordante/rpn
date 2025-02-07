@@ -19,11 +19,11 @@ module;
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Window.H>
 
-#include <iostream>
-
 export module gui;
 
 import calculator;
+import std;
+
 // When not in an anonymous namespace the twindow classes in tui and gui give
 // issues. This seems like a bug in Clang.
 namespace {

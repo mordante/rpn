@@ -12,11 +12,8 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <__algorithm/ranges_lower_bound.h>
-
 export module lib.binary_find;
+import std;
 
 namespace lib {
 namespace detail {

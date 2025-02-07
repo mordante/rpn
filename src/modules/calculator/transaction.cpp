@@ -12,35 +12,11 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <__config>
-
-_LIBCPP_BEGIN_NAMESPACE_STD
-
-#if _LIBCPP_STD_VER >= 17
-template <class _Tp>
-[[nodiscard]] _LIBCPP_HIDE_FROM_ABI constexpr const _Tp &
-as_const(_Tp &__t) noexcept {
-  return __t;
-}
-
-template <class _Tp> void as_const(const _Tp &&) = delete;
-#endif
-
-_LIBCPP_END_NAMESPACE_STD
-
-#include <algorithm>
-#include <array>
-#include <exception>
-#include <memory>
-#include <ranges>
-#include <string>
-#include <vector>
-
 export module calculator.transaction;
 
 import calculator.model;
+import std;
+import std.compat;
 
 namespace calculator {
 

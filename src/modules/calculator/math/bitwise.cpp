@@ -12,15 +12,11 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <cstdint>
-#include <stdexcept>
-#include <variant>
-
 export module calculator.math.bitwise;
 
 export import calculator.math.core;
+import std;
+import std.compat;
 
 namespace calculator {
 namespace math {

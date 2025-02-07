@@ -12,15 +12,11 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <stdexcept>
-#include <utility>
-#include <vector>
-
 export module calculator.undo_handler;
 
 export import calculator.transaction;
+import std;
+import std.compat;
 
 namespace calculator {
 

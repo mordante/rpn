@@ -12,15 +12,12 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <memory>
-#include <string>
-
 export module parser.detail.floating_point;
 
 export import parser.detail.base;
 import parser.detail.invalid_value;
+import std;
+import std.compat;
 
 namespace parser {
 

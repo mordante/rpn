@@ -12,17 +12,14 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <memory>
-#include <string>
-
 // TODO Rename siged_value to signed when that becomes valid.
 export module parser.detail.signed_value;
 
 export import parser.detail.base;
 import parser.detail.invalid_value;
 import parser.detail.string;
+import std;
+import std.compat;
 
 namespace parser {
 

@@ -20,6 +20,7 @@ target_compile_options(rpn
 set_target_properties(rpn
 	PROPERTIES
 		CXX_CLANG_TIDY "${CLANG_TIDY}"
+		CMAKE_CXX_MODULE_STD ON
 )
 # These aren't properly set by fltk itself.
 target_include_directories(rpn

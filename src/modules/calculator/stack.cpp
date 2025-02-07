@@ -12,15 +12,12 @@
  * See the COPYING file for more details.
  */
 
-module;
-
-#include <format>
-#include <vector>
-
 export module calculator.stack;
 
 export import calculator.value;
 import lib.base;
+import std;
+import std.compat;
 
 namespace calculator {
 
