@@ -23,7 +23,6 @@ import parser.detail.unsigned_value;
 import parser.detail.string;
 import parser.detail.signed_value;
 import std;
-import std.compat;
 
 namespace parser {
 
@@ -69,7 +68,7 @@ private:
         parser_ = std::make_unique<tparser_signed>();
         break;
       default:
-        if (isdigit(c))
+        if (std::isdigit(c))
           parser_ = std::make_unique<tparser_unsigned>();
         else
           parser_ = std::make_unique<tparser_string>();

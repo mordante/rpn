@@ -17,7 +17,6 @@ export module calculator.stack;
 export import calculator.value;
 import lib.base;
 import std;
-import std.compat;
 
 namespace calculator {
 
@@ -26,7 +25,7 @@ public:
   // *** Query ***
 
   [[nodiscard]] bool empty() const noexcept { return values_.empty(); }
-  [[nodiscard]] size_t size() const noexcept { return values_.size(); }
+  [[nodiscard]] std::size_t size() const noexcept { return values_.size(); }
   [[nodiscard]] const std::vector<std::string> &strings() const noexcept {
     synchronise_display();
     return strings_;
@@ -150,7 +149,7 @@ void tstack::synchronise_display() const {
   if (!dirty_)
     return;
 
-  for (size_t i = 0; i < strings_.size(); ++i)
+  for (std::size_t i = 0; i < strings_.size(); ++i)
     if (strings_[i].empty())
       strings_[i] = format(values_[i]);
 
@@ -212,13 +211,13 @@ static std::string format_integral_grouped(lib::tbase base,
 
 /** The integral types used in the value class. */
 template <class T>
-  requires std::same_as<T, int64_t> || std::same_as<T, uint64_t>
+  requires std::same_as<T, std::int64_t> || std::same_as<T, std::uint64_t>
 static std::string format(lib::tbase base, bool grouping, bool debug_mode,
                           T value) {
   std::string_view debug = [&] {
     if (!debug_mode)
       return "";
-    if constexpr (std::same_as<T, int64_t>)
+    if constexpr (std::same_as<T, std::int64_t>)
       return " |i";
     else
       return " |u";
@@ -240,7 +239,7 @@ static std::string format(lib::tbase, bool, bool debug_mode, double value) {
 }
 
 /** Catches changes of @ref tstorage. */
-template <class T> static uint64_t format(lib::tbase, bool, T) = delete;
+template <class T> static std::uint64_t format(lib::tbase, bool, T) = delete;
 
 static std::string format(lib::tbase base, bool grouping, bool debug_mode,
                           const tvalue &value) {

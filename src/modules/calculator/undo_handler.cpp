@@ -16,7 +16,6 @@ export module calculator.undo_handler;
 
 export import calculator.transaction;
 import std;
-import std.compat;
 
 namespace calculator {
 

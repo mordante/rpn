@@ -20,7 +20,6 @@ import lib.base;
 import parser.detail.floating_point;
 import parser.detail.invalid_value;
 import std;
-import std.compat;
 
 namespace parser {
 
@@ -67,7 +66,7 @@ private:
   }
 
   std::unique_ptr<tparser_> initial(char c) {
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       throw std::logic_error(
           "The caller should have validated input is a digit");
 

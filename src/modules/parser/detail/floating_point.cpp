@@ -17,7 +17,6 @@ export module parser.detail.floating_point;
 export import parser.detail.base;
 import parser.detail.invalid_value;
 import std;
-import std.compat;
 
 namespace parser {
 
@@ -75,7 +74,7 @@ private:
   }
 
   std::unique_ptr<tparser_> initial(char c) {
-    if (!isdigit(c) && c != '.')
+    if (!std::isdigit(c) && c != '.')
       throw std::logic_error(
           "The caller should have validated input is a digit or .");
 
@@ -104,7 +103,7 @@ private:
       return nullptr;
     }
 
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     return nullptr;
@@ -117,7 +116,7 @@ private:
       return nullptr;
     }
 
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     state_ = tstate::optional_number;
@@ -133,7 +132,7 @@ private:
     if (handle_input_separator(c))
       return nullptr;
 
-    if (!isdigit(c))
+    if (!std::isdigit(c))
       return std::make_unique<tparser_invalid_value>();
 
     buffer_ += c;
