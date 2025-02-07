@@ -72,23 +72,23 @@ for different bases and make it easy to use bitwise operations.</p>
 <section id="building">
 <h2><a class="toc-backref" href="#id5">Building</a><a class="headerlink" href="#building" title="Permalink to this headline">¶</a></h2>
 <p>In order to build the application the following dependencies are required:</p>
-<p>Due to module support and using <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">std</span></code> the requirements are quite high:
-* <a class="reference external" href="https://cmake.org/">CMake</a> 3.30.0 or later.
-* A recent <a class="reference external" href="clang.llvm.org/">Clang</a> main build. Clang 20.0.0 might work.
-* A recent <a class="reference external" href="libcxx.llvm.org/">libc++</a> main build. Libc++ 20.0.0 might work.
-* <a class="reference external" href="https://ninja-build.org/">Ninja</a> 1.11 or later.
-* A working Internet connection. The application depends on</p>
-<blockquote>
-<div><p><a class="reference external" href="http://google.github.io/googletest/">GoogleTest</a> and
+<dl class="simple">
+<dt>Due to module support and using <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">std</span></code> the requirements are quite high:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/">CMake</a> 3.30.0 or later.</p></li>
+<li><p>A recent <a class="reference external" href="clang.llvm.org/">Clang</a> main build. Clang 20.0.0 might work.</p></li>
+<li><p>A recent <a class="reference external" href="libcxx.llvm.org/">libc++</a> main build. Libc++ 20.0.0 might work.</p></li>
+<li><p><a class="reference external" href="https://ninja-build.org/">Ninja</a> 1.11 or later.</p></li>
+<li><p>A working Internet connection. The application depends on
+<a class="reference external" href="http://google.github.io/googletest/">GoogleTest</a> and
 <a class="reference external" href="https://fltk.org/">FLTK</a>. The proper dependencies are downloaded during
-the build process.</p>
-</div></blockquote>
-<ul class="simple">
+the build process.</p></li>
 <li><p>Optional when enabling coverage <code class="docutils literal notranslate"><span class="pre">llvm-cov</span></code> and <code class="docutils literal notranslate"><span class="pre">llvm-profdata</span></code> are
 required. This should be the same version as Clang, but normally they are
 installed together with Clang.</p></li>
 <li><p>Optional for formatting <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>, <code class="docutils literal notranslate"><span class="pre">cmake-format</span></code>, and <code class="docutils literal notranslate"><span class="pre">black</span></code>.</p></li>
 </ul>
+</dd>
+</dl>
 <p>The build itself is a normal CMake build. It has the following options:</p>
 </section>
 <section id="usage">
