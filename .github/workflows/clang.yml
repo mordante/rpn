@@ -19,7 +19,7 @@ jobs:
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo sh -c 'echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy main" >> /etc/apt/sources.list'
           sudo apt update
-          sudo apt-get install -y clang-21 clang-tools-21 libc++-21-dev libc++abi-21-dev libunwind-21-dev python3-sphinx
+          sudo apt-get install -y clang-21 libc++-21-dev libc++abi-21-dev libunwind-21-dev python3-sphinx
           # Install a Ninja version with module support. The one shipped with Ubuntu 22.04 is too old.
           set -e
           wget -qO /tmp/ninja.gz https://github.com/ninja-build/ninja/releases/latest/download/ninja-linux.zip
